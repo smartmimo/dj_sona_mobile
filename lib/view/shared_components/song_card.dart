@@ -89,6 +89,7 @@ class SongCard extends StatelessWidget {
 
     return Expanded(
       child: Container(
+        color: isCurrentlyPlaying ? Theme.of(context).colorScheme.primary.withOpacity(0.2) : null,
         padding: StyleConstants.edgeInsets8,
         height: 100,
         child: Column(
