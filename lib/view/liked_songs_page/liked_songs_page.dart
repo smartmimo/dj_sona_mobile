@@ -19,6 +19,7 @@ class LikedSongsPage extends StatelessWidget {
   final AudioPlayerService audioService = serviceLocator.get<AudioPlayerService>();
   final AppStateCubit _appStateCubit = serviceLocator.get<AppStateCubit>();
 
+  static const String _likedSongsPlaylistName = "likedSongs";
   @override
   Widget build(context) {
     return BlocBuilder<AppStateCubit, AppState>(
@@ -60,9 +61,14 @@ class LikedSongsPage extends StatelessWidget {
               padding: StyleConstants.edgeInsetsB16,
               child: SongCard(
                 songItem: state.likedSongs[index],
-                isCurrentlyPlaying: currentlyPlaying?.id == state.likedSongs[index].id,
+                isCurrentlyPlaying: audioService.queueTitle.value == _likedSongsPlaylistName &&
+                    currentlyPlaying?.id == state.likedSongs[index].id,
                 isLoading: false,
-                onPressed: () {},
+                onPressed: () => audioService.playPlaylist(
+                  items: state.likedSongs,
+                  playlistName: _likedSongsPlaylistName,
+                  startAt: index,
+                ),
               ),
             );
           }),
@@ -103,12 +109,12 @@ class LikedSongsPage extends StatelessWidget {
     return Row(
       children: [
         _getDownloadButton(context, state),
-        _getPlayButton(context),
+        _getPlayButton(context, state),
       ].withHorizontalElementsSpacing(8),
     );
   }
 
-  Widget _getPlayButton(BuildContext context) {
+  Widget _getPlayButton(BuildContext context, AppState state) {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
@@ -127,7 +133,10 @@ class LikedSongsPage extends StatelessWidget {
             size: AppBarWidget.leadingSize / 1.6,
             color: ColorConstants.white,
           ),
-          onPressed: audioService.play,
+          onPressed: () => audioService.playPlaylist(
+            items: state.likedSongs,
+            playlistName: _likedSongsPlaylistName,
+          ),
           padding: EdgeInsets.zero,
           splashColor: Theme.of(context).colorScheme.secondary.withOpacity(1),
           splashRadius: AppBarWidget.leadingSize / 2,

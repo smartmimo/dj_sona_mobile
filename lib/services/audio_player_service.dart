@@ -32,6 +32,25 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
     return audioStreamInfo;
   }
 
+  Future<MediaItem> _getMediaItemFromSongItem(
+    SongItem songItem, {
+    int? originalIndex,
+    int? shuffledIndex,
+  }) async {
+    final AudioOnlyStreamInfo audioStreamInfo = await _getAudioStreamFromId(songItem.id);
+    return MediaItem(
+      id: songItem.id,
+      title: songItem.title,
+      duration: songItem.duration,
+      artUri: songItem.thumbnailUrl != null ? Uri.parse(songItem.thumbnailUrl!) : null,
+      extras: {
+        "streamUrl": audioStreamInfo.url.toString(),
+        "originalIndex": originalIndex,
+        "shuffledIndex": shuffledIndex,
+      },
+    );
+  }
+
   Future<Video> _getVideoDatafromId(String videoId) async {
     final YoutubeExplode yt = YoutubeExplode();
     final Video manifest = await yt.videos.get(videoId);
@@ -39,22 +58,71 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
     return manifest;
   }
 
-  Future<void> playSong(SongItem songItem) async {
-    final AudioOnlyStreamInfo audioStreamInfo = await _getAudioStreamFromId(songItem.id);
-    final MediaItem item = MediaItem(
-      id: songItem.id,
-      title: songItem.title,
-      duration: songItem.duration,
-      artUri: songItem.thumbnailUrl != null ? Uri.parse(songItem.thumbnailUrl!) : null,
-      extras: {
-        "streamUrl": audioStreamInfo.url.toString(),
-      },
-    );
+  Future<MediaItem> playSong(SongItem songItem) async {
+    final MediaItem item = await _getMediaItemFromSongItem(songItem);
 
-    audioPlayer.setUrl(audioStreamInfo.url.toString());
+    audioPlayer.setUrl(item.extras!["streamUrl"]);
+
     clearQueue();
     broadcastMediaItem(item);
     if (!audioPlayer.playing) audioPlayer.play();
+    return item;
+  }
+
+  Future<void> playPlaylist({
+    required List<SongItem> items,
+    required String playlistName,
+    int? startAt,
+  }) async {
+    if (items.isEmpty) return;
+
+    final List<SongItem> shuffledItems = List<SongItem>.from(items)..shuffle();
+    late final List<SongItem> songItems;
+    clearQueue();
+
+    if (audioPlayer.shuffleModeEnabled) {
+      songItems = shuffledItems;
+    } else {
+      songItems = List<SongItem>.from(items);
+    }
+
+    if (startAt != null) {
+      var tmp = songItems[0];
+      songItems[0] = songItems[startAt];
+      songItems[startAt] = tmp;
+    }
+
+    final firstMediaItem = await _getMediaItemFromSongItem(
+      songItems[0],
+      originalIndex: items.indexWhere((e) => e.id == songItems[0].id),
+      shuffledIndex: shuffledItems.indexWhere((e) => e.id == songItems[0].id),
+    );
+
+    queueTitle.value = playlistName;
+    addQueueItem(firstMediaItem);
+    addQueueItem(
+      await _getMediaItemFromSongItem(
+        songItems[1],
+        originalIndex: items.indexWhere((e) => e.id == songItems[1].id),
+        shuffledIndex: shuffledItems.indexWhere((e) => e.id == songItems[1].id),
+      ),
+    );
+
+    audioPlayer.setUrl(firstMediaItem.extras!["streamUrl"]);
+    broadcastMediaItem(firstMediaItem);
+    if (!audioPlayer.playing) audioPlayer.play();
+
+    List<MediaItem> mediaItemList = await Future.wait<MediaItem>(
+      songItems.getRange(2, songItems.length).map(
+            (songItem) => _getMediaItemFromSongItem(
+              songItem,
+              originalIndex: items.indexWhere((e) => songItem.id == e.id),
+              shuffledIndex: shuffledItems.indexWhere((e) => songItem.id == e.id),
+            ),
+          ),
+    );
+
+    addQueueItems(mediaItemList);
     return;
   }
 
@@ -90,14 +158,20 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
     if (currentIndex - 1 < 0) return;
 
     final MediaItem previousItem = queue.value[currentIndex - 1];
-    audioPlayer.setUrl(previousItem.id);
+    audioPlayer.setUrl(previousItem.extras!["streamUrl"]);
     broadcastMediaItem(previousItem);
     if (!audioPlayer.playing) audioPlayer.play();
   }
 
   @override
-  Future<void> setShuffleMode(AudioServiceShuffleMode shuffleMode) {
-    return audioPlayer.setShuffleModeEnabled(shuffleMode != AudioServiceShuffleMode.none);
+  Future<void> setShuffleMode(AudioServiceShuffleMode shuffleMode) async {
+    final bool isShuffleEnabled = shuffleMode != AudioServiceShuffleMode.none;
+    audioPlayer.setShuffleModeEnabled(isShuffleEnabled);
+
+    if (StringUtils.isNotEmpty(queueTitle.value)) {
+      final shuffleParameter = isShuffleEnabled ? "shuffledIndex" : "originalIndex";
+      queue.value.sort((a, b) => a.extras![shuffleParameter] - b.extras![shuffleParameter]);
+    }
   }
 
   @override
@@ -180,6 +254,7 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
   }
 
   void clearQueue() {
+    queueTitle.value = "";
     queue.value = [];
   }
 }
