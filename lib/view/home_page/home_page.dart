@@ -7,6 +7,7 @@ import 'package:djsona_mobile/services/search_api_provider.dart';
 import 'package:djsona_mobile/services/service_locator.dart';
 import 'package:djsona_mobile/utils/image_utils.dart';
 import 'package:djsona_mobile/view/home_page/search_appbar.dart';
+import 'package:djsona_mobile/view/shared_components/appbar_widget.dart';
 import 'package:djsona_mobile/view/shared_components/song_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,9 +34,11 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: ImageUtils.lightenColor(Theme.of(context).colorScheme.secondary, 0.6),
       resizeToAvoidBottomInset: false,
-      appBar: SearchAppbar(
+      appBar: AppBarWidget(
+        content: SearchAppbar(
         onChanged: cubit.onSearchChanged,
         isLoading: state.isLoading,
+        ),
       ),
       body: Container(
         width: double.infinity,

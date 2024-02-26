@@ -27,7 +27,7 @@ class LocalStorageManager {
 
   static void addToHistory(SongItem item) async {
     final Directory historyDir = Directory("${(await getExternalStorageDirectory())!.path}/history");
-    if (!historyDir.existsSync()) historyDir.create();
+    if (!historyDir.existsSync()) historyDir.createSync();
 
     final List<FileSystemEntity> historyFiles = historyDir.listSync();
     historyFiles.sort((a, b) => b.statSync().changed.compareTo(a.statSync().changed));
@@ -44,9 +44,36 @@ class LocalStorageManager {
     final List<FileSystemEntity> historyFiles = historyDir.listSync();
     historyFiles.sort((a, b) => b.statSync().changed.compareTo(a.statSync().changed));
 
-    if (historyFiles.length >= _maxItemsInHistory) historyFiles.last.delete();
-
     return historyFiles.map((file) {
+      return SongItem.fromJson(
+        _readFile(file.absolute.path),
+      );
+    }).toList();
+  }
+
+  static void addToLiked(SongItem item) async {
+    final Directory likedSongsDir = Directory("${(await getExternalStorageDirectory())!.path}/liked");
+    if (!likedSongsDir.existsSync()) likedSongsDir.createSync();
+
+    final List<FileSystemEntity> likedFiles = likedSongsDir.listSync();
+    likedFiles.sort((a, b) => b.statSync().changed.compareTo(a.statSync().changed));
+
+    _writeFile("${likedSongsDir.path}/${item.id}.json", item.toJson());
+  }
+
+  static void removeFromLiked(SongItem item) async {
+    final Directory likedSongsDir = Directory("${(await getExternalStorageDirectory())!.path}/liked");
+    File("${likedSongsDir.path}/${item.id}.json").delete();
+  }
+
+  static Future<List<SongItem>> listLiked() async {
+    final Directory likedSongsDir = Directory("${(await getExternalStorageDirectory())!.path}/liked");
+    if (!likedSongsDir.existsSync()) return [];
+
+    final List<FileSystemEntity> likedFiles = likedSongsDir.listSync();
+    likedFiles.sort((a, b) => b.statSync().changed.compareTo(a.statSync().changed));
+
+    return likedFiles.map((file) {
       return SongItem.fromJson(
         _readFile(file.absolute.path),
       );

@@ -8,7 +8,7 @@ GetIt serviceLocator = GetIt.instance;
 void setupDependencies() {
   serviceLocator.allowReassignment = true;
   serviceLocator.registerSingleton<ApiService>(ApiService()..init());
-  serviceLocator.registerSingleton<AppStateCubit>(AppStateCubit());
+  serviceLocator.registerSingleton<AppStateCubit>(AppStateCubit()..updateLikedSongs());
 
   /**
    * PROVIDERS

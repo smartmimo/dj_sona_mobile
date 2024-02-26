@@ -1,6 +1,9 @@
 import 'package:djsona_mobile/constants/color_constants.dart';
 import 'package:djsona_mobile/constants/icon_constants.dart';
 import 'package:djsona_mobile/constants/style_constants.dart';
+import 'package:djsona_mobile/cubits/app_state_cubit/app_state.dart';
+import 'package:djsona_mobile/cubits/app_state_cubit/app_state_cubit.dart';
+import 'package:djsona_mobile/services/service_locator.dart';
 import 'package:djsona_mobile/types/song_item.dart';
 import 'package:djsona_mobile/utils/string_utils.dart';
 import 'package:djsona_mobile/utils/theme_utils/elements_spacing_extension.dart';
@@ -9,9 +12,10 @@ import 'package:djsona_mobile/view/shared_components/card_layout.dart';
 import 'package:djsona_mobile/view/shared_components/loading_widget.dart';
 import 'package:djsona_mobile/view/shared_components/network_img.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SongCard extends StatelessWidget {
-  const SongCard({
+  SongCard({
     super.key,
     required this.songItem,
     required this.isCurrentlyPlaying,
@@ -22,6 +26,8 @@ class SongCard extends StatelessWidget {
   final bool isCurrentlyPlaying;
   final bool isLoading;
   final VoidCallback? onPressed;
+
+  final AppStateCubit _appStateCubit = serviceLocator.get<AppStateCubit>();
 
   @override
   Widget build(BuildContext context) {
@@ -184,8 +190,24 @@ class SongCard extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        _getActionIcon(context, iconData: IconConstants.addToPlaylist),
-        _getActionIcon(context, iconData: IconConstants.heart),
+        _getActionIcon(
+          context,
+          iconData: IconConstants.addToPlaylist,
+          onPressed: () {},
+        ),
+        BlocBuilder<AppStateCubit, AppState>(
+          bloc: serviceLocator.get<AppStateCubit>(),
+          builder: (context, state) {
+            final bool isSongLiked = _appStateCubit.isSongLiked(songItem);
+
+            return _getActionIcon(
+              context,
+              iconData: isSongLiked ? IconConstants.heartFilled : IconConstants.heart,
+              iconColor: isSongLiked ? ColorConstants.errorRed : null,
+              onPressed: () => _appStateCubit.toggleSongLike(songItem),
+            );
+          },
+        ),
       ].withHorizontalElementsSpacing(8),
     );
   }
@@ -193,6 +215,7 @@ class SongCard extends StatelessWidget {
   Widget _getActionIcon(
     BuildContext context, {
     required IconData iconData,
+    required VoidCallback onPressed,
     Color? iconColor,
   }) {
     return Container(
@@ -211,7 +234,7 @@ class SongCard extends StatelessWidget {
         clipBehavior: Clip.hardEdge,
         child: IconButton(
           padding: EdgeInsets.zero,
-          onPressed: () {},
+          onPressed: onPressed,
           icon: Icon(
             iconData,
             size: 16,

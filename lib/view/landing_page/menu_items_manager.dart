@@ -22,19 +22,19 @@ abstract class MenuItemsManager {
     "Search",
     IconConstants.search,
     IconConstants.searchFilled,
-    const HomeRoute(),
+    HomeRoute(),
   );
   static final _playlists = MenuItem(
     "Playlists",
     IconConstants.playlist,
     IconConstants.playlistFilled,
-    const HomeRoute(),
+    HomeRoute(),
   );
   static final _likedSongs = MenuItem(
     "Liked songs",
     IconConstants.customHeart,
     IconConstants.customHeartFilled,
-    const HomeRoute(),
+    LikedSongsRoute(),
   );
 
   static final List<MenuItem> menuItems = [_homePage, _playlists, _likedSongs];

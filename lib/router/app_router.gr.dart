@@ -24,16 +24,25 @@ class _$AppRouter extends RootStackRouter {
       );
     },
     LandingRoute.name: (routeData) {
-      final args = routeData.argsAs<LandingRouteArgs>(orElse: () => const LandingRouteArgs());
       return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: LandingPage(key: args.key),
+        child: const LandingPage(),
       );
     },
     HomeRoute.name: (routeData) {
+      final args =
+          routeData.argsAs<HomeRouteArgs>(orElse: () => const HomeRouteArgs());
       return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: HomePage(),
+        child: HomePage(key: args.key),
+      );
+    },
+    LikedSongsRoute.name: (routeData) {
+      final args = routeData.argsAs<LikedSongsRouteArgs>(
+          orElse: () => const LikedSongsRouteArgs());
+      return MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: LikedSongsPage(key: args.key),
       );
     },
   };
@@ -53,7 +62,12 @@ class _$AppRouter extends RootStackRouter {
                   HomeRoute.name,
                   path: '',
                   parent: LandingRoute.name,
-                )
+                ),
+                RouteConfig(
+                  LikedSongsRoute.name,
+                  path: 'liked-songs-page',
+                  parent: LandingRoute.name,
+                ),
               ],
             )
           ],
@@ -76,39 +90,61 @@ class MainRouter extends PageRouteInfo<void> {
 
 /// generated route for
 /// [LandingPage]
-class LandingRoute extends PageRouteInfo<LandingRouteArgs> {
-  LandingRoute({
-    Key? key,
-    List<PageRouteInfo>? children,
-  }) : super(
+class LandingRoute extends PageRouteInfo<void> {
+  const LandingRoute({List<PageRouteInfo>? children})
+      : super(
           LandingRoute.name,
           path: '',
-          args: LandingRouteArgs(key: key),
           initialChildren: children,
         );
 
   static const String name = 'LandingRoute';
 }
 
-class LandingRouteArgs {
-  const LandingRouteArgs({this.key});
+/// generated route for
+/// [HomePage]
+class HomeRoute extends PageRouteInfo<HomeRouteArgs> {
+  HomeRoute({Key? key})
+      : super(
+          HomeRoute.name,
+          path: '',
+          args: HomeRouteArgs(key: key),
+        );
+
+  static const String name = 'HomeRoute';
+}
+
+class HomeRouteArgs {
+  const HomeRouteArgs({this.key});
 
   final Key? key;
 
   @override
   String toString() {
-    return 'LandingRouteArgs{key: $key}';
+    return 'HomeRouteArgs{key: $key}';
   }
 }
 
 /// generated route for
-/// [HomePage]
-class HomeRoute extends PageRouteInfo<void> {
-  const HomeRoute()
+/// [LikedSongsPage]
+class LikedSongsRoute extends PageRouteInfo<LikedSongsRouteArgs> {
+  LikedSongsRoute({Key? key})
       : super(
-          HomeRoute.name,
-          path: '',
+          LikedSongsRoute.name,
+          path: 'liked-songs-page',
+          args: LikedSongsRouteArgs(key: key),
         );
 
-  static const String name = 'HomeRoute';
+  static const String name = 'LikedSongsRoute';
+}
+
+class LikedSongsRouteArgs {
+  const LikedSongsRouteArgs({this.key});
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'LikedSongsRouteArgs{key: $key}';
+  }
 }

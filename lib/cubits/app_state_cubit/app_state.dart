@@ -1,27 +1,32 @@
 import 'dart:ui';
 
 import 'package:djsona_mobile/constants/color_constants.dart';
+import 'package:djsona_mobile/types/song_item.dart';
 import 'package:flutter/foundation.dart';
 
 class AppState {
   final RequestErrorObject? error;
   final Color primaryColor;
   final Color secondaryColor;
+  final List<SongItem> likedSongs;
   AppState({
     this.error,
     this.primaryColor = ColorConstants.primary,
     this.secondaryColor = ColorConstants.secondary,
+    this.likedSongs = const [],
   });
 
   AppState copyWith({
     ValueGetter<RequestErrorObject?>? error,
     Color? primaryColor,
     Color? secondaryColor,
+    List<SongItem>? likedSongs,
   }) {
     return AppState(
       error: error != null ? error() : this.error,
       primaryColor: primaryColor ?? this.primaryColor,
       secondaryColor: secondaryColor ?? this.secondaryColor,
+      likedSongs: likedSongs ?? this.likedSongs,
     );
   }
 }
