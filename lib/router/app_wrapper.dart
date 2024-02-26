@@ -16,12 +16,22 @@ class AppWrapper extends StatelessWidget {
       child: BlocBuilder<AppStateCubit, AppState>(
         bloc: serviceLocator.get<AppStateCubit>(),
         builder: (context, state) {
-          if (state is AppStateError) {
-            return ErrorWidget(error: state.error);
+          if (state.error != null) {
+            return ErrorWidget(error: state.error!);
           }
-          return const Scaffold(
-            resizeToAvoidBottomInset: false,
-            body: AutoRouter(),
+          return AnimatedTheme(
+            data: ThemeData(
+              colorScheme: ColorScheme.light(
+                primary: state.primaryColor,
+                secondary: state.secondaryColor,
+              ),
+            ),
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+            child: const Scaffold(
+              resizeToAvoidBottomInset: false,
+              body: AutoRouter(),
+            ),
           );
         },
       ),

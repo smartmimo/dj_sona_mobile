@@ -41,7 +41,7 @@ class ErrorWidget extends StatelessWidget {
       children: [
         Column(
           children: [
-            _getInfoIcon(),
+            _getInfoIcon(context),
             _getTitle(context),
           ].withVerticalElementsSpacing(12),
         ),
@@ -56,11 +56,11 @@ class ErrorWidget extends StatelessWidget {
     );
   }
 
-  Widget _getInfoIcon() {
-    return const Icon(
+  Widget _getInfoIcon(BuildContext context) {
+    return Icon(
       IconConstants.info,
       size: _infoIconSize,
-      color: ColorConstants.primary,
+      color: Theme.of(context).colorScheme.primary,
     );
   }
 
@@ -68,7 +68,7 @@ class ErrorWidget extends StatelessWidget {
     TextTheme textTheme = Theme.of(context).textTheme;
     return Text(
       "An error has occured",
-      style: textTheme.heading3.copyWith(color: ColorConstants.primary),
+      style: textTheme.heading3.copyWith(color: Theme.of(context).colorScheme.primary),
     );
   }
 
@@ -147,7 +147,7 @@ class ErrorWidget extends StatelessWidget {
       padding: StyleConstants.edgeInsetsB16,
       child: ButtonMaster(
         text: "Back to home page",
-        onPressed: () => appStateCubit.initialize(),
+        onPressed: () => appStateCubit.reset(),
         prefixIcon: const Icon(
           IconConstants.home,
           size: 18,

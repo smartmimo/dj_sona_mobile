@@ -26,7 +26,7 @@ class CardLayout extends StatelessWidget {
           boxShadow: StyleConstants.standardShadow,
           border: hasBorder
               ? Border.all(
-                  color: ColorConstants.primary,
+                  color: Theme.of(context).colorScheme.primary,
                   width: 2,
                   strokeAlign: BorderSide.strokeAlignOutside,
                 )

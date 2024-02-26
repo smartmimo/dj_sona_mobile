@@ -1,3 +1,4 @@
+import 'package:djsona_mobile/utils/image_utils.dart';
 import 'package:djsona_mobile/view/landing_page/audio_player_opener.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +16,7 @@ class LandingPage extends StatelessWidget {
     final TextTheme textTheme = Theme.of(context).textTheme;
 
     return SystemOverlayStyle.semiDark(
+      color: Theme.of(context).colorScheme.primary,
       child: AutoTabsScaffold(
         resizeToAvoidBottomInset: false,
         routes: List<PageRouteInfo>.from(
@@ -22,7 +24,7 @@ class LandingPage extends StatelessWidget {
         ),
         builder: (context, child, _) {
           return Container(
-            color: ColorConstants.background,
+            color: ImageUtils.lightenColor(Theme.of(context).colorScheme.secondary, 0.6),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -40,7 +42,7 @@ class LandingPage extends StatelessWidget {
             },
             child: Container(
               height: bottomBarHeight,
-              color: ColorConstants.primary,
+              color: Theme.of(context).colorScheme.primary,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,

@@ -1,7 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:djsona_mobile/constants/color_constants.dart';
 import 'package:djsona_mobile/router/app_router.dart';
 
 class DJSonaMobileApp extends StatelessWidget {
@@ -16,11 +15,6 @@ class DJSonaMobileApp extends StatelessWidget {
 
   Widget _buildAppWidget(BuildContext context) {
     return MaterialApp.router(
-      theme: ThemeData(
-        colorScheme: const ColorScheme.light(
-          primary: ColorConstants.primary,
-        ),
-      ),
       builder: (context, child) => MediaQuery(
         data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true, textScaleFactor: 1),
         child: child ?? Container(),

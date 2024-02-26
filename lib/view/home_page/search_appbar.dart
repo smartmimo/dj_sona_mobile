@@ -4,7 +4,6 @@ import 'package:djsona_mobile/utils/string_utils.dart';
 import 'package:djsona_mobile/view/shared_components/loading_widget.dart';
 import 'package:djsona_mobile/view/shared_components/txt_field.dart';
 import 'package:flutter/material.dart';
-import 'package:djsona_mobile/constants/color_constants.dart';
 import 'package:flutter/services.dart';
 
 class SearchAppbar extends StatelessWidget implements PreferredSizeWidget {
@@ -31,14 +30,14 @@ class SearchAppbar extends StatelessWidget implements PreferredSizeWidget {
       ),
       automaticallyImplyLeading: false,
       elevation: 0,
-      backgroundColor: ColorConstants.primary,
+      backgroundColor: Theme.of(context).colorScheme.primary,
       excludeHeaderSemantics: true,
       centerTitle: true,
       title: TxtFormField(
         controller: textController,
         labeltext: "Search for a song",
         prefixIcon: const Icon(IconConstants.search, size: _textFieldIconsSize),
-        suffixIcon: _getPrefixIcon(),
+        suffixIcon: _getPrefixIcon(context),
         borderRadius: StyleConstants.radius100,
         borderColor: Colors.transparent,
         textFieldHeight: _searchBarHeight,
@@ -47,7 +46,7 @@ class SearchAppbar extends StatelessWidget implements PreferredSizeWidget {
       leading: Padding(
         padding: StyleConstants.edgeInsetsL8,
         child: CircleAvatar(
-          backgroundColor: ColorConstants.secondary,
+          backgroundColor: Theme.of(context).colorScheme.secondary,
           child: ClipRRect(
             borderRadius: StyleConstants.radius100,
             child: Image.asset("assets/images/dj_sona_icon_2.png"),
@@ -68,7 +67,7 @@ class SearchAppbar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  Widget? _getPrefixIcon() {
+  Widget? _getPrefixIcon(context) {
     if (isLoading) {
       return const SizedBox(
         width: _textFieldIconsSize,
@@ -87,7 +86,7 @@ class SearchAppbar extends StatelessWidget implements PreferredSizeWidget {
             padding: EdgeInsets.zero,
             onPressed: textController.clear,
             icon: const Icon(IconConstants.close, size: _textFieldIconsSize),
-            splashColor: ColorConstants.primary.withOpacity(0.4),
+            splashColor: Theme.of(context).colorScheme.primary.withOpacity(0.4),
           ),
         ),
       );

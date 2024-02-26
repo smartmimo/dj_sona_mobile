@@ -81,7 +81,7 @@ class ButtonMaster extends StatelessWidget {
     } else {
       return BorderSide(
         width: borderWidth,
-        color: filledColor ?? ColorConstants.primary,
+        color: filledColor ?? Theme.of(context).colorScheme.primary,
       );
     }
   }
@@ -135,7 +135,7 @@ class ButtonMaster extends StatelessWidget {
   }
 
   MaterialStateProperty<Color> _getFilledColor(BuildContext context) {
-    Color color = filledColor ?? ColorConstants.primary;
+    Color color = filledColor ?? Theme.of(context).colorScheme.primary;
     return MaterialStateProperty.resolveWith<Color>((buttonState) {
       bool isDisabled = buttonState.contains(MaterialState.disabled);
       if (isDisabled) {

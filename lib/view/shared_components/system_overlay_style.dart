@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:djsona_mobile/constants/color_constants.dart';
 
 class SystemOverlayStyle extends StatelessWidget implements PreferredSizeWidget {
   const SystemOverlayStyle({
@@ -10,11 +9,13 @@ class SystemOverlayStyle extends StatelessWidget implements PreferredSizeWidget 
     required this.statusBarBrightness,
     required this.systemNavigationBarIconBrightness,
     required this.child,
+    required this.color,
   });
 
   const SystemOverlayStyle.light({
     super.key,
     required this.child,
+    required this.color,
   })  : statusBarColor = Colors.transparent,
         systemNavigationBarColor = Colors.transparent,
         statusBarBrightness = Brightness.light,
@@ -23,6 +24,7 @@ class SystemOverlayStyle extends StatelessWidget implements PreferredSizeWidget 
   const SystemOverlayStyle.dark({
     super.key,
     required this.child,
+    required this.color,
   })  : statusBarColor = Colors.transparent,
         systemNavigationBarColor = Colors.transparent,
         statusBarBrightness = Brightness.dark,
@@ -31,8 +33,9 @@ class SystemOverlayStyle extends StatelessWidget implements PreferredSizeWidget 
   const SystemOverlayStyle.semiDark({
     super.key,
     required this.child,
+    required this.color,
   })  : statusBarColor = Colors.transparent,
-        systemNavigationBarColor = ColorConstants.primary,
+        systemNavigationBarColor = color,
         statusBarBrightness = Brightness.dark,
         systemNavigationBarIconBrightness = Brightness.light;
 
@@ -41,6 +44,7 @@ class SystemOverlayStyle extends StatelessWidget implements PreferredSizeWidget 
   final Brightness statusBarBrightness;
   final Brightness systemNavigationBarIconBrightness;
   final Widget child;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {

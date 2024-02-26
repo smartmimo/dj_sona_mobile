@@ -48,7 +48,7 @@ class RefreshScrollable extends StatelessWidget {
 
     return RefreshIndicator(
       key: refreshWidgetKey,
-      color: ColorConstants.primary,
+      color: Theme.of(context).colorScheme.primary,
       onRefresh: refreshContent,
       strokeWidth: 3,
       child: ListView.builder(

@@ -1,17 +1,24 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:djsona_mobile/cubits/app_state_cubit/app_state_cubit.dart';
 import 'package:djsona_mobile/services/search_api_provider.dart';
 import 'package:djsona_mobile/services/service_locator.dart';
 import 'package:djsona_mobile/types/song_item.dart';
+import 'package:djsona_mobile/utils/image_utils.dart';
+import 'package:djsona_mobile/utils/string_utils.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler {
   final AudioPlayer audioPlayer = AudioPlayer();
   final SearchApiProvider _searchApiProvider = serviceLocator.get<SearchApiProvider>();
+  final AppStateCubit _appStateCubit = serviceLocator.get<AppStateCubit>();
+
   AudioPlayerService() {
     audioPlayer.playbackEventStream.map(_transformEvent).pipe(playbackState);
     mediaItem.listen((value) {
-      if (value != null && (queue.value.isEmpty || queue.value.indexOf(value) == queue.value.length - 1)) {
+      if (value == null) return;
+
+      if (queue.value.isEmpty || queue.value.indexOf(value) == queue.value.length - 1) {
         autoPlayFromCurrentItem(value);
       }
     });
@@ -45,7 +52,8 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
     );
 
     audioPlayer.setUrl(audioStreamInfo.url.toString());
-    mediaItem.add(item);
+    clearQueue();
+    broadcastMediaItem(item);
     if (!audioPlayer.playing) audioPlayer.play();
     return;
   }
@@ -72,7 +80,7 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
 
     final MediaItem nextItem = queue.value[currentIndex + 1];
     audioPlayer.setUrl(nextItem.extras!["streamUrl"]);
-    mediaItem.add(nextItem);
+    broadcastMediaItem(nextItem);
     if (!audioPlayer.playing) audioPlayer.play();
   }
 
@@ -83,7 +91,7 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
 
     final MediaItem previousItem = queue.value[currentIndex - 1];
     audioPlayer.setUrl(previousItem.id);
-    mediaItem.add(previousItem);
+    broadcastMediaItem(previousItem);
     if (!audioPlayer.playing) audioPlayer.play();
   }
 
@@ -95,6 +103,25 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
   @override
   Future<void> setRepeatMode(AudioServiceRepeatMode repeatMode) {
     return audioPlayer.setLoopMode(repeatMode == AudioServiceRepeatMode.none ? LoopMode.off : LoopMode.all);
+  }
+
+  void broadcastMediaItem(MediaItem item) {
+    if (StringUtils.isNotEmpty(item.artUri?.toString())) {
+      ImageUtils.getDominantColorsFromImageUrl(item.artUri!.toString()).then((value) {
+        _appStateCubit.updateColors(
+          primary: value.darkVibrantColor?.color ??
+              ImageUtils.darkenColor(
+                ImageUtils.getAverageColorFromList(value.colors.toList()),
+              ),
+          secondary: value.lightMutedColor?.color ??
+              ImageUtils.lightenColor(
+                ImageUtils.getAverageColorFromList(value.colors.toList()),
+              ),
+        );
+      });
+
+      mediaItem.add(item);
+    }
   }
 
   PlaybackState _transformEvent(PlaybackEvent event) {

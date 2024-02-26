@@ -110,7 +110,7 @@ class _SeekerWidgetState extends State<SeekerWidget> {
         decoration: BoxDecoration(
           boxShadow: StyleConstants.standardShadow,
           color: ColorConstants.white,
-          border: Border.all(color: ColorConstants.secondary, width: widget.seekerHeight),
+          border: Border.all(color: Theme.of(context).colorScheme.secondary, width: widget.seekerHeight),
           borderRadius: StyleConstants.radius100,
         ),
       ),
@@ -131,12 +131,12 @@ class _SeekerWidgetState extends State<SeekerWidget> {
             ),
             Container(
               height: widget.seekerHeight,
-              color: ColorConstants.secondary.withOpacity(0.3),
+              color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
               width: widget.bufferedDuration.inSeconds * widthOfSibling / widget.totalDuration.inSeconds,
             ),
             Container(
               height: widget.seekerHeight,
-              color: ColorConstants.secondary,
+              color: Theme.of(context).colorScheme.secondary,
               width: currentDurationWidth,
             ),
           ],

@@ -184,15 +184,16 @@ class SongCard extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        _getActionIcon(iconData: IconConstants.addToPlaylist),
-        _getActionIcon(iconData: IconConstants.heart),
+        _getActionIcon(context, iconData: IconConstants.addToPlaylist),
+        _getActionIcon(context, iconData: IconConstants.heart),
       ].withHorizontalElementsSpacing(8),
     );
   }
 
-  Widget _getActionIcon({
+  Widget _getActionIcon(
+    BuildContext context, {
     required IconData iconData,
-    Color? iconColor = ColorConstants.primary,
+    Color? iconColor,
   }) {
     return Container(
       width: 20,
@@ -201,7 +202,8 @@ class SongCard extends StatelessWidget {
         color: ColorConstants.white.withOpacity(0.8),
         borderRadius: StyleConstants.radius100,
         boxShadow: StyleConstants.standardShadow,
-        border: Border.all(color: ColorConstants.primary, width: 2, strokeAlign: BorderSide.strokeAlignOutside),
+        border: Border.all(
+            color: Theme.of(context).colorScheme.primary, width: 2, strokeAlign: BorderSide.strokeAlignOutside),
       ),
       child: Material(
         type: MaterialType.transparency,
@@ -213,7 +215,7 @@ class SongCard extends StatelessWidget {
           icon: Icon(
             iconData,
             size: 16,
-            color: iconColor,
+            color: iconColor ?? Theme.of(context).colorScheme.primary,
           ),
           splashColor: ColorConstants.blackish.withOpacity(0.4),
         ),

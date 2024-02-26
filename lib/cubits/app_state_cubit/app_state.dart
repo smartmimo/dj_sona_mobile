@@ -1,10 +1,29 @@
-abstract class AppState {}
+import 'dart:ui';
 
-class AppStateInitial extends AppState {}
+import 'package:djsona_mobile/constants/color_constants.dart';
+import 'package:flutter/foundation.dart';
 
-class AppStateError extends AppState {
-  final RequestErrorObject error;
-  AppStateError(this.error);
+class AppState {
+  final RequestErrorObject? error;
+  final Color primaryColor;
+  final Color secondaryColor;
+  AppState({
+    this.error,
+    this.primaryColor = ColorConstants.primary,
+    this.secondaryColor = ColorConstants.secondary,
+  });
+
+  AppState copyWith({
+    ValueGetter<RequestErrorObject?>? error,
+    Color? primaryColor,
+    Color? secondaryColor,
+  }) {
+    return AppState(
+      error: error != null ? error() : this.error,
+      primaryColor: primaryColor ?? this.primaryColor,
+      secondaryColor: secondaryColor ?? this.secondaryColor,
+    );
+  }
 }
 
 class RequestErrorObject {

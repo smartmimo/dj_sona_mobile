@@ -1,4 +1,3 @@
-import 'package:djsona_mobile/constants/color_constants.dart';
 import 'package:djsona_mobile/constants/icon_constants.dart';
 import 'package:djsona_mobile/constants/style_constants.dart';
 import 'package:djsona_mobile/view/shared_components/loading_widget.dart';
@@ -21,7 +20,7 @@ class NetworkImg extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _imageUrl != null ? _getDecorationImage(_imageUrl!) : _getDefaultImage();
+    return _imageUrl != null ? _getDecorationImage(_imageUrl!) : _getDefaultImage(context);
   }
 
   Widget _getDecorationImage(String imageUrl) {
@@ -30,7 +29,7 @@ class NetworkImg extends StatelessWidget {
       fit: fit,
       width: width,
       height: height,
-      errorBuilder: (context, error, stackTrace) => _getDefaultImage(),
+      errorBuilder: (context, error, stackTrace) => _getDefaultImage(context),
       loadingBuilder: (context, child, chunkEvent) =>
           chunkEvent?.cumulativeBytesLoaded == chunkEvent?.expectedTotalBytes
               ? child
@@ -47,11 +46,11 @@ class NetworkImg extends StatelessWidget {
     );
   }
 
-  Widget _getDefaultImage() {
+  Widget _getDefaultImage(BuildContext context) {
     return Container(
       width: width,
       height: height,
-      color: ColorConstants.secondary,
+      color: Theme.of(context).colorScheme.secondary,
       child: ClipRRect(
         borderRadius: StyleConstants.radius100,
         child: const Icon(IconConstants.images, size: 30),

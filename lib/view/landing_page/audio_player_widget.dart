@@ -42,7 +42,7 @@ class AudioPlayerWidget extends StatelessWidget {
         return Container(
           height: LandingPage.bottomBarHeight,
           decoration: BoxDecoration(
-            color: ColorConstants.primary,
+            color: Theme.of(context).colorScheme.primary,
             borderRadius: StyleConstants.radiusTlTr12,
           ),
           child: _getImageAndContent(context, mediaItem, currentHeight),
@@ -115,7 +115,7 @@ class AudioPlayerWidget extends StatelessWidget {
       clipBehavior: Clip.hardEdge,
       child: Container(
         decoration: BoxDecoration(
-          color: ColorConstants.primary.withOpacity(0.7),
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
           borderRadius: StyleConstants.radius100,
           border: Border.all(
             color: ColorConstants.white,
@@ -140,7 +140,7 @@ class AudioPlayerWidget extends StatelessWidget {
                   ? audioService.pause
                   : audioService.play,
           padding: EdgeInsets.zero,
-          splashColor: ColorConstants.primary.withOpacity(0.9),
+          splashColor: Theme.of(context).colorScheme.primary.withOpacity(0.9),
         ),
       ),
     );
@@ -232,9 +232,9 @@ class AudioPlayerWidget extends StatelessWidget {
         _getShuffleButton(context, state),
         Row(
           children: [
-            _getSwitchSongButton(iconData: IconConstants.previous, onPressed: audioService.skipToPrevious),
+            _getSwitchSongButton(context, iconData: IconConstants.previous, onPressed: audioService.skipToPrevious),
             _getPlayPauseButton(context, state),
-            _getSwitchSongButton(iconData: IconConstants.next, onPressed: audioService.skipToNext),
+            _getSwitchSongButton(context, iconData: IconConstants.next, onPressed: audioService.skipToNext),
           ].withHorizontalElementsSpacing(4),
         ),
         _getLoopButton(context, state),
@@ -253,7 +253,7 @@ class AudioPlayerWidget extends StatelessWidget {
           color: ColorConstants.white,
           borderRadius: StyleConstants.radius100,
           border: Border.all(
-            color: ColorConstants.secondary,
+            color: Theme.of(context).colorScheme.secondary,
             width: 2,
           ),
         ),
@@ -271,7 +271,7 @@ class AudioPlayerWidget extends StatelessWidget {
                       ? Icons.pause_rounded
                       : Icons.play_arrow_rounded,
               size: 32,
-              color: ColorConstants.primary,
+              color: Theme.of(context).colorScheme.primary,
             ),
             onPressed: state.processingState == AudioProcessingState.completed
                 ? audioService.replay
@@ -279,7 +279,7 @@ class AudioPlayerWidget extends StatelessWidget {
                     ? audioService.pause
                     : audioService.play,
             padding: EdgeInsets.zero,
-            splashColor: ColorConstants.secondary.withOpacity(0.5),
+            splashColor: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
             splashRadius: 1000,
           ),
         ),
@@ -287,7 +287,8 @@ class AudioPlayerWidget extends StatelessWidget {
     );
   }
 
-  Widget _getSwitchSongButton({
+  Widget _getSwitchSongButton(
+    BuildContext context, {
     required IconData iconData,
     required VoidCallback onPressed,
   }) {
@@ -303,7 +304,7 @@ class AudioPlayerWidget extends StatelessWidget {
         ),
         onPressed: onPressed,
         padding: EdgeInsets.zero,
-        splashColor: ColorConstants.secondary.withOpacity(0.5),
+        splashColor: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
         splashRadius: 20,
       ),
     );
@@ -325,7 +326,7 @@ class AudioPlayerWidget extends StatelessWidget {
           isActivated ? AudioServiceShuffleMode.none : AudioServiceShuffleMode.all,
         ),
         padding: EdgeInsets.zero,
-        splashColor: ColorConstants.secondary.withOpacity(0.5),
+        splashColor: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
         splashRadius: 20,
       ),
     );
@@ -347,7 +348,7 @@ class AudioPlayerWidget extends StatelessWidget {
           isActivated ? AudioServiceRepeatMode.none : AudioServiceRepeatMode.all,
         ),
         padding: EdgeInsets.zero,
-        splashColor: ColorConstants.secondary.withOpacity(0.5),
+        splashColor: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
         splashRadius: 20,
       ),
     );
@@ -357,15 +358,16 @@ class AudioPlayerWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        _getSongActionIcon(iconData: IconConstants.addToPlaylist),
-        _getSongActionIcon(iconData: IconConstants.heart),
+        _getSongActionIcon(context, iconData: IconConstants.addToPlaylist),
+        _getSongActionIcon(context, iconData: IconConstants.heart),
       ].withHorizontalElementsSpacing(8),
     );
   }
 
-  Widget _getSongActionIcon({
+  Widget _getSongActionIcon(
+    BuildContext context, {
     required IconData iconData,
-    Color? iconColor = ColorConstants.primary,
+    Color? iconColor,
   }) {
     return Container(
       width: 28,
@@ -374,7 +376,8 @@ class AudioPlayerWidget extends StatelessWidget {
         color: ColorConstants.white,
         borderRadius: StyleConstants.radius100,
         boxShadow: StyleConstants.standardShadow,
-        border: Border.all(color: ColorConstants.secondary, width: 2, strokeAlign: BorderSide.strokeAlignOutside),
+        border: Border.all(
+            color: Theme.of(context).colorScheme.secondary, width: 2, strokeAlign: BorderSide.strokeAlignOutside),
       ),
       child: Material(
         type: MaterialType.transparency,
@@ -386,7 +389,7 @@ class AudioPlayerWidget extends StatelessWidget {
           icon: Icon(
             iconData,
             size: 20,
-            color: iconColor,
+            color: iconColor ?? Theme.of(context).colorScheme.primary,
           ),
           splashColor: ColorConstants.blackish.withOpacity(0.4),
         ),
