@@ -84,7 +84,10 @@ class SearchAppbar extends StatelessWidget implements PreferredSizeWidget {
           height: _textFieldIconsSize,
           child: IconButton(
             padding: EdgeInsets.zero,
-            onPressed: textController.clear,
+            onPressed: () {
+              textController.clear();
+              onChanged(null);
+            },
             icon: const Icon(IconConstants.close, size: _textFieldIconsSize),
             splashColor: Theme.of(context).colorScheme.primary.withOpacity(0.4),
           ),

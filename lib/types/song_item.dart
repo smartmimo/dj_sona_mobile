@@ -35,6 +35,18 @@ class SongItem {
     required this.thumbnailUrl,
   });
 
+  factory SongItem.fromJson(Map<String, dynamic> json) {
+    return SongItem(
+      id: json['id'],
+      youtubeUrl: json['youtubeUrl'],
+      title: json['title'],
+      durationString: json['durationString'],
+      publishedTimeString: json['publishedTimeString'],
+      viewsString: json['viewsString'],
+      thumbnailUrl: json['thumbnailUrl'],
+    );
+  }
+
   SongItem copyWith({
     String? id,
     String? youtubeUrl,
@@ -53,5 +65,17 @@ class SongItem {
       viewsString: viewsString ?? this.viewsString,
       thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'youtubeUrl': youtubeUrl,
+      'title': title,
+      'durationString': durationString,
+      'publishedTimeString': publishedTimeString,
+      'viewsString': viewsString,
+      'thumbnailUrl': thumbnailUrl,
+    };
   }
 }

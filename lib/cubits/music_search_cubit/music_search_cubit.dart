@@ -4,6 +4,7 @@ import 'package:djsona_mobile/cubits/music_search_cubit/music_search_state.dart'
 import 'package:djsona_mobile/services/audio_player_service.dart';
 import 'package:djsona_mobile/services/search_api_provider.dart';
 import 'package:djsona_mobile/types/song_item.dart';
+import 'package:djsona_mobile/utils/local_storage_manager.dart';
 import 'package:djsona_mobile/utils/string_utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,11 +19,19 @@ class MusicSearchCubit extends Cubit<MusicSearchState> {
 
   StreamSubscription<List<SongItem>>? searchStream;
 
+  void init() {
+    LocalStorageManager.listHistory().then((value) => emit(state.copyWith(
+          songList: value,
+          isLoading: false,
+        )));
+  }
+
   void onSongPressed(SongItem songItem) async {
     emit(state.copyWith(
       songLoadingId: () => songItem.id,
     ));
     await _audioService.playSong(songItem);
+    LocalStorageManager.addToHistory(songItem);
     emit(state.copyWith(
       songLoadingId: () => null,
     ));
@@ -31,7 +40,7 @@ class MusicSearchCubit extends Cubit<MusicSearchState> {
   void onSearchChanged(String? text) {
     searchStream?.cancel();
 
-    if (StringUtils.isEmpty(text)) return emit(state.copyWith(songList: [], isLoading: false));
+    if (StringUtils.isEmpty(text)) return init();
 
     emit(state.copyWith(isLoading: true));
     searchStream = _searchApiProvider.searchByText(text!).asStream().listen((songList) {
