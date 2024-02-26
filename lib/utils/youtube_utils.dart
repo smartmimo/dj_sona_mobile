@@ -1,9 +1,12 @@
 import 'dart:convert';
+import 'package:djsona_mobile/types/media_item_extras.dart';
+import 'package:djsona_mobile/types/media_item_wrapper.dart';
 import 'package:djsona_mobile/types/song_item.dart';
 import 'package:html/parser.dart';
 import 'package:html/dom.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
-abstract class YoutubeHtmlParser {
+abstract class YoutubeUtils {
   static List<SongItem> parseSearchResponse(String html) {
     Document document = parse(html);
 
@@ -26,7 +29,6 @@ abstract class YoutubeHtmlParser {
         songs.add(
           SongItem(
             id: item["videoId"],
-            youtubeUrl: 'https://youtu.be/${item["videoId"]}',
             title: item["title"]["runs"][0]["text"],
             durationString: item["lengthText"] != null ? item["lengthText"]["simpleText"] : null,
             publishedTimeString: item["publishedTimeText"] != null ? item["publishedTimeText"]["simpleText"] : null,
@@ -42,5 +44,35 @@ abstract class YoutubeHtmlParser {
       return songs;
     }
     throw "Error while parsing..";
+  }
+
+  static Future<AudioOnlyStreamInfo> getAudioStreamFromVideoId(String videoId) async {
+    final YoutubeExplode yt = YoutubeExplode();
+    final StreamManifest manifest = await yt.videos.streamsClient.getManifest(videoId);
+    final AudioOnlyStreamInfo audioStreamInfo = manifest.audioOnly.withHighestBitrate();
+    yt.close();
+    return audioStreamInfo;
+  }
+
+  static Future<MediaItemWrapper> getMediaItemFromSongItem(
+    SongItem songItem, {
+    int? originalIndex,
+    int? shuffledIndex,
+  }) async {
+    final AudioOnlyStreamInfo audioStreamInfo = await getAudioStreamFromVideoId(songItem.id);
+    return songItem.toMediaItemWrapper(
+      extras: MediaItemExtras(
+        streamUrl: audioStreamInfo.url.toString(),
+        originalIndex: originalIndex,
+        shuffledIndex: shuffledIndex,
+      ),
+    );
+  }
+
+  static Future<Video> getVideoDatafromId(String videoId) async {
+    final YoutubeExplode yt = YoutubeExplode();
+    final Video manifest = await yt.videos.get(videoId);
+    yt.close();
+    return manifest;
   }
 }

@@ -1,8 +1,11 @@
 import 'dart:math';
 
+import 'package:djsona_mobile/types/media_item_extras.dart';
+import 'package:djsona_mobile/types/media_item_wrapper.dart';
+import 'package:djsona_mobile/utils/string_utils.dart';
+
 class SongItem {
   final String id;
-  final String youtubeUrl;
   final String title;
   final String? durationString;
   final String? publishedTimeString;
@@ -27,7 +30,6 @@ class SongItem {
 
   SongItem({
     required this.id,
-    required this.youtubeUrl,
     required this.title,
     required this.durationString,
     required this.publishedTimeString,
@@ -38,7 +40,6 @@ class SongItem {
   factory SongItem.fromJson(Map<String, dynamic> json) {
     return SongItem(
       id: json['id'],
-      youtubeUrl: json['youtubeUrl'],
       title: json['title'],
       durationString: json['durationString'],
       publishedTimeString: json['publishedTimeString'],
@@ -47,35 +48,37 @@ class SongItem {
     );
   }
 
-  SongItem copyWith({
-    String? id,
-    String? youtubeUrl,
-    String? title,
-    String? durationString,
-    String? publishedTimeString,
-    String? viewsString,
-    String? thumbnailUrl,
-  }) {
+  factory SongItem.fromMediaItem(MediaItemWrapper mediaItem) {
     return SongItem(
-      id: id ?? this.id,
-      youtubeUrl: youtubeUrl ?? this.youtubeUrl,
-      title: title ?? this.title,
-      durationString: durationString ?? this.durationString,
-      publishedTimeString: publishedTimeString ?? this.publishedTimeString,
-      viewsString: viewsString ?? this.viewsString,
-      thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
+      id: mediaItem.id,
+      title: mediaItem.title,
+      durationString: StringUtils.prettyDuration(mediaItem.duration),
+      publishedTimeString: mediaItem.extras.publishedTimeString,
+      viewsString: mediaItem.extras.viewsString,
+      thumbnailUrl: mediaItem.artUri?.toString(),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'youtubeUrl': youtubeUrl,
       'title': title,
       'durationString': durationString,
       'publishedTimeString': publishedTimeString,
       'viewsString': viewsString,
       'thumbnailUrl': thumbnailUrl,
     };
+  }
+
+  MediaItemWrapper toMediaItemWrapper({
+    required MediaItemExtras extras,
+  }) {
+    return MediaItemWrapper(
+      id: id,
+      title: title,
+      duration: duration,
+      artUri: thumbnailUrl != null ? Uri.parse(thumbnailUrl!) : null,
+      extras: extras.copyWith(publishedTimeString: publishedTimeString, viewsString: viewsString),
+    );
   }
 }

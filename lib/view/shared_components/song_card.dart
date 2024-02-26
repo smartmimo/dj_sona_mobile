@@ -197,7 +197,7 @@ class SongCard extends StatelessWidget {
           onPressed: () {},
         ),
         BlocBuilder<AppStateCubit, AppState>(
-          bloc: serviceLocator.get<AppStateCubit>(),
+          bloc: _appStateCubit,
           builder: (context, state) {
             final bool isSongLiked = _appStateCubit.isSongLiked(songItem);
 

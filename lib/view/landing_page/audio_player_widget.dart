@@ -2,8 +2,12 @@ import 'package:audio_service/audio_service.dart';
 import 'package:djsona_mobile/constants/color_constants.dart';
 import 'package:djsona_mobile/constants/icon_constants.dart';
 import 'package:djsona_mobile/constants/style_constants.dart';
+import 'package:djsona_mobile/cubits/app_state_cubit/app_state.dart';
+import 'package:djsona_mobile/cubits/app_state_cubit/app_state_cubit.dart';
 import 'package:djsona_mobile/services/audio_player_service.dart';
 import 'package:djsona_mobile/services/service_locator.dart';
+import 'package:djsona_mobile/types/media_item_wrapper.dart';
+import 'package:djsona_mobile/types/song_item.dart';
 import 'package:djsona_mobile/utils/theme_utils/elements_spacing_extension.dart';
 import 'package:djsona_mobile/utils/theme_utils/text_theme_extension.dart';
 import 'package:djsona_mobile/view/landing_page/audio_player_opener.dart';
@@ -11,12 +15,14 @@ import 'package:djsona_mobile/view/landing_page/landing_page.dart';
 import 'package:djsona_mobile/view/landing_page/seeker_widget.dart';
 import 'package:djsona_mobile/view/shared_components/network_img.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:marquee/marquee.dart';
 
 class AudioPlayerWidget extends StatelessWidget {
   AudioPlayerWidget({super.key});
 
   final AudioPlayerService audioService = serviceLocator.get<AudioPlayerService>();
+  final AppStateCubit _appStateCubit = serviceLocator.get<AppStateCubit>();
 
   static const double _miniWidgetImageWidth = 100;
   static const double _maxImageHeight = 150;
@@ -45,7 +51,11 @@ class AudioPlayerWidget extends StatelessWidget {
             color: Theme.of(context).colorScheme.primary,
             borderRadius: StyleConstants.radiusTlTr12,
           ),
-          child: _getImageAndContent(context, mediaItem, currentHeight),
+          child: _getImageAndContent(
+            context,
+            MediaItemWrapper.fromMediaItem(mediaItem),
+            currentHeight,
+          ),
         );
       },
     );
@@ -53,7 +63,7 @@ class AudioPlayerWidget extends StatelessWidget {
 
   Widget _getImageAndContent(
     BuildContext context,
-    MediaItem mediaItem,
+    MediaItemWrapper mediaItem,
     double currentHeight,
   ) {
     return StreamBuilder<PlaybackState?>(
@@ -90,7 +100,7 @@ class AudioPlayerWidget extends StatelessWidget {
     );
   }
 
-  ClipRRect _getImage(MediaItem mediaItem, double currentHeight) {
+  ClipRRect _getImage(MediaItemWrapper mediaItem, double currentHeight) {
     final bool isMiniWidget = _isMiniWidget(currentHeight);
     return ClipRRect(
       borderRadius: isMiniWidget ? StyleConstants.radiusTl12 : StyleConstants.radius12,
@@ -149,7 +159,7 @@ class AudioPlayerWidget extends StatelessWidget {
   Widget _getPlayerContent(
     BuildContext context,
     PlaybackState state,
-    MediaItem mediaItem,
+    MediaItemWrapper mediaItem,
     double currentHeight,
   ) {
     final bool isMiniWidget = _isMiniWidget(currentHeight);
@@ -187,7 +197,7 @@ class AudioPlayerWidget extends StatelessWidget {
     );
   }
 
-  Widget _getTitle(BuildContext context, MediaItem mediaItem, bool isMiniWidget) {
+  Widget _getTitle(BuildContext context, MediaItemWrapper mediaItem, bool isMiniWidget) {
     final TextTheme textTheme = Theme.of(context).textTheme;
     final TextStyle textStyle = isMiniWidget
         ? textTheme.bodyMBold.copyWith(color: ColorConstants.white)
@@ -215,7 +225,7 @@ class AudioPlayerWidget extends StatelessWidget {
     }
   }
 
-  Widget _getProgressSection(BuildContext context, PlaybackState state, MediaItem mediaItem, bool isMiniWidget) {
+  Widget _getProgressSection(BuildContext context, PlaybackState state, MediaItemWrapper mediaItem, bool isMiniWidget) {
     return SeekerWidget(
       seek: audioService.seek,
       totalDuration: mediaItem.duration!,
@@ -354,12 +364,24 @@ class AudioPlayerWidget extends StatelessWidget {
     );
   }
 
-  Widget _getSongActions(BuildContext context, MediaItem mediaItem) {
+  Widget _getSongActions(BuildContext context, MediaItemWrapper mediaItem) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        _getSongActionIcon(context, iconData: IconConstants.addToPlaylist),
-        _getSongActionIcon(context, iconData: IconConstants.heart),
+        _getSongActionIcon(context, iconData: IconConstants.addToPlaylist, onPressed: () {}),
+        BlocBuilder<AppStateCubit, AppState>(
+          bloc: _appStateCubit,
+          builder: (context, state) {
+            final bool isSongLiked = _appStateCubit.isSongLiked(SongItem.fromMediaItem(mediaItem));
+
+            return _getSongActionIcon(
+              context,
+              iconData: isSongLiked ? IconConstants.heartFilled : IconConstants.heart,
+              iconColor: isSongLiked ? ColorConstants.errorRed : null,
+              onPressed: () => _appStateCubit.toggleSongLike(SongItem.fromMediaItem(mediaItem)),
+            );
+          },
+        ),
       ].withHorizontalElementsSpacing(8),
     );
   }
@@ -367,6 +389,7 @@ class AudioPlayerWidget extends StatelessWidget {
   Widget _getSongActionIcon(
     BuildContext context, {
     required IconData iconData,
+    required VoidCallback onPressed,
     Color? iconColor,
   }) {
     return Container(
@@ -385,7 +408,7 @@ class AudioPlayerWidget extends StatelessWidget {
         clipBehavior: Clip.hardEdge,
         child: IconButton(
           padding: EdgeInsets.zero,
-          onPressed: () {},
+          onPressed: onPressed,
           icon: Icon(
             iconData,
             size: 20,

@@ -1,6 +1,6 @@
 import 'package:djsona_mobile/services/api/api_service.dart';
 import 'package:djsona_mobile/types/song_item.dart';
-import 'package:djsona_mobile/utils/youtube_html_parser.dart';
+import 'package:djsona_mobile/utils/youtube_utils.dart';
 
 class SearchApiProvider {
   final ApiService _apiService;
@@ -11,7 +11,7 @@ class SearchApiProvider {
       "search_query": query,
     });
 
-    return YoutubeHtmlParser.parseSearchResponse(result.data);
+    return YoutubeUtils.parseSearchResponse(result.data);
   }
 
   Future<List<String>> getRelatedVideosFromId(String videoId) async {

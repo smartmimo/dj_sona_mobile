@@ -1,5 +1,6 @@
 import 'package:djsona_mobile/constants/color_constants.dart';
 import 'package:djsona_mobile/constants/style_constants.dart';
+import 'package:djsona_mobile/utils/string_utils.dart';
 import 'package:djsona_mobile/utils/theme_utils/elements_spacing_extension.dart';
 import 'package:djsona_mobile/utils/theme_utils/text_theme_extension.dart';
 import 'package:flutter/material.dart' hide SearchBar;
@@ -156,7 +157,7 @@ class _SeekerWidgetState extends State<SeekerWidget> {
       ),
       padding: StyleConstants.edgeInsetsH4V2,
       child: Text(
-        "${duration.inMinutes.remainder(60)}:${(duration.inSeconds.remainder(60).toString().padLeft(2, '0'))}",
+        StringUtils.prettyDuration(duration),
         style: textTheme.bodyMBold.copyWith(color: ColorConstants.lightGrey),
       ),
     );

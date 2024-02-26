@@ -2,9 +2,12 @@ import 'package:audio_service/audio_service.dart';
 import 'package:djsona_mobile/cubits/app_state_cubit/app_state_cubit.dart';
 import 'package:djsona_mobile/services/search_api_provider.dart';
 import 'package:djsona_mobile/services/service_locator.dart';
+import 'package:djsona_mobile/types/media_item_extras.dart';
+import 'package:djsona_mobile/types/media_item_wrapper.dart';
 import 'package:djsona_mobile/types/song_item.dart';
 import 'package:djsona_mobile/utils/image_utils.dart';
 import 'package:djsona_mobile/utils/string_utils.dart';
+import 'package:djsona_mobile/utils/youtube_utils.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
@@ -24,47 +27,13 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
     });
   }
 
-  Future<AudioOnlyStreamInfo> _getAudioStreamFromId(String videoId) async {
-    final YoutubeExplode yt = YoutubeExplode();
-    final StreamManifest manifest = await yt.videos.streamsClient.getManifest(videoId);
-    final AudioOnlyStreamInfo audioStreamInfo = manifest.audioOnly.withHighestBitrate();
-    yt.close();
-    return audioStreamInfo;
-  }
+  Future<MediaItemWrapper> playSong(SongItem songItem) async {
+    final MediaItemWrapper item = await YoutubeUtils.getMediaItemFromSongItem(songItem);
 
-  Future<MediaItem> _getMediaItemFromSongItem(
-    SongItem songItem, {
-    int? originalIndex,
-    int? shuffledIndex,
-  }) async {
-    final AudioOnlyStreamInfo audioStreamInfo = await _getAudioStreamFromId(songItem.id);
-    return MediaItem(
-      id: songItem.id,
-      title: songItem.title,
-      duration: songItem.duration,
-      artUri: songItem.thumbnailUrl != null ? Uri.parse(songItem.thumbnailUrl!) : null,
-      extras: {
-        "streamUrl": audioStreamInfo.url.toString(),
-        "originalIndex": originalIndex,
-        "shuffledIndex": shuffledIndex,
-      },
-    );
-  }
-
-  Future<Video> _getVideoDatafromId(String videoId) async {
-    final YoutubeExplode yt = YoutubeExplode();
-    final Video manifest = await yt.videos.get(videoId);
-    yt.close();
-    return manifest;
-  }
-
-  Future<MediaItem> playSong(SongItem songItem) async {
-    final MediaItem item = await _getMediaItemFromSongItem(songItem);
-
-    audioPlayer.setUrl(item.extras!["streamUrl"]);
+    audioPlayer.setUrl(item.extras.streamUrl);
 
     clearQueue();
-    broadcastMediaItem(item);
+    broadcastMediaItem(item.toMediaItem());
     if (!audioPlayer.playing) audioPlayer.play();
     return item;
   }
@@ -92,29 +61,28 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
       songItems[startAt] = tmp;
     }
 
-    final firstMediaItem = await _getMediaItemFromSongItem(
+    final MediaItemWrapper firstMediaItem = await YoutubeUtils.getMediaItemFromSongItem(
       songItems[0],
       originalIndex: items.indexWhere((e) => e.id == songItems[0].id),
       shuffledIndex: shuffledItems.indexWhere((e) => e.id == songItems[0].id),
     );
-
     queueTitle.value = playlistName;
-    addQueueItem(firstMediaItem);
-    addQueueItem(
-      await _getMediaItemFromSongItem(
-        songItems[1],
-        originalIndex: items.indexWhere((e) => e.id == songItems[1].id),
-        shuffledIndex: shuffledItems.indexWhere((e) => e.id == songItems[1].id),
-      ),
-    );
+    addQueueItem(firstMediaItem.toMediaItem());
 
-    audioPlayer.setUrl(firstMediaItem.extras!["streamUrl"]);
-    broadcastMediaItem(firstMediaItem);
+    final MediaItemWrapper secondMediaItem = await YoutubeUtils.getMediaItemFromSongItem(
+      songItems[1],
+      originalIndex: items.indexWhere((e) => e.id == songItems[1].id),
+      shuffledIndex: shuffledItems.indexWhere((e) => e.id == songItems[1].id),
+    );
+    addQueueItem(secondMediaItem.toMediaItem());
+
+    audioPlayer.setUrl(firstMediaItem.extras.streamUrl);
+    broadcastMediaItem(firstMediaItem.toMediaItem());
     if (!audioPlayer.playing) audioPlayer.play();
 
-    List<MediaItem> mediaItemList = await Future.wait<MediaItem>(
+    List<MediaItemWrapper> mediaItemList = await Future.wait<MediaItemWrapper>(
       songItems.getRange(2, songItems.length).map(
-            (songItem) => _getMediaItemFromSongItem(
+            (songItem) => YoutubeUtils.getMediaItemFromSongItem(
               songItem,
               originalIndex: items.indexWhere((e) => songItem.id == e.id),
               shuffledIndex: shuffledItems.indexWhere((e) => songItem.id == e.id),
@@ -122,7 +90,7 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
           ),
     );
 
-    addQueueItems(mediaItemList);
+    addQueueItems(mediaItemList.map((item) => item.toMediaItem()).toList());
     return;
   }
 
@@ -147,7 +115,7 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
     if (currentIndex + 1 > queue.value.length - 1) return;
 
     final MediaItem nextItem = queue.value[currentIndex + 1];
-    audioPlayer.setUrl(nextItem.extras!["streamUrl"]);
+    audioPlayer.setUrl(MediaItemWrapper.fromMediaItem(nextItem).extras.streamUrl);
     broadcastMediaItem(nextItem);
     if (!audioPlayer.playing) audioPlayer.play();
   }
@@ -158,7 +126,7 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
     if (currentIndex - 1 < 0) return;
 
     final MediaItem previousItem = queue.value[currentIndex - 1];
-    audioPlayer.setUrl(previousItem.extras!["streamUrl"]);
+    audioPlayer.setUrl(MediaItemWrapper.fromMediaItem(previousItem).extras.streamUrl);
     broadcastMediaItem(previousItem);
     if (!audioPlayer.playing) audioPlayer.play();
   }
@@ -238,18 +206,21 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
     clearQueue();
     addQueueItem(currentItem);
     for (final String videoId in relatedVideoIds) {
-      final AudioOnlyStreamInfo audioStreamInfo = await _getAudioStreamFromId(videoId);
-      final Video videoDetails = await _getVideoDatafromId(videoId);
-      final MediaItem item = MediaItem(
+      final AudioOnlyStreamInfo audioStreamInfo = await YoutubeUtils.getAudioStreamFromVideoId(videoId);
+      final Video videoDetails = await YoutubeUtils.getVideoDatafromId(videoId);
+
+      final MediaItemWrapper item = MediaItemWrapper(
         id: videoId,
         title: videoDetails.title,
         duration: videoDetails.duration,
         artUri: Uri.parse(videoDetails.thumbnails.highResUrl),
-        extras: {
-          "streamUrl": audioStreamInfo.url.toString(),
-        },
+        extras: MediaItemExtras(
+          streamUrl: audioStreamInfo.url.toString(),
+          publishedTimeString: StringUtils.timeAgo(videoDetails.publishDate),
+          viewsString: StringUtils.viewsToKMBFormat(videoDetails.engagement.viewCount),
+        ),
       );
-      addQueueItem(item);
+      addQueueItem(item.toMediaItem());
     }
   }
 

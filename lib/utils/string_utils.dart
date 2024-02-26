@@ -77,4 +77,41 @@ abstract class StringUtils {
 
     return num.truncateToDouble() == num ? num.toInt().toString() : num.toString();
   }
+
+  static String? timeAgo(DateTime? dateTime) {
+    if (dateTime == null) return null;
+
+    final now = DateTime.now();
+    final difference = now.difference(dateTime);
+    if (difference.inDays >= 365) {
+      final years = (difference.inDays / 365).floor();
+      return '$years year${years != 1 ? 's' : ''} ago';
+    } else if (difference.inDays >= 30) {
+      final months = (difference.inDays / 30).floor();
+      return '$months month${months != 1 ? 's' : ''} ago';
+    } else if (difference.inDays >= 1) {
+      return '${difference.inDays} day${difference.inDays != 1 ? 's' : ''} ago';
+    } else if (difference.inHours >= 1) {
+      return '${difference.inHours} hour${difference.inHours != 1 ? 's' : ''} ago';
+    } else {
+      return 'Just now';
+    }
+  }
+
+  static String viewsToKMBFormat(int number) {
+    if (number < 1000) {
+      return number.toString();
+    } else if (number < 1000000) {
+      return '${(number / 1000).toStringAsFixed(0)}K views';
+    } else if (number < 1000000000) {
+      return '${(number / 1000000).toStringAsFixed(0)}M views';
+    } else {
+      return '${(number / 1000000000).toStringAsFixed(0)}B views';
+    }
+  }
+
+  static String prettyDuration(Duration? duration) {
+    if (duration == null) return "0:00";
+    return "${duration.inMinutes.remainder(60)}:${(duration.inSeconds.remainder(60).toString().padLeft(2, '0'))}";
+  }
 }
