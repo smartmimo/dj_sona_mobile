@@ -10,6 +10,7 @@ import 'package:djsona_mobile/utils/image_utils.dart';
 import 'package:djsona_mobile/utils/theme_utils/elements_spacing_extension.dart';
 import 'package:djsona_mobile/utils/theme_utils/text_theme_extension.dart';
 import 'package:djsona_mobile/view/shared_components/appbar_widget.dart';
+import 'package:djsona_mobile/view/shared_components/loading_widget.dart';
 import 'package:djsona_mobile/view/shared_components/song_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,7 +20,7 @@ class LikedSongsPage extends StatelessWidget {
   final AudioPlayerService audioService = serviceLocator.get<AudioPlayerService>();
   final AppStateCubit _appStateCubit = serviceLocator.get<AppStateCubit>();
 
-  static const String _likedSongsPlaylistName = "likedSongs";
+  static const String likedSongsPlaylistName = "likedSongs";
   @override
   Widget build(context) {
     return BlocBuilder<AppStateCubit, AppState>(
@@ -61,14 +62,10 @@ class LikedSongsPage extends StatelessWidget {
               padding: StyleConstants.edgeInsetsB16,
               child: SongCard(
                 songItem: state.likedSongs[index],
-                isCurrentlyPlaying: audioService.queueTitle.value == _likedSongsPlaylistName &&
+                isCurrentlyPlaying: audioService.queueTitle.value == likedSongsPlaylistName &&
                     currentlyPlaying?.id == state.likedSongs[index].id,
                 isLoading: false,
-                onPressed: () => audioService.playPlaylist(
-                  items: state.likedSongs,
-                  playlistName: _likedSongsPlaylistName,
-                  startAt: index,
-                ),
+                onPressed: state.isLikedSongsLoading ? null : () => _appStateCubit.startLikedSongs(startAt: index),
               ),
             );
           }),
@@ -123,25 +120,30 @@ class LikedSongsPage extends StatelessWidget {
       ),
       width: AppBarWidget.leadingSize,
       height: AppBarWidget.leadingSize,
-      child: Material(
-        type: MaterialType.transparency,
-        shape: const CircleBorder(),
-        clipBehavior: Clip.hardEdge,
-        child: IconButton(
-          icon: const Icon(
-            Icons.play_arrow_rounded,
-            size: AppBarWidget.leadingSize / 1.6,
-            color: ColorConstants.white,
-          ),
-          onPressed: () => audioService.playPlaylist(
-            items: state.likedSongs,
-            playlistName: _likedSongsPlaylistName,
-          ),
-          padding: EdgeInsets.zero,
-          splashColor: Theme.of(context).colorScheme.secondary.withOpacity(1),
-          splashRadius: AppBarWidget.leadingSize / 2,
-        ),
-      ),
+      child: state.isLikedSongsLoading
+          ? const Center(
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: LoadingWidget(color: ColorConstants.white),
+              ),
+            )
+          : Material(
+              type: MaterialType.transparency,
+              shape: const CircleBorder(),
+              clipBehavior: Clip.hardEdge,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.play_arrow_rounded,
+                  size: AppBarWidget.leadingSize / 1.6,
+                  color: ColorConstants.white,
+                ),
+                onPressed: _appStateCubit.startLikedSongs,
+                padding: EdgeInsets.zero,
+                splashColor: Theme.of(context).colorScheme.secondary.withOpacity(1),
+                splashRadius: AppBarWidget.leadingSize / 2,
+              ),
+            ),
     );
   }
 

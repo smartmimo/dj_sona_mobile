@@ -9,11 +9,13 @@ class AppState {
   final Color primaryColor;
   final Color secondaryColor;
   final List<SongItem> likedSongs;
+  final bool isLikedSongsLoading;
   AppState({
     this.error,
     this.primaryColor = ColorConstants.primary,
     this.secondaryColor = ColorConstants.secondary,
     this.likedSongs = const [],
+    this.isLikedSongsLoading = false,
   });
 
   AppState copyWith({
@@ -21,12 +23,14 @@ class AppState {
     Color? primaryColor,
     Color? secondaryColor,
     List<SongItem>? likedSongs,
+    bool? isLikedSongsLoading,
   }) {
     return AppState(
       error: error != null ? error() : this.error,
       primaryColor: primaryColor ?? this.primaryColor,
       secondaryColor: secondaryColor ?? this.secondaryColor,
       likedSongs: likedSongs ?? this.likedSongs,
+      isLikedSongsLoading: isLikedSongsLoading ?? this.isLikedSongsLoading,
     );
   }
 }
