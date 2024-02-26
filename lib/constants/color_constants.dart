@@ -1,0 +1,58 @@
+import 'dart:ui';
+
+class ColorConstants {
+  static const Color blackish = Color(0xff141414);
+  static const Color white = Color(0xffffffff);
+  static const Color brown = Color(0xff8d644b);
+  static const Color lightGreyAccent = Color(0xffdcdcd3);
+
+  static const Color red = Color(0xffff0000);
+  static const Color errorRed = Color(0xffdc3545);
+  static const Color errorText = Color(0xffba1a1a);
+  static const Color redAlert = Color(0xffFA4A32);
+  static const Color statusRed = Color(0xffFC5555);
+  static const Color silver = Color(0xffc0c0c0);
+  static const Color darkRed = Color(0xff721c24);
+  static const Color lightRed = Color(0xfff7b1a8);
+  static const Color green = Color(0xff4caf50);
+  static const Color greenSuccess = Color(0xff38CA54);
+  static const Color darkGreen = Color(0xff155724);
+  static const Color lightGreen = Color(0xffa8f7ba);
+  static const Color cityPolygonMap = Color(0xffd1675b);
+  static const Color yellowishBrown = Color(0xffa96800);
+  static const Color facebookBlue = Color(0xff4267B2);
+  static const Color mailOrange = Color(0xffff961c);
+  static const Color twitterAqua = Color(0xff00acee);
+  static const Color linkHoki = Color(0xff607d8b);
+  static const Color cyan = Color(0xff02b6a3);
+  static const Color blueForImportat = Color(0xff17a2b8);
+  static const Color darkerCyan = Color(0xff16b2a1);
+  static const Color bsLatte = Color(0XFFD3CBC6);
+  static const Color bsFlatWhite = Color(0XFFFAF8F6);
+  static const Color lightGrey = Color(0XFF888888);
+  static const Color bsMocha = Color(0XFF8D644B);
+  static const Color bsMochaDisabled = Color(0XFFcfbdb2);
+  static const Color bsEsperesso = Color(0XFF160F0B);
+  static const Color darkGrey = Color(0XFF222222);
+  static const Color mediumGrey = Color(0XFF444444);
+  static const Color grey = Color(0XFF666666);
+  static const Color lighterGrey = Color(0XFFC2C2C2);
+  static const Color lightestGrey = Color(0XFFC4C4C4);
+  static const Color paleGrey01 = Color(0XFFEBEBEB);
+  static const Color paleGrey02 = Color(0XFFF2F2F2);
+  static const Color paleGrey03 = Color(0XFFF6F6F6);
+  static const Color background = Color(0XFFEFDDEE);
+  static const Color yellowMild = Color(0XFFFFCC00);
+  static const Color teaGreen = Color(0XFFCAFFCB);
+  static const Color veryLightGreen = Color(0xffE7F9E7);
+  static const Color roofTerracotta = Color(0XFFB3261E);
+  static const Color peachSchnapps = Color(0XFFFFDAD6);
+  static const Color springWood = Color(0XFFFBF9F7);
+  static const Color successText = Color(0XFF1F722F);
+  static const Color lightYellow = Color(0XFFfffbeb);
+  static const Color paleGrey04 = Color(0XFFEFE9E5);
+  static const Color paleGrey05 = Color(0Xfff4f0ed);
+  static const Color shadowColor = Color(0x26000000);
+  static const Color primary = Color.fromARGB(255, 173, 24, 114);
+  static const Color secondary = Color(0xFFE19FD7);
+}

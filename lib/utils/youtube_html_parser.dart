@@ -1,0 +1,46 @@
+import 'dart:convert';
+import 'package:djsona_mobile/types/song_item.dart';
+import 'package:html/parser.dart';
+import 'package:html/dom.dart';
+
+abstract class YoutubeHtmlParser {
+  static List<SongItem> parseSearchResponse(String html) {
+    Document document = parse(html);
+
+    for (final Element element in document.getElementsByTagName('script')) {
+      if (!element.innerHtml.contains("var ytInitialData")) continue;
+
+      final jsonRegex = RegExp(r'var\s+ytInitialData\s*=\s*({.*?});', dotAll: true);
+      final match = jsonRegex.firstMatch(element.innerHtml);
+      if (match == null) throw ('JSON variable not found in the script content.');
+      final jsonStr = match.group(1)!;
+
+      final List<dynamic> items = (jsonDecode(jsonStr)['contents']['twoColumnSearchResultsRenderer']['primaryContents']
+              ['sectionListRenderer']['contents'][0]['itemSectionRenderer']['contents'] as List)
+          .where((e) => e.containsKey('videoRenderer'))
+          .map((item) => item["videoRenderer"])
+          .toList();
+
+      final List<SongItem> songs = [];
+      for (final item in items) {
+        songs.add(
+          SongItem(
+            id: item["videoId"],
+            youtubeUrl: 'https://youtu.be/${item["videoId"]}',
+            title: item["title"]["runs"][0]["text"],
+            durationString: item["lengthText"] != null ? item["lengthText"]["simpleText"] : null,
+            publishedTimeString: item["publishedTimeText"] != null ? item["publishedTimeText"]["simpleText"] : null,
+            viewsString: item["shortViewCountText"] != null ? item["shortViewCountText"]["simpleText"] : null,
+            thumbnailUrl: ((item["thumbnail"]["thumbnails"] as List)
+                  ..sort(
+                    (a, b) => b["width"] - a["width"],
+                  ))
+                .first["url"],
+          ),
+        );
+      }
+      return songs;
+    }
+    throw "Error while parsing..";
+  }
+}

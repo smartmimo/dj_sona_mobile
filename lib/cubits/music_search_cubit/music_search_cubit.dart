@@ -1,0 +1,41 @@
+import 'dart:async';
+
+import 'package:djsona_mobile/cubits/music_search_cubit/music_search_state.dart';
+import 'package:djsona_mobile/services/audio_player_service.dart';
+import 'package:djsona_mobile/services/search_api_provider.dart';
+import 'package:djsona_mobile/types/song_item.dart';
+import 'package:djsona_mobile/utils/string_utils.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+class MusicSearchCubit extends Cubit<MusicSearchState> {
+  MusicSearchCubit(
+    this._searchApiProvider,
+    this._audioService,
+  ) : super(MusicSearchState());
+
+  final SearchApiProvider _searchApiProvider;
+  final AudioPlayerService _audioService;
+
+  StreamSubscription<List<SongItem>>? searchStream;
+
+  void onSongPressed(SongItem songItem) async {
+    emit(state.copyWith(
+      songLoadingId: () => songItem.id,
+    ));
+    await _audioService.playSong(songItem);
+    emit(state.copyWith(
+      songLoadingId: () => null,
+    ));
+  }
+
+  void onSearchChanged(String? text) {
+    searchStream?.cancel();
+
+    if (StringUtils.isEmpty(text)) return emit(state.copyWith(songList: [], isLoading: false));
+
+    emit(state.copyWith(isLoading: true));
+    searchStream = _searchApiProvider.searchByText(text!).asStream().listen((songList) {
+      emit(state.copyWith(songList: songList, isLoading: false));
+    });
+  }
+}

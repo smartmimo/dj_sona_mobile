@@ -1,0 +1,223 @@
+import 'package:djsona_mobile/constants/color_constants.dart';
+import 'package:djsona_mobile/constants/icon_constants.dart';
+import 'package:djsona_mobile/constants/style_constants.dart';
+import 'package:djsona_mobile/types/song_item.dart';
+import 'package:djsona_mobile/utils/string_utils.dart';
+import 'package:djsona_mobile/utils/theme_utils/elements_spacing_extension.dart';
+import 'package:djsona_mobile/utils/theme_utils/text_theme_extension.dart';
+import 'package:djsona_mobile/view/shared_components/card_layout.dart';
+import 'package:djsona_mobile/view/shared_components/loading_widget.dart';
+import 'package:djsona_mobile/view/shared_components/network_img.dart';
+import 'package:flutter/material.dart';
+
+class SongCard extends StatelessWidget {
+  const SongCard({
+    super.key,
+    required this.songItem,
+    required this.isCurrentlyPlaying,
+    required this.isLoading,
+    required this.onPressed,
+  });
+  final SongItem songItem;
+  final bool isCurrentlyPlaying;
+  final bool isLoading;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return CardLayout(
+      padding: EdgeInsets.zero,
+      hasBorder: isCurrentlyPlaying,
+      content: InkWell(
+        onTap: onPressed,
+        child: Row(
+          children: [
+            _getThumbnailSection(context),
+            _getSongData(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _getThumbnailSection(BuildContext context) {
+    return Stack(
+      children: [
+        _getImage(),
+        if (StringUtils.isNotEmpty(songItem.durationString)) ...{
+          _getDurationWidget(context),
+        },
+      ],
+    );
+  }
+
+  ClipRRect _getImage() {
+    return ClipRRect(
+      borderRadius: StyleConstants.radiusTlBl8,
+      child: NetworkImg(songItem.thumbnailUrl, width: 130, height: 100, fit: BoxFit.cover),
+    );
+  }
+
+  Widget _getDurationWidget(BuildContext context) {
+    final TextTheme textTheme = Theme.of(context).textTheme;
+    return Positioned(
+      bottom: 8,
+      right: 8,
+      child: Container(
+        decoration: BoxDecoration(
+          color: ColorConstants.white,
+          borderRadius: StyleConstants.radius4,
+          boxShadow: StyleConstants.standardShadow,
+        ),
+        padding: StyleConstants.edgeInsetsH4V2,
+        child: Text(
+          songItem.durationString!,
+          style: textTheme.bodyMBold.copyWith(color: ColorConstants.lightGrey),
+        ),
+      ),
+    );
+  }
+
+  Widget _getSongData(BuildContext context) {
+    final TextTheme textTheme = Theme.of(context).textTheme;
+
+    return Expanded(
+      child: Container(
+        padding: StyleConstants.edgeInsets8,
+        height: 100,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _getSongTitle(textTheme),
+            _getSongMetaData(textTheme),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: LoadingWidget(),
+                      )
+                    : Container(),
+                _getSongActions(context),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Flexible _getSongTitle(TextTheme textTheme) {
+    return Flexible(
+      child: Text(
+        songItem.title,
+        style: textTheme.bodyLBold.copyWith(color: ColorConstants.blackish),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+
+  Widget _getSongMetaData(TextTheme textTheme) {
+    return Row(
+      children: [
+        if (StringUtils.isNotEmpty(songItem.viewsString)) ...{
+          _getSongViews(textTheme),
+        },
+        if (StringUtils.isNotEmpty(songItem.publishedTimeString)) ...{
+          Flexible(
+            child: _getSongPublishTime(textTheme),
+          ),
+        },
+      ]
+          .withDivider(
+            divider: const Icon(
+              IconConstants.dash,
+              color: ColorConstants.lightGrey,
+            ),
+            isLastDividerIncluded: false,
+          )
+          .withHorizontalElementsSpacing(8),
+    );
+  }
+
+  Widget _getSongViews(TextTheme textTheme) {
+    return Row(
+      children: [
+        const Icon(
+          IconConstants.eye,
+          size: 16,
+          color: ColorConstants.lightGrey,
+        ),
+        Text(
+          songItem.viewsString!,
+          style: textTheme.bodyMBold.copyWith(color: ColorConstants.lightGrey),
+        ),
+      ].withHorizontalElementsSpacing(4),
+    );
+  }
+
+  Widget _getSongPublishTime(TextTheme textTheme) {
+    return Row(
+      children: [
+        const Icon(
+          IconConstants.calendar,
+          size: 16,
+          color: ColorConstants.lightGrey,
+        ),
+        Flexible(
+          child: Text(
+            songItem.publishedTimeString!,
+            style: textTheme.bodyMBold.copyWith(color: ColorConstants.lightGrey),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ].withHorizontalElementsSpacing(4),
+    );
+  }
+
+  Widget _getSongActions(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        _getActionIcon(iconData: IconConstants.addToPlaylist),
+        _getActionIcon(iconData: IconConstants.heart),
+      ].withHorizontalElementsSpacing(8),
+    );
+  }
+
+  Widget _getActionIcon({
+    required IconData iconData,
+    Color? iconColor = ColorConstants.primary,
+  }) {
+    return Container(
+      width: 20,
+      height: 20,
+      decoration: BoxDecoration(
+        color: ColorConstants.white.withOpacity(0.8),
+        borderRadius: StyleConstants.radius100,
+        boxShadow: StyleConstants.standardShadow,
+        border: Border.all(color: ColorConstants.primary, width: 2, strokeAlign: BorderSide.strokeAlignOutside),
+      ),
+      child: Material(
+        type: MaterialType.transparency,
+        shape: const CircleBorder(),
+        clipBehavior: Clip.hardEdge,
+        child: IconButton(
+          padding: EdgeInsets.zero,
+          onPressed: () {},
+          icon: Icon(
+            iconData,
+            size: 16,
+            color: iconColor,
+          ),
+          splashColor: ColorConstants.blackish.withOpacity(0.4),
+        ),
+      ),
+    );
+  }
+}
