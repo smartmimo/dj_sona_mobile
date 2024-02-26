@@ -17,7 +17,8 @@ class AudioPlayerOpener extends StatefulWidget {
 
 class _AudioPlayerOpenerState extends State<AudioPlayerOpener> {
   static const double _heightToTriggerOpen = 200;
-  static const Duration _animationDuration = Duration(milliseconds: 500);
+  static const Duration _animationDuration = Duration(milliseconds: 700);
+  static const Duration _initialAnimationDuration = Duration(milliseconds: 2000);
 
   double _boxHeight = 0;
   bool _isBarDragging = false;
@@ -99,9 +100,13 @@ class _AudioPlayerOpenerState extends State<AudioPlayerOpener> {
 
   Widget _mapSnapshotToWidget(BuildContext context, AsyncSnapshot<MediaItem?> snapshot) {
     return AnimatedContainer(
-      duration: !_isBarDragging ? _animationDuration : const Duration(milliseconds: 0),
+      duration: _boxHeight < AudioPlayerOpener.defaultBoxHeight
+          ? _initialAnimationDuration
+          : !_isBarDragging
+              ? _animationDuration
+              : const Duration(milliseconds: 0),
       height: snapshot.data != null ? _boxHeight : 0,
-      curve: Curves.bounceOut,
+      curve: _boxHeight < AudioPlayerOpener.defaultBoxHeight ? Curves.easeInOut : Curves.bounceOut,
       child: AudioPlayerWidget(),
     );
   }
