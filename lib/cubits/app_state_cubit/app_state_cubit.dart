@@ -11,8 +11,6 @@ import 'package:dio/dio.dart';
 class AppStateCubit extends Cubit<AppState> {
   AppStateCubit() : super(AppState());
 
-  final AudioPlayerService _audioService = serviceLocator.get<AudioPlayerService>();
-
   void handleNetworkError(DioException error) {
     emit(state.copyWith(
       error: () => RequestErrorObject(
@@ -63,8 +61,10 @@ class AppStateCubit extends Cubit<AppState> {
   }
 
   startLikedSongs({int? startAt}) async {
+    final AudioPlayerService audioService = serviceLocator.get<AudioPlayerService>();
+
     emit(state.copyWith(isLikedSongsLoading: true));
-    await _audioService.playPlaylist(
+    await audioService.playPlaylist(
       items: state.likedSongs,
       playlistName: LikedSongsPage.likedSongsPlaylistName,
       startAt: startAt,
