@@ -33,7 +33,7 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
     audioPlayer.setUrl(item.extras.streamUrl);
 
     clearQueue();
-    broadcastMediaItem(item.toMediaItem());
+    broadcastMediaItem(item.toMediaItem().copyWith(artist: "Search"));
     if (!audioPlayer.playing) play();
     return item;
   }
@@ -67,17 +67,17 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
       shuffledIndex: shuffledItems.indexWhere((e) => e.id == songItems[0].id),
     );
     queueTitle.value = playlistName;
-    addQueueItem(firstMediaItem.toMediaItem());
+    addQueueItem(firstMediaItem.toMediaItem().copyWith(artist: playlistName));
 
     final MediaItemWrapper secondMediaItem = await YoutubeUtils.getMediaItemFromSongItem(
       songItems[1],
       originalIndex: items.indexWhere((e) => e.id == songItems[1].id),
       shuffledIndex: shuffledItems.indexWhere((e) => e.id == songItems[1].id),
     );
-    addQueueItem(secondMediaItem.toMediaItem());
+    addQueueItem(secondMediaItem.toMediaItem().copyWith(artist: playlistName));
 
     audioPlayer.setUrl(firstMediaItem.extras.streamUrl);
-    broadcastMediaItem(firstMediaItem.toMediaItem());
+    broadcastMediaItem(firstMediaItem.toMediaItem().copyWith(artist: playlistName));
     if (!audioPlayer.playing) audioPlayer.play();
 
     List<MediaItemWrapper> mediaItemList = await Future.wait<MediaItemWrapper>(
@@ -90,7 +90,7 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
           ),
     );
 
-    addQueueItems(mediaItemList.map((item) => item.toMediaItem()).toList());
+    addQueueItems(mediaItemList.map((item) => item.toMediaItem().copyWith(artist: playlistName)).toList());
     return;
   }
 
@@ -251,7 +251,7 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
           viewsString: StringUtils.viewsToKMBFormat(videoDetails.engagement.viewCount),
         ),
       );
-      addQueueItem(item.toMediaItem());
+      addQueueItem(item.toMediaItem().copyWith(artist: "Autoplay"));
     }
   }
 

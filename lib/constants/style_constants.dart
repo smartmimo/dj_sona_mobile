@@ -43,6 +43,7 @@ class StyleConstants {
   static const EdgeInsets edgeInsetsH4V6 = EdgeInsets.symmetric(horizontal: 4, vertical: 6);
   static const EdgeInsets edgeInsetsH16V12 = EdgeInsets.symmetric(horizontal: 16, vertical: 12);
   static const EdgeInsets edgeInsetsH16V8 = EdgeInsets.symmetric(horizontal: 16, vertical: 8);
+  static const EdgeInsets edgeInsetsH8V4 = EdgeInsets.symmetric(horizontal: 8, vertical: 4);
   static const EdgeInsets edgeInsetsH16V4 = EdgeInsets.symmetric(horizontal: 16, vertical: 4);
   static const EdgeInsets edgeInsetsH16V20 = EdgeInsets.symmetric(horizontal: 16, vertical: 20);
   static const EdgeInsets edgeInsetsH16V40 = EdgeInsets.symmetric(horizontal: 16, vertical: 40);
@@ -60,6 +61,7 @@ class StyleConstants {
   static const EdgeInsets edgeInsetsV20 = EdgeInsets.symmetric(horizontal: 20);
 
   static const EdgeInsets edgeInsetsL8 = EdgeInsets.only(left: 8);
+  static const EdgeInsets edgeInsetsL4 = EdgeInsets.only(left: 4);
   static const EdgeInsets edgeInsetsL8T16 = EdgeInsets.only(left: 8, top: 16);
   static const EdgeInsets edgeInsetsL12 = EdgeInsets.only(left: 12);
   static const EdgeInsets edgeInsetsL14 = EdgeInsets.only(left: 14);

@@ -20,7 +20,7 @@ class LikedSongsPage extends StatelessWidget {
   final AudioPlayerService audioService = serviceLocator.get<AudioPlayerService>();
   final AppStateCubit _appStateCubit = serviceLocator.get<AppStateCubit>();
 
-  static const String likedSongsPlaylistName = "likedSongs";
+  static const String likedSongsPlaylistName = "Liked songs";
   @override
   Widget build(context) {
     return BlocBuilder<AppStateCubit, AppState>(

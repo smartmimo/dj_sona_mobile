@@ -1,4 +1,9 @@
+import 'package:djsona_mobile/constants/style_constants.dart';
+import 'package:djsona_mobile/services/audio_player_service.dart';
+import 'package:djsona_mobile/services/service_locator.dart';
 import 'package:djsona_mobile/utils/image_utils.dart';
+import 'package:djsona_mobile/utils/string_utils.dart';
+import 'package:djsona_mobile/utils/theme_utils/text_theme_extension.dart';
 import 'package:djsona_mobile/view/landing_page/audio_player_opener.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +33,18 @@ class LandingPage extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(child: child),
+                Expanded(
+                  child: Stack(
+                    children: [
+                      child,
+                      Positioned(
+                        bottom: 4,
+                        left: 4,
+                        child: _getCurrentPlaylistSticker(context),
+                      ),
+                    ],
+                  ),
+                ),
                 const AudioPlayerOpener(),
               ],
             ),
@@ -103,6 +119,27 @@ class LandingPage extends StatelessWidget {
           ],
         ),
         onPressed: () => tabsRouter.setActiveIndex(index),
+      ),
+    );
+  }
+
+  Container _getCurrentPlaylistSticker(BuildContext context) {
+    final item = serviceLocator.get<AudioPlayerService>().mediaItem;
+    if (item.value == null || StringUtils.isEmpty(item.value!.artist)) return Container();
+    return Container(
+      height: 20,
+      decoration: BoxDecoration(
+        borderRadius: StyleConstants.radius4,
+        color: Theme.of(context).colorScheme.primary.withOpacity(0.9),
+        boxShadow: StyleConstants.standardShadow,
+      ),
+      padding: StyleConstants.edgeInsetsH8V4,
+      child: Text(
+        item.value!.artist!,
+        style: Theme.of(context).textTheme.bodyS.copyWith(
+              color: ColorConstants.white,
+            ),
+        textAlign: TextAlign.center,
       ),
     );
   }
