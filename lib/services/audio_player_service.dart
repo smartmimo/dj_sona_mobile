@@ -34,7 +34,7 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
 
     clearQueue();
     broadcastMediaItem(item.toMediaItem());
-    if (!audioPlayer.playing) audioPlayer.play();
+    if (!audioPlayer.playing) play();
     return item;
   }
 
@@ -95,7 +95,13 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
   }
 
   @override
-  Future<void> play() => audioPlayer.play();
+  Future<void> play() {
+    try {
+      return audioPlayer.play();
+    } catch (e) {
+      return Future.delayed(const Duration(seconds: 1), play);
+    }
+  }
 
   Future<void> replay() => audioPlayer.seek(Duration.zero).then((_) => play());
 
@@ -117,7 +123,7 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
     final MediaItem nextItem = queue.value[currentIndex + 1];
     audioPlayer.setUrl(MediaItemWrapper.fromMediaItem(nextItem).extras.streamUrl);
     broadcastMediaItem(nextItem);
-    if (!audioPlayer.playing) audioPlayer.play();
+    if (!audioPlayer.playing) play();
   }
 
   @override
@@ -128,7 +134,7 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
     final MediaItem previousItem = queue.value[currentIndex - 1];
     audioPlayer.setUrl(MediaItemWrapper.fromMediaItem(previousItem).extras.streamUrl);
     broadcastMediaItem(previousItem);
-    if (!audioPlayer.playing) audioPlayer.play();
+    if (!audioPlayer.playing) play();
   }
 
   @override
@@ -166,22 +172,47 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
     }
   }
 
+  @override
+  Future<dynamic> customAction(String name, [Map<String, dynamic>? extras]) async {
+    if (name == 'toggleLikeToCurrentItem') {
+      if (mediaItem.value == null) return;
+      _appStateCubit.toggleSongLike(
+        SongItem.fromMediaItem(
+          MediaItemWrapper.fromMediaItem(mediaItem.value!),
+        ),
+      );
+    }
+  }
+
   PlaybackState _transformEvent(PlaybackEvent event) {
     if (event.processingState == ProcessingState.completed) skipToNext();
-
     return PlaybackState(
       controls: [
-        MediaControl.skipToPrevious,
-        if (audioPlayer.playing) MediaControl.pause else MediaControl.play,
-        MediaControl.stop,
-        MediaControl.skipToNext,
+        if (mediaItem.value != null) ...{
+          MediaControl(
+            androidIcon: _appStateCubit.isSongIdLiked(
+              mediaItem.value!.id,
+            )
+                ? 'drawable/heart_filled'
+                : 'drawable/heart',
+            label: 'Previous',
+            action: MediaAction.custom,
+            customAction: const CustomMediaAction(name: "toggleLikeToCurrentItem"),
+          ),
+        },
+        MediaControl.skipToPrevious.copyWith(androidIcon: "drawable/previous"),
+        if (audioPlayer.playing)
+          MediaControl.pause.copyWith(androidIcon: "drawable/pause")
+        else
+          MediaControl.play.copyWith(androidIcon: "drawable/play"),
+        MediaControl.skipToNext.copyWith(androidIcon: "drawable/next"),
       ],
       systemActions: const {
         MediaAction.seek,
         MediaAction.skipToNext,
         MediaAction.skipToPrevious,
       },
-      androidCompactActionIndices: const [0, 1, 3],
+      androidCompactActionIndices: mediaItem.value != null ? const [1, 2, 3] : const [0, 1, 2],
       processingState: const {
         ProcessingState.idle: AudioProcessingState.idle,
         ProcessingState.loading: AudioProcessingState.loading,

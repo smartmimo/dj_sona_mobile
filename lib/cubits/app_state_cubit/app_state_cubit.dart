@@ -60,6 +60,11 @@ class AppStateCubit extends Cubit<AppState> {
     return likedSong != null;
   }
 
+  bool isSongIdLiked(String songId) {
+    final SongItem? likedSong = state.likedSongs.where((song) => song.id == songId).firstOrNull;
+    return likedSong != null;
+  }
+
   startLikedSongs({int? startAt}) async {
     final AudioPlayerService audioService = serviceLocator.get<AudioPlayerService>();
 
