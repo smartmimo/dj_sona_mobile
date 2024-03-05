@@ -79,14 +79,11 @@ class AudioPlayerWidget extends StatelessWidget {
             direction: isMiniWidget ? Axis.horizontal : Axis.vertical,
             children: [
               if (!isMiniWidget) _getScrollerLineIcon(context),
-              Stack(
-                alignment: Alignment.center,
-                fit: StackFit.passthrough,
-                children: [
-                  _getImage(mediaItem, currentHeight),
-                  if (isMiniWidget) _getMiniPlayPauseButton(context, state),
-                ],
-              ),
+              if (isMiniWidget) ...{
+                _getMiniImageAndPlayButton(context, state, mediaItem, currentHeight),
+              } else ...{
+                _getImage(mediaItem, currentHeight),
+              },
               Expanded(
                 child: Padding(
                   padding: isMiniWidget ? StyleConstants.edgeInsets4 : EdgeInsets.zero,
@@ -100,8 +97,48 @@ class AudioPlayerWidget extends StatelessWidget {
     );
   }
 
+  Widget _getMiniImageAndPlayButton(
+    BuildContext context,
+    PlaybackState state,
+    MediaItemWrapper mediaItem,
+    double currentHeight,
+  ) {
+    late final IconData actionIcon;
+    late final VoidCallback actionCallback;
+    if (state.processingState == AudioProcessingState.completed) {
+      actionIcon = Icons.replay_rounded;
+      actionCallback = audioService.replay;
+    } else if (state.playing) {
+      actionIcon = Icons.pause_rounded;
+      actionCallback = audioService.pause;
+    } else {
+      actionIcon = Icons.play_arrow_rounded;
+      actionCallback = audioService.play;
+    }
+
+    return Stack(
+      alignment: Alignment.center,
+      fit: StackFit.passthrough,
+      children: [
+        _getImage(mediaItem, currentHeight),
+        _getMiniPlayPauseButton(context, state, actionIcon),
+        Positioned.fill(
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: StyleConstants.radiusTl12,
+              onTap: actionCallback,
+              splashColor: Theme.of(context).colorScheme.primary.withOpacity(0.9),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   ClipRRect _getImage(MediaItemWrapper mediaItem, double currentHeight) {
     final bool isMiniWidget = _isMiniWidget(currentHeight);
+
     return ClipRRect(
       borderRadius: isMiniWidget ? StyleConstants.radiusTl12 : StyleConstants.radius12,
       child: NetworkImg(
@@ -117,41 +154,26 @@ class AudioPlayerWidget extends StatelessWidget {
     );
   }
 
-  Widget _getMiniPlayPauseButton(BuildContext context, PlaybackState state) {
-    final bool isPlaying = state.playing;
-    return Material(
-      type: MaterialType.transparency,
-      shape: const CircleBorder(),
-      clipBehavior: Clip.hardEdge,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
-          borderRadius: StyleConstants.radius100,
-          border: Border.all(
-            color: ColorConstants.white,
-            width: 2,
-          ),
+  Widget _getMiniPlayPauseButton(
+    BuildContext context,
+    PlaybackState state,
+    IconData iconData,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+        borderRadius: StyleConstants.radius100,
+        border: Border.all(
+          color: ColorConstants.white,
+          width: 2,
         ),
-        width: 30,
-        height: 30,
-        child: IconButton(
-          icon: Icon(
-            state.processingState == AudioProcessingState.completed
-                ? Icons.replay_rounded
-                : isPlaying
-                    ? Icons.pause_rounded
-                    : Icons.play_arrow_rounded,
-            size: 20,
-            color: ColorConstants.white,
-          ),
-          onPressed: state.processingState == AudioProcessingState.completed
-              ? audioService.replay
-              : isPlaying
-                  ? audioService.pause
-                  : audioService.play,
-          padding: EdgeInsets.zero,
-          splashColor: Theme.of(context).colorScheme.primary.withOpacity(0.9),
-        ),
+      ),
+      width: 30,
+      height: 30,
+      child: Icon(
+        iconData,
+        size: 20,
+        color: ColorConstants.white,
       ),
     );
   }
