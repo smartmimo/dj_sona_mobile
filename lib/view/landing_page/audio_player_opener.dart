@@ -1,15 +1,16 @@
-import 'package:audio_service/audio_service.dart';
-import 'package:djsona_mobile/services/audio_player_service.dart';
-import 'package:djsona_mobile/services/service_locator.dart';
 import 'package:djsona_mobile/view/landing_page/landing_page.dart';
 import 'package:djsona_mobile/view/landing_page/audio_player_widget.dart';
 import 'package:flutter/material.dart' hide SearchBar;
 
 class AudioPlayerOpener extends StatefulWidget {
-  const AudioPlayerOpener({super.key});
+  const AudioPlayerOpener({
+    super.key,
+    required this.isHidden,
+  });
 
   static const double defaultBoxHeight = LandingPage.bottomBarHeight;
   static const double openedBoxHeight = 300;
+  final bool isHidden;
 
   @override
   State<AudioPlayerOpener> createState() => _AudioPlayerOpenerState();
@@ -90,17 +91,14 @@ class _AudioPlayerOpenerState extends State<AudioPlayerOpener> {
       onVerticalDragEnd: _onVerticalDragEnd,
       onVerticalDragStart: _onVerticalDragStart,
       onTap: _triggerShakeAnimation,
-      child: StreamBuilder<MediaItem?>(
-        stream: serviceLocator.get<AudioPlayerService>().mediaItem,
-        builder: _mapSnapshotToWidget,
-      ),
+      child: _getAnimatedWidget(context),
     );
   }
 
-  Widget _mapSnapshotToWidget(BuildContext context, AsyncSnapshot<MediaItem?> snapshot) {
+  Widget _getAnimatedWidget(BuildContext context) {
     return AnimatedContainer(
       duration: !_isBarDragging ? _animationDuration : const Duration(milliseconds: 0),
-      height: snapshot.data != null ? _boxHeight : 0,
+      height: widget.isHidden ? 0 : _boxHeight,
       curve: Curves.easeInOut,
       child: AudioPlayerWidget(),
     );

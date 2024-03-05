@@ -26,7 +26,7 @@ class _$AppRouter extends RootStackRouter {
     LandingRoute.name: (routeData) {
       return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const LandingPage(),
+        child: LandingPage(),
       );
     },
     HomeRoute.name: (routeData) {

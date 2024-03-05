@@ -13,8 +13,10 @@ import 'package:djsona_mobile/view/landing_page/menu_items_manager.dart';
 import 'package:djsona_mobile/view/shared_components/system_overlay_style.dart';
 
 class LandingPage extends StatelessWidget {
-  const LandingPage({super.key});
+  LandingPage({super.key});
   static const double bottomBarHeight = 60;
+
+  final AudioPlayerService _audioPlayerService = serviceLocator.get<AudioPlayerService>();
 
   @override
   Widget build(context) {
@@ -45,7 +47,9 @@ class LandingPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                const AudioPlayerOpener(),
+                AudioPlayerOpener(
+                  isHidden: _audioPlayerService.mediaItem.value == null,
+                ),
               ],
             ),
           );
@@ -124,7 +128,7 @@ class LandingPage extends StatelessWidget {
   }
 
   Container _getCurrentPlaylistSticker(BuildContext context) {
-    final item = serviceLocator.get<AudioPlayerService>().mediaItem;
+    final item = _audioPlayerService.mediaItem;
     if (item.value == null || StringUtils.isEmpty(item.value!.artist)) return Container();
     return Container(
       height: 20,
