@@ -138,18 +138,21 @@ class AudioPlayerWidget extends StatelessWidget {
 
   ClipRRect _getImage(MediaItemWrapper mediaItem, double currentHeight) {
     final bool isMiniWidget = _isMiniWidget(currentHeight);
-
     return ClipRRect(
       borderRadius: isMiniWidget ? StyleConstants.radiusTl12 : StyleConstants.radius12,
-      child: NetworkImg(
-        mediaItem.artUri?.toString() ?? "",
-        width: isMiniWidget && !_isDragging(currentHeight) ? _miniWidgetImageWidth : null,
-        height: isMiniWidget
-            ? currentHeight
-            : currentHeight - _imageHeightOffset < _maxImageHeight
-                ? currentHeight - _imageHeightOffset
-                : _maxImageHeight,
-        fit: BoxFit.cover,
+      child: Container(
+        constraints: const BoxConstraints(
+          minWidth: _miniWidgetImageWidth,
+        ),
+        child: NetworkImg(
+          mediaItem.artUri?.toString() ?? "",
+          height: isMiniWidget
+              ? currentHeight
+              : currentHeight - _imageHeightOffset < _maxImageHeight
+                  ? currentHeight - _imageHeightOffset
+                  : _maxImageHeight,
+          fit: BoxFit.cover,
+        ),
       ),
     );
   }
