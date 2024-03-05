@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:djsona_mobile/constants/app_constants.dart';
 import 'package:djsona_mobile/types/song_item.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -25,58 +26,69 @@ class LocalStorageManager {
     );
   }
 
+  static void _addSongToFolder({
+    required SongItem item,
+    required String folderName,
+    int? maxItems,
+  }) async {
+    final Directory dir = Directory("${(await getExternalStorageDirectory())!.path}/$folderName");
+    if (!dir.existsSync()) dir.createSync();
+
+    final List<FileSystemEntity> files = dir.listSync();
+    files.sort((a, b) => b.statSync().changed.compareTo(a.statSync().changed));
+
+    if (maxItems != null && files.length >= maxItems) files.last.delete();
+
+    _writeFile("${dir.path}/${item.id}.json", item.toJson());
+  }
+
+  static void _removeSongFromFolder({
+    required SongItem item,
+    required String folderName,
+  }) async {
+    final Directory dir = Directory("${(await getExternalStorageDirectory())!.path}/$folderName");
+    File("${dir.path}/${item.id}.json").delete();
+  }
+
+  static Future<List<SongItem>> _listSongsFromFolder({required String folderName}) async {
+    final Directory dir = Directory("${(await getExternalStorageDirectory())!.path}/$folderName");
+    if (!dir.existsSync()) return [];
+
+    final List<FileSystemEntity> files = dir.listSync();
+    files.sort((a, b) => b.statSync().changed.compareTo(a.statSync().changed));
+
+    return files.map((file) {
+      return SongItem.fromJson(
+        _readFile(file.absolute.path),
+      );
+    }).toList();
+  }
+
   static void addToHistory(SongItem item) async {
-    final Directory historyDir = Directory("${(await getExternalStorageDirectory())!.path}/history");
-    if (!historyDir.existsSync()) historyDir.createSync();
-
-    final List<FileSystemEntity> historyFiles = historyDir.listSync();
-    historyFiles.sort((a, b) => b.statSync().changed.compareTo(a.statSync().changed));
-
-    if (historyFiles.length >= _maxItemsInHistory) historyFiles.last.delete();
-
-    _writeFile("${historyDir.path}/${item.id}.json", item.toJson());
+    return _addSongToFolder(
+      item: item,
+      folderName: AppConstants.historyFolderName,
+      maxItems: _maxItemsInHistory,
+    );
   }
 
   static Future<List<SongItem>> listHistory() async {
-    final Directory historyDir = Directory("${(await getExternalStorageDirectory())!.path}/history");
-    if (!historyDir.existsSync()) return [];
-
-    final List<FileSystemEntity> historyFiles = historyDir.listSync();
-    historyFiles.sort((a, b) => b.statSync().changed.compareTo(a.statSync().changed));
-
-    return historyFiles.map((file) {
-      return SongItem.fromJson(
-        _readFile(file.absolute.path),
-      );
-    }).toList();
+    return _listSongsFromFolder(folderName: AppConstants.historyFolderName);
   }
 
   static void addToLiked(SongItem item) async {
-    final Directory likedSongsDir = Directory("${(await getExternalStorageDirectory())!.path}/liked");
-    if (!likedSongsDir.existsSync()) likedSongsDir.createSync();
-
-    final List<FileSystemEntity> likedFiles = likedSongsDir.listSync();
-    likedFiles.sort((a, b) => b.statSync().changed.compareTo(a.statSync().changed));
-
-    _writeFile("${likedSongsDir.path}/${item.id}.json", item.toJson());
+    return _addSongToFolder(
+      item: item,
+      folderName: AppConstants.likedFolderName,
+      maxItems: _maxItemsInHistory,
+    );
   }
 
   static void removeFromLiked(SongItem item) async {
-    final Directory likedSongsDir = Directory("${(await getExternalStorageDirectory())!.path}/liked");
-    File("${likedSongsDir.path}/${item.id}.json").delete();
+    return _removeSongFromFolder(item: item, folderName: AppConstants.likedFolderName);
   }
 
   static Future<List<SongItem>> listLiked() async {
-    final Directory likedSongsDir = Directory("${(await getExternalStorageDirectory())!.path}/liked");
-    if (!likedSongsDir.existsSync()) return [];
-
-    final List<FileSystemEntity> likedFiles = likedSongsDir.listSync();
-    likedFiles.sort((a, b) => b.statSync().changed.compareTo(a.statSync().changed));
-
-    return likedFiles.map((file) {
-      return SongItem.fromJson(
-        _readFile(file.absolute.path),
-      );
-    }).toList();
+    return _listSongsFromFolder(folderName: AppConstants.likedFolderName);
   }
 }

@@ -185,7 +185,7 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
   }
 
   PlaybackState _transformEvent(PlaybackEvent event) {
-    if (event.processingState == ProcessingState.completed) skipToNext();
+    if (event.processingState == ProcessingState.completed) Future.delayed(const Duration(seconds: 1), skipToNext);
     return PlaybackState(
       controls: [
         if (mediaItem.value != null) ...{

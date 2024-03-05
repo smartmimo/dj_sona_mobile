@@ -5,4 +5,6 @@ abstract class AppConstants {
   static const String dateFormatHoursDots = "dd.MM.yyyy - HH:mm";
   static const String dateFormatDots = "dd.MM.yyyy";
   static const String youtubeBasePath = "https://www.youtube.com";
+  static const String historyFolderName = "history";
+  static const String likedFolderName = "liked";
 }
