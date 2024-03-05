@@ -76,6 +76,11 @@ class LocalStorageManager {
     return _listSongsFromFolder(folderName: AppConstants.historyFolderName);
   }
 
+  static Future<void> clearHistory() async {
+    final Directory dir = Directory("${(await getExternalStorageDirectory())!.path}/${AppConstants.historyFolderName}");
+    if (dir.existsSync()) dir.delete(recursive: true);
+  }
+
   static void addToLiked(SongItem item) async {
     return _addSongToFolder(
       item: item,

@@ -20,10 +20,15 @@ class MusicSearchCubit extends Cubit<MusicSearchState> {
   StreamSubscription<List<SongItem>>? searchStream;
 
   void init() {
-    LocalStorageManager.listHistory().then((value) => emit(state.copyWith(
+    LocalStorageManager.listHistory().then(
+      (value) => emit(
+        state.copyWith(
           songList: value,
           isLoading: false,
-        )));
+          isClearHistoryShown: true,
+        ),
+      ),
+    );
   }
 
   void onSongPressed(SongItem songItem) async {
@@ -42,9 +47,13 @@ class MusicSearchCubit extends Cubit<MusicSearchState> {
 
     if (StringUtils.isEmpty(text)) return init();
 
-    emit(state.copyWith(isLoading: true));
+    emit(state.copyWith(isLoading: true, isClearHistoryShown: false));
     searchStream = _searchApiProvider.searchByText(text!).asStream().listen((songList) {
       emit(state.copyWith(songList: songList, isLoading: false));
     });
+  }
+
+  void clearHistory() {
+    LocalStorageManager.clearHistory().then((_) => init());
   }
 }
