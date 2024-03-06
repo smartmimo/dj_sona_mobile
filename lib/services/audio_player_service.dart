@@ -69,6 +69,13 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
     queueTitle.value = playlistName;
     addQueueItem(firstMediaItem.toMediaItem().copyWith(artist: playlistName));
 
+    if (songItems.length <= 1) {
+      audioPlayer.setUrl(firstMediaItem.extras.streamUrl);
+      broadcastMediaItem(firstMediaItem.toMediaItem().copyWith(artist: playlistName));
+      if (!audioPlayer.playing) audioPlayer.play();
+      return;
+    }
+
     final MediaItemWrapper secondMediaItem = await YoutubeUtils.getMediaItemFromSongItem(
       songItems[1],
       originalIndex: items.indexWhere((e) => e.id == songItems[1].id),

@@ -1,15 +1,21 @@
+import 'package:djsona_mobile/constants/app_constants.dart';
 import 'package:djsona_mobile/cubits/app_state_cubit/app_state.dart';
 import 'package:djsona_mobile/services/audio_player_service.dart';
 import 'package:djsona_mobile/services/service_locator.dart';
+import 'package:djsona_mobile/types/playlist.dart';
 import 'package:djsona_mobile/types/song_item.dart';
 import 'package:djsona_mobile/utils/local_storage_manager.dart';
-import 'package:djsona_mobile/view/liked_songs_page/liked_songs_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
 
 class AppStateCubit extends Cubit<AppState> {
   AppStateCubit() : super(AppState());
+
+  void init() async {
+    final List<Playlist> playlists = await LocalStorageManager.listPlaylists();
+    emit(state.copyWith(playlists: playlists, playlistLoadingName: () => null));
+  }
 
   void handleNetworkError(DioException error) {
     emit(state.copyWith(
@@ -31,49 +37,83 @@ class AppStateCubit extends Cubit<AppState> {
     emit(state.copyWith(primaryColor: primary, secondaryColor: secondary));
   }
 
-  void toggleSongLike(SongItem item) {
-    if (!isSongLiked(item)) {
-      LocalStorageManager.addToLiked(item);
-      emit(state.copyWith(
-        likedSongs: List<SongItem>.from([item, ...state.likedSongs]),
-      ));
-    } else {
-      LocalStorageManager.removeFromLiked(item);
-      emit(state.copyWith(
-        likedSongs: List<SongItem>.from(state.likedSongs)..removeWhere((song) => song.id == item.id),
-      ));
-    }
+  startPlaylist({required String playlistName, int? startAt}) async {
+    final AudioPlayerService audioService = serviceLocator.get<AudioPlayerService>();
+    final Playlist? playlist = state.getPlaylistByName(playlistName);
+    if (playlist == null) return;
+
+    emit(state.copyWith(playlistLoadingName: () => playlistName));
+    await audioService.playPlaylist(
+      items: playlist.songList,
+      playlistName: playlistName,
+      startAt: startAt,
+    );
+    emit(state.copyWith(playlistLoadingName: () => null));
   }
 
-  void updateLikedSongs() async {
+  addItemToPlaylist({required String playlistName, required SongItem item}) {
+    LocalStorageManager.addToPlaylist(playlistName: playlistName, item: item);
     emit(state.copyWith(
-      likedSongs: List<SongItem>.from(await LocalStorageManager.listLiked()),
+      playlists: List<Playlist>.from(
+        state.playlists.map((playlist) {
+          if (playlist.name == playlistName) {
+            return playlist.copyWith(songList: List<SongItem>.from([item, ...playlist.songList]));
+          } else {
+            return playlist;
+          }
+        }),
+      ),
     ));
   }
 
+  removeItemFromPlaylist({required String playlistName, required SongItem item}) {
+    LocalStorageManager.removeFromPlaylist(playlistName: playlistName, item: item);
+    emit(state.copyWith(
+      playlists: List<Playlist>.from(
+        state.playlists.map((playlist) {
+          if (playlist.name == playlistName) {
+            return playlist.copyWith(
+              songList: List<SongItem>.from(playlist.songList)..removeWhere((song) => song.id == item.id),
+            );
+          } else {
+            return playlist;
+          }
+        }),
+      ),
+    ));
+  }
+
+  List<SongItem> getPlaylistSongs({required String playlistName}) {
+    return state.getPlaylistByName(playlistName)?.songList ?? [];
+  }
+
+  void toggleSongLike(SongItem item) {
+    if (isSongLiked(item)) {
+      removeItemFromPlaylist(playlistName: AppConstants.likedSongsPlaylistName, item: item);
+    } else {
+      addItemToPlaylist(playlistName: AppConstants.likedSongsPlaylistName, item: item);
+    }
+  }
+
   List<SongItem> getLikedSongs() {
-    return state.likedSongs;
+    return getPlaylistSongs(playlistName: AppConstants.likedSongsPlaylistName);
   }
 
   bool isSongLiked(SongItem item) {
-    final SongItem? likedSong = state.likedSongs.where((song) => song.id == item.id).firstOrNull;
+    final SongItem? likedSong = state
+        .getPlaylistByName(AppConstants.likedSongsPlaylistName)
+        ?.songList
+        .where((song) => song.id == item.id)
+        .firstOrNull;
     return likedSong != null;
   }
 
   bool isSongIdLiked(String songId) {
-    final SongItem? likedSong = state.likedSongs.where((song) => song.id == songId).firstOrNull;
+    final SongItem? likedSong = state
+        .getPlaylistByName(AppConstants.likedSongsPlaylistName)
+        ?.songList
+        .where((song) => song.id == songId)
+        .firstOrNull;
     return likedSong != null;
-  }
-
-  startLikedSongs({int? startAt}) async {
-    final AudioPlayerService audioService = serviceLocator.get<AudioPlayerService>();
-
-    emit(state.copyWith(isLikedSongsLoading: true));
-    await audioService.playPlaylist(
-      items: state.likedSongs,
-      playlistName: LikedSongsPage.likedSongsPlaylistName,
-      startAt: startAt,
-    );
-    emit(state.copyWith(isLikedSongsLoading: false));
   }
 }

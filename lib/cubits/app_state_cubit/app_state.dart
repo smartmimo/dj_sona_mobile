@@ -1,36 +1,40 @@
 import 'dart:ui';
 
 import 'package:djsona_mobile/constants/color_constants.dart';
-import 'package:djsona_mobile/types/song_item.dart';
+import 'package:djsona_mobile/types/playlist.dart';
 import 'package:flutter/foundation.dart';
 
 class AppState {
   final RequestErrorObject? error;
   final Color primaryColor;
   final Color secondaryColor;
-  final List<SongItem> likedSongs;
-  final bool isLikedSongsLoading;
+  final List<Playlist> playlists;
+  final String? playlistLoadingName;
   AppState({
     this.error,
     this.primaryColor = ColorConstants.primary,
     this.secondaryColor = ColorConstants.secondary,
-    this.likedSongs = const [],
-    this.isLikedSongsLoading = false,
+    this.playlists = const [],
+    this.playlistLoadingName,
   });
+
+  Playlist? getPlaylistByName(String name) {
+    return playlists.where((element) => element.name == name).firstOrNull;
+  }
 
   AppState copyWith({
     ValueGetter<RequestErrorObject?>? error,
     Color? primaryColor,
     Color? secondaryColor,
-    List<SongItem>? likedSongs,
-    bool? isLikedSongsLoading,
+    List<Playlist>? playlists,
+    ValueGetter<String?>? playlistLoadingName,
   }) {
     return AppState(
       error: error != null ? error() : this.error,
       primaryColor: primaryColor ?? this.primaryColor,
       secondaryColor: secondaryColor ?? this.secondaryColor,
-      likedSongs: likedSongs ?? this.likedSongs,
-      isLikedSongsLoading: isLikedSongsLoading ?? this.isLikedSongsLoading,
+      playlists: playlists ?? this.playlists,
+      playlistLoadingName: playlistLoadingName != null ? playlistLoadingName() : this.playlistLoadingName,
     );
   }
 }
