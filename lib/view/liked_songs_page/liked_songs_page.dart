@@ -1,5 +1,5 @@
 import 'package:djsona_mobile/constants/app_constants.dart';
-import 'package:djsona_mobile/view/shared_components/playlist_screen.dart';
+import 'package:djsona_mobile/view/shared_components/playlist_screen_page.dart';
 import 'package:flutter/material.dart';
 
 class LikedSongsPage extends StatelessWidget {
@@ -7,6 +7,6 @@ class LikedSongsPage extends StatelessWidget {
 
   @override
   Widget build(context) {
-    return PlaylistScreen(playlistName: AppConstants.likedSongsPlaylistName);
+    return PlaylistScreenPage(playlistName: AppConstants.likedSongsPlaylistName);
   }
 }

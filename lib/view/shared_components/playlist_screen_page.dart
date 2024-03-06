@@ -16,8 +16,8 @@ import 'package:djsona_mobile/view/shared_components/song_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class PlaylistScreen extends StatelessWidget {
-  PlaylistScreen({
+class PlaylistScreenPage extends StatelessWidget {
+  PlaylistScreenPage({
     super.key,
     required this.playlistName,
   });

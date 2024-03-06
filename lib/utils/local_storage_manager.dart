@@ -115,6 +115,7 @@ class LocalStorageManager {
       playlistFolders.map(
         (folder) async => Playlist(
           name: folder.path.split("/").last,
+          creationDate: folder.statSync().changed,
           songList: await _listSongsFromFolder(
             path: folder.path,
             isFullPath: true,

@@ -3,9 +3,11 @@ import 'package:djsona_mobile/types/song_item.dart';
 class Playlist {
   final String name;
   final List<SongItem> songList;
+  final DateTime creationDate;
 
   Playlist({
     required this.name,
+    required this.creationDate,
     required this.songList,
   });
 
@@ -15,6 +17,7 @@ class Playlist {
   }) {
     return Playlist(
       name: name ?? this.name,
+      creationDate: creationDate,
       songList: songList ?? this.songList,
     );
   }

@@ -28,13 +28,13 @@ abstract class MenuItemsManager {
     "Playlists",
     IconConstants.playlist,
     IconConstants.playlistFilled,
-    HomeRoute(),
+    PlaylistsRoute(),
   );
   static final _likedSongs = MenuItem(
     "Liked songs",
     IconConstants.customHeart,
     IconConstants.customHeartFilled,
-    LikedSongsRoute(),
+    const LikedSongsRoute(),
   );
 
   static final List<MenuItem> menuItems = [_homePage, _playlists, _likedSongs];
