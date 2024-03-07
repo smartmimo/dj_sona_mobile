@@ -3,6 +3,7 @@ import 'package:djsona_mobile/constants/app_constants.dart';
 import 'package:djsona_mobile/constants/color_constants.dart';
 import 'package:djsona_mobile/constants/icon_constants.dart';
 import 'package:djsona_mobile/constants/style_constants.dart';
+import 'package:djsona_mobile/cubits/app_state_cubit/app_state.dart';
 import 'package:djsona_mobile/cubits/app_state_cubit/app_state_cubit.dart';
 import 'package:djsona_mobile/router/app_router.dart';
 import 'package:djsona_mobile/services/audio_player_service.dart';
@@ -11,9 +12,13 @@ import 'package:djsona_mobile/types/playlist.dart';
 import 'package:djsona_mobile/utils/image_utils.dart';
 import 'package:djsona_mobile/utils/theme_utils/elements_spacing_extension.dart';
 import 'package:djsona_mobile/utils/theme_utils/text_theme_extension.dart';
+import 'package:djsona_mobile/view/shared_components/add_playlist_widget.dart';
 import 'package:djsona_mobile/view/shared_components/appbar_widget.dart';
 import 'package:djsona_mobile/view/shared_components/card_layout.dart';
+import 'package:djsona_mobile/view/shared_components/delete_button.dart';
+import 'package:djsona_mobile/view/shared_components/popup_dialog_layout.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 class PlaylistsPage extends StatelessWidget {
@@ -23,10 +28,17 @@ class PlaylistsPage extends StatelessWidget {
 
   @override
   Widget build(context) {
+    return BlocBuilder<AppStateCubit, AppState>(
+      bloc: _appStateCubit,
+      builder: _mapStateToWidget,
+    );
+  }
+
+  Widget _mapStateToWidget(BuildContext context, AppState state) {
     return Scaffold(
       backgroundColor: ImageUtils.lightenColor(Theme.of(context).colorScheme.secondary, 0.6),
       resizeToAvoidBottomInset: false,
-      appBar: AppBarWidget(content: _getAppBarContent(context)),
+      appBar: AppBarWidget(content: _getAppBarContent(context, state)),
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -37,23 +49,23 @@ class PlaylistsPage extends StatelessWidget {
         ),
         child: Material(
           type: MaterialType.transparency,
-          child: _getContent(context),
+          child: _getContent(context, state),
         ),
       ),
     );
   }
 
-  Widget _getAppBarContent(BuildContext context) {
+  Widget _getAppBarContent(BuildContext context, AppState state) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _getAppBarTitles(context),
+        _getAppBarTitles(context, state),
         _getNewPlaylistButton(context),
       ],
     );
   }
 
-  Column _getAppBarTitles(BuildContext context) {
+  Column _getAppBarTitles(BuildContext context, AppState state) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -62,7 +74,7 @@ class PlaylistsPage extends StatelessWidget {
           style: Theme.of(context).textTheme.bodyXLBold.copyWith(color: ColorConstants.white),
         ),
         Text(
-          "${_appStateCubit.state.playlists.length} playlists",
+          "${state.playlists.length} playlists",
           style: Theme.of(context).textTheme.bodyLBold.copyWith(color: ColorConstants.paleGrey01),
         ),
       ].withVerticalElementsSpacing(4),
@@ -88,7 +100,18 @@ class PlaylistsPage extends StatelessWidget {
             size: AppBarWidget.leadingSize / 1.6,
             color: ColorConstants.white,
           ),
-          onPressed: () => {},
+          onPressed: () => showDialog(
+            context: context,
+            builder: (context) => PopupDialogLayout(
+              title: Text(
+                "New playlist",
+                style: Theme.of(context).textTheme.heading5.copyWith(
+                      color: ColorConstants.blackish,
+                    ),
+              ),
+              body: AddPlaylistWidget(onCreatePressed: _appStateCubit.newPlaylist),
+            ),
+          ),
           padding: EdgeInsets.zero,
           splashColor: Theme.of(context).colorScheme.secondary.withOpacity(1),
           splashRadius: AppBarWidget.leadingSize / 2,
@@ -97,16 +120,16 @@ class PlaylistsPage extends StatelessWidget {
     );
   }
 
-  Widget _getContent(context) {
+  Widget _getContent(context, AppState state) {
     return ListView.builder(
       padding: StyleConstants.edgeInsetsT16,
       itemBuilder: ((context, index) {
         return Padding(
           padding: StyleConstants.edgeInsetsB16,
-          child: _getPlaylistCard(context, _appStateCubit.state.playlists[index]),
+          child: _getPlaylistCard(context, state.playlists[index]),
         );
       }),
-      itemCount: _appStateCubit.state.playlists.length,
+      itemCount: state.playlists.length,
       physics: const AlwaysScrollableScrollPhysics(),
     );
   }
@@ -154,11 +177,19 @@ class PlaylistsPage extends StatelessWidget {
         padding: StyleConstants.edgeInsets8,
         height: 100,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _getPlaylistName(playlist, textTheme),
-            _getPlaylistMetaData(playlist, textTheme),
-          ].withVerticalElementsSpacing(8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _getPlaylistName(playlist, textTheme),
+                  _getPlaylistMetaData(playlist, textTheme),
+                ].withVerticalElementsSpacing(8),
+              ),
+            ),
+            _getActions(context, playlist),
+          ],
         ),
       ),
     );
@@ -221,6 +252,19 @@ class PlaylistsPage extends StatelessWidget {
           style: textTheme.bodyMBold.copyWith(color: ColorConstants.lightGrey),
         ),
       ].withHorizontalElementsSpacing(4),
+    );
+  }
+
+  Widget _getActions(BuildContext context, Playlist playlist) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        DeleteButton(
+          isDisabled: false,
+          onPressed: () => _appStateCubit.deletePlaylist(playlist.name),
+          onlyIcon: true,
+        ),
+      ],
     );
   }
 }

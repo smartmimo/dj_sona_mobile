@@ -124,4 +124,21 @@ class LocalStorageManager {
       ),
     );
   }
+
+  static Future<void> newPlaylist(String playlistName) async {
+    final String rootPath = (await getExternalStorageDirectory())!.path;
+    final Directory playlistsDir = Directory("$rootPath/playlists");
+    if (!playlistsDir.existsSync()) playlistsDir.createSync();
+
+    final List<FileSystemEntity> playlistFolders = playlistsDir.listSync();
+    playlistFolders.sort((a, b) => b.statSync().changed.compareTo(a.statSync().changed));
+
+    return Directory("${playlistsDir.path}/$playlistName").createSync();
+  }
+
+  static Future<void> deletePlaylist(String playlistName) async {
+    final String rootPath = (await getExternalStorageDirectory())!.path;
+    final Directory dir = Directory("$rootPath/playlists/$playlistName");
+    if (dir.existsSync()) return dir.deleteSync();
+  }
 }

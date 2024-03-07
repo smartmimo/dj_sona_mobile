@@ -13,8 +13,8 @@ class AppStateCubit extends Cubit<AppState> {
   AppStateCubit() : super(AppState());
 
   void init() async {
-    final List<Playlist> playlists = await LocalStorageManager.listPlaylists();
-    emit(state.copyWith(playlists: playlists, playlistLoadingName: () => null));
+    final List<Playlist> playlistsWithLikedSongs = await LocalStorageManager.listPlaylists();
+    emit(state.copyWith(playlistsWithLikedSongs: playlistsWithLikedSongs, playlistLoadingName: () => null));
   }
 
   void handleNetworkError(DioException error) {
@@ -54,8 +54,8 @@ class AppStateCubit extends Cubit<AppState> {
   addItemToPlaylist({required String playlistName, required SongItem item}) {
     LocalStorageManager.addToPlaylist(playlistName: playlistName, item: item);
     emit(state.copyWith(
-      playlists: List<Playlist>.from(
-        state.playlists.map((playlist) {
+      playlistsWithLikedSongs: List<Playlist>.from(
+        state.playlistsWithLikedSongs.map((playlist) {
           if (playlist.name == playlistName) {
             return playlist.copyWith(songList: List<SongItem>.from([item, ...playlist.songList]));
           } else {
@@ -69,8 +69,8 @@ class AppStateCubit extends Cubit<AppState> {
   removeItemFromPlaylist({required String playlistName, required SongItem item}) {
     LocalStorageManager.removeFromPlaylist(playlistName: playlistName, item: item);
     emit(state.copyWith(
-      playlists: List<Playlist>.from(
-        state.playlists.map((playlist) {
+      playlistsWithLikedSongs: List<Playlist>.from(
+        state.playlistsWithLikedSongs.map((playlist) {
           if (playlist.name == playlistName) {
             return playlist.copyWith(
               songList: List<SongItem>.from(playlist.songList)..removeWhere((song) => song.id == item.id),
@@ -115,5 +115,32 @@ class AppStateCubit extends Cubit<AppState> {
         .where((song) => song.id == songId)
         .firstOrNull;
     return likedSong != null;
+  }
+
+  void newPlaylist(String playlistName) {
+    LocalStorageManager.newPlaylist(playlistName);
+    emit(
+      state.copyWith(
+        playlistsWithLikedSongs: List<Playlist>.from(
+          [
+            Playlist(
+              name: playlistName,
+              creationDate: DateTime.now(),
+              songList: [],
+            ),
+            ...state.playlistsWithLikedSongs,
+          ],
+        ),
+      ),
+    );
+  }
+
+  deletePlaylist(String playlistName) {
+    LocalStorageManager.deletePlaylist(playlistName);
+    emit(state.copyWith(
+      playlistsWithLikedSongs: List<Playlist>.from(
+        state.playlistsWithLikedSongs..removeWhere((playlist) => playlist.name == playlistName),
+      ),
+    ));
   }
 }
