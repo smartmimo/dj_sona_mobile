@@ -129,6 +129,7 @@ class PlaylistsPage extends StatelessWidget {
               PlaylistScreenRoute(playlistName: state.playlists[index].name),
             ),
             onDelete: () => _appStateCubit.deletePlaylist(state.playlists[index].name),
+            isDisabled: state.playlists[index].songList.isEmpty,
           ),
         );
       }),

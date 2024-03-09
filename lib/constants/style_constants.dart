@@ -119,6 +119,10 @@ class StyleConstants {
     topLeft: Radius.circular(8),
     bottomLeft: Radius.circular(8),
   );
+  static const BorderRadius radiusTrBr8 = BorderRadius.only(
+    topRight: Radius.circular(8),
+    bottomRight: Radius.circular(8),
+  );
   static const BorderRadius radiusBR12 = BorderRadius.only(
     bottomRight: Radius.circular(12),
   );

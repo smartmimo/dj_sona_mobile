@@ -104,28 +104,31 @@ class PlaylistCard extends StatelessWidget {
     final TextTheme textTheme = Theme.of(context).textTheme;
 
     return Expanded(
-      child: Container(
-        color: isDisabled
-            ? ColorConstants.paleGrey01
-            : isCurrentlyPlaying
-                ? Theme.of(context).colorScheme.primary.withOpacity(0.2)
-                : null,
-        padding: StyleConstants.edgeInsets8,
-        height: 100,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _getPlaylistName(textTheme),
-                  _getPlaylistMetaData(textTheme),
-                ].withVerticalElementsSpacing(8),
+      child: ClipRRect(
+        borderRadius: StyleConstants.radiusTrBr8,
+        child: Container(
+          color: isDisabled
+              ? ColorConstants.paleGrey01
+              : isCurrentlyPlaying
+                  ? Theme.of(context).colorScheme.primary.withOpacity(0.2)
+                  : null,
+          padding: StyleConstants.edgeInsets8,
+          height: 100,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _getPlaylistName(textTheme),
+                    _getPlaylistMetaData(textTheme),
+                  ].withVerticalElementsSpacing(8),
+                ),
               ),
-            ),
-            _getActions(context),
-          ],
+              _getActions(context),
+            ],
+          ),
         ),
       ),
     );
