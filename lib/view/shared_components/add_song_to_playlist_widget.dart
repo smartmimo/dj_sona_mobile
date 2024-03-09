@@ -73,7 +73,7 @@ class AddSongToPlaylist extends StatelessWidget {
   }
 
   Widget _getPlaylistCard(BuildContext context, Playlist playlist) {
-    final songExists = _appStateCubit.getPlaylistSongs(playlistName: playlist.name).contains(songItem);
+    final songExists = _appStateCubit.isSongInPlaylist(playlistName: playlist.name, item: songItem);
 
     final Widget card = PlaylistCard(
       playlist: playlist,

@@ -105,12 +105,7 @@ class AppStateCubit extends Cubit<AppState> {
   }
 
   bool isSongLiked(SongItem item) {
-    final SongItem? likedSong = state
-        .getPlaylistByName(AppConstants.likedSongsPlaylistName)
-        ?.songList
-        .where((song) => song.id == item.id)
-        .firstOrNull;
-    return likedSong != null;
+    return isSongInPlaylist(playlistName: AppConstants.likedSongsPlaylistName, item: item);
   }
 
   bool isSongIdLiked(String songId) {
@@ -153,5 +148,16 @@ class AppStateCubit extends Cubit<AppState> {
         state.playlistsWithLikedSongs..removeWhere((playlist) => playlist.name == playlistName),
       ),
     ));
+  }
+
+  bool isSongInPlaylist({required String playlistName, required SongItem item}) {
+    final SongItem? likedSong = state
+        .getPlaylistByName(
+          playlistName,
+        )
+        ?.songList
+        .where((song) => song.id == item.id)
+        .firstOrNull;
+    return likedSong != null;
   }
 }

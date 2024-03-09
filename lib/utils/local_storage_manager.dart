@@ -139,6 +139,6 @@ class LocalStorageManager {
   static Future<void> deletePlaylist(String playlistName) async {
     final String rootPath = (await getExternalStorageDirectory())!.path;
     final Directory dir = Directory("$rootPath/playlists/$playlistName");
-    if (dir.existsSync()) return dir.deleteSync();
+    if (dir.existsSync()) return dir.deleteSync(recursive: true);
   }
 }
