@@ -30,6 +30,7 @@ class PlaylistCard extends StatelessWidget {
       padding: EdgeInsets.zero,
       hasBorder: isCurrentlyPlaying,
       content: InkWell(
+        borderRadius: StyleConstants.radius8,
         onTap: onPressed,
         child: Row(
           children: [

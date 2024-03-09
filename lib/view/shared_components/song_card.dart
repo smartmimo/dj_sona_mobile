@@ -38,6 +38,7 @@ class SongCard extends StatelessWidget {
       padding: EdgeInsets.zero,
       hasBorder: isCurrentlyPlaying,
       content: InkWell(
+        borderRadius: StyleConstants.radius8,
         onTap: onPressed,
         child: Row(
           children: [
@@ -194,45 +195,53 @@ class SongCard extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        _getActionIcon(
-          context,
-          iconData: IconConstants.addToPlaylist,
-          onPressed: () => showDialog(
-            context: context,
-            builder: (context) => GestureDetector(
-              onTap: AutoRouter.of(context).pop,
-              child: Scaffold(
-                backgroundColor: Colors.transparent,
-                body: GestureDetector(
-                  onTap: () {},
-                  child: PopupDialogLayout(
-                    title: Text(
-                      "Add song to playlist",
-                      style: Theme.of(context).textTheme.heading5,
-                    ),
-                    body: AddSongToPlaylist(
-                      songItem: songItem,
-                    ),
-                  ),
+        _getAddToPlaylistAction(context),
+        _getLikeSongAction(),
+      ].withHorizontalElementsSpacing(8),
+    );
+  }
+
+  Widget _getAddToPlaylistAction(BuildContext context) {
+    return _getActionIcon(
+      context,
+      iconData: IconConstants.addToPlaylist,
+      onPressed: () => showDialog(
+        context: context,
+        builder: (context) => GestureDetector(
+          onTap: AutoRouter.of(context).pop,
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: GestureDetector(
+              onTap: () {},
+              child: PopupDialogLayout(
+                title: Text(
+                  "Add song to playlist",
+                  style: Theme.of(context).textTheme.heading5,
+                ),
+                body: AddSongToPlaylist(
+                  songItem: songItem,
                 ),
               ),
             ),
           ),
         ),
-        BlocBuilder<AppStateCubit, AppState>(
-          bloc: _appStateCubit,
-          builder: (context, state) {
-            final bool isSongLiked = _appStateCubit.isSongLiked(songItem);
+      ),
+    );
+  }
 
-            return _getActionIcon(
-              context,
-              iconData: isSongLiked ? IconConstants.heartFilled : IconConstants.heart,
-              iconColor: isSongLiked ? ColorConstants.errorRed : null,
-              onPressed: () => _appStateCubit.toggleSongLike(songItem),
-            );
-          },
-        ),
-      ].withHorizontalElementsSpacing(8),
+  BlocBuilder<AppStateCubit, AppState> _getLikeSongAction() {
+    return BlocBuilder<AppStateCubit, AppState>(
+      bloc: _appStateCubit,
+      builder: (context, state) {
+        final bool isSongLiked = _appStateCubit.isSongLiked(songItem);
+
+        return _getActionIcon(
+          context,
+          iconData: isSongLiked ? IconConstants.heartFilled : IconConstants.heart,
+          iconColor: isSongLiked ? ColorConstants.errorRed : null,
+          onPressed: () => _appStateCubit.toggleSongLike(songItem),
+        );
+      },
     );
   }
 
