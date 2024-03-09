@@ -130,6 +130,10 @@ class PlaylistsPage extends StatelessWidget {
             ),
             onDelete: () => _appStateCubit.deletePlaylist(state.playlists[index].name),
             isDisabled: state.playlists[index].songList.isEmpty,
+            onPlay: () => _appStateCubit.startPlaylist(
+              playlistName: state.playlists[index].name,
+            ),
+            isLoading: state.playlistLoadingName == state.playlists[index].name,
           ),
         );
       }),

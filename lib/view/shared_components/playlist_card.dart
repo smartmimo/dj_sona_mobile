@@ -9,6 +9,7 @@ import 'package:djsona_mobile/utils/theme_utils/elements_spacing_extension.dart'
 import 'package:djsona_mobile/utils/theme_utils/text_theme_extension.dart';
 import 'package:djsona_mobile/view/shared_components/card_layout.dart';
 import 'package:djsona_mobile/view/shared_components/delete_button.dart';
+import 'package:djsona_mobile/view/shared_components/loading_widget.dart';
 import 'package:djsona_mobile/view/shared_components/network_img.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -19,15 +20,19 @@ class PlaylistCard extends StatelessWidget {
     required this.playlist,
     required this.isCurrentlyPlaying,
     required this.onPressed,
+    this.onPlay,
     this.onDelete,
     this.isDisabled = false,
+    this.isLoading = false,
   });
 
   final Playlist playlist;
   final bool isCurrentlyPlaying;
   final VoidCallback onPressed;
   final VoidCallback? onDelete;
+  final VoidCallback? onPlay;
   final bool isDisabled;
+  final bool isLoading;
 
   static const double _defaultThumbnailSize = 50;
   static const double _miniDefaultThumbnailSize = 24;
@@ -126,7 +131,19 @@ class PlaylistCard extends StatelessWidget {
                   ].withVerticalElementsSpacing(8),
                 ),
               ),
-              _getActions(context),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: LoadingWidget(),
+                        )
+                      : Container(),
+                  _getActions(context),
+                ],
+              ),
             ],
           ),
         ),
@@ -204,8 +221,52 @@ class PlaylistCard extends StatelessWidget {
             onPressed: onDelete!,
             onlyIcon: true,
           ),
-        }
-      ],
+        },
+        if (onPlay != null) ...{
+          _getActionIcon(
+            context,
+            iconData: Icons.play_arrow_rounded,
+            onPressed: onPlay!,
+          ),
+        },
+      ].withHorizontalElementsSpacing(4),
+    );
+  }
+
+  Widget _getActionIcon(
+    BuildContext context, {
+    required IconData iconData,
+    required VoidCallback onPressed,
+    Color? iconColor,
+  }) {
+    return Container(
+      width: 28,
+      height: 28,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
+        borderRadius: StyleConstants.radius100,
+        boxShadow: StyleConstants.standardShadow,
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary,
+          width: 2,
+          strokeAlign: BorderSide.strokeAlignOutside,
+        ),
+      ),
+      child: Material(
+        type: MaterialType.transparency,
+        shape: const CircleBorder(),
+        clipBehavior: Clip.hardEdge,
+        child: IconButton(
+          padding: EdgeInsets.zero,
+          onPressed: isLoading ? null : onPressed,
+          icon: Icon(
+            iconData,
+            size: 24,
+            color: iconColor ?? Theme.of(context).colorScheme.primary,
+          ),
+          splashColor: ColorConstants.blackish.withOpacity(0.4),
+        ),
+      ),
     );
   }
 }
