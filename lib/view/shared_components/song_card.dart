@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:djsona_mobile/constants/color_constants.dart';
 import 'package:djsona_mobile/constants/icon_constants.dart';
 import 'package:djsona_mobile/constants/style_constants.dart';
@@ -8,9 +9,11 @@ import 'package:djsona_mobile/types/song_item.dart';
 import 'package:djsona_mobile/utils/string_utils.dart';
 import 'package:djsona_mobile/utils/theme_utils/elements_spacing_extension.dart';
 import 'package:djsona_mobile/utils/theme_utils/text_theme_extension.dart';
+import 'package:djsona_mobile/view/shared_components/add_song_to_playlist_widget.dart';
 import 'package:djsona_mobile/view/shared_components/card_layout.dart';
 import 'package:djsona_mobile/view/shared_components/loading_widget.dart';
 import 'package:djsona_mobile/view/shared_components/network_img.dart';
+import 'package:djsona_mobile/view/shared_components/popup_dialog_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -194,7 +197,27 @@ class SongCard extends StatelessWidget {
         _getActionIcon(
           context,
           iconData: IconConstants.addToPlaylist,
-          onPressed: () {},
+          onPressed: () => showDialog(
+            context: context,
+            builder: (context) => GestureDetector(
+              onTap: AutoRouter.of(context).pop,
+              child: Scaffold(
+                backgroundColor: Colors.transparent,
+                body: GestureDetector(
+                  onTap: () {},
+                  child: PopupDialogLayout(
+                    title: Text(
+                      "Add song to playlist",
+                      style: Theme.of(context).textTheme.heading5,
+                    ),
+                    body: AddSongToPlaylist(
+                      songItem: songItem,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
         BlocBuilder<AppStateCubit, AppState>(
           bloc: _appStateCubit,

@@ -1,5 +1,7 @@
 import 'package:djsona_mobile/constants/app_constants.dart';
 import 'package:djsona_mobile/cubits/app_state_cubit/app_state.dart';
+import 'package:djsona_mobile/cubits/app_state_cubit/error_types/playlist_exists_error.dart';
+import 'package:djsona_mobile/cubits/app_state_cubit/error_types/request_error_object.dart';
 import 'package:djsona_mobile/services/audio_player_service.dart';
 import 'package:djsona_mobile/services/service_locator.dart';
 import 'package:djsona_mobile/types/playlist.dart';
@@ -117,22 +119,28 @@ class AppStateCubit extends Cubit<AppState> {
     return likedSong != null;
   }
 
-  void newPlaylist(String playlistName) {
+  Playlist newPlaylist(String playlistName) {
+    if (state.getPlaylistByName(playlistName) != null) throw PlaylistExistsError();
+
     LocalStorageManager.newPlaylist(playlistName);
+
+    final Playlist addedPlaylist = Playlist(
+      name: playlistName,
+      creationDate: DateTime.now(),
+      songList: [],
+    );
+
     emit(
       state.copyWith(
         playlistsWithLikedSongs: List<Playlist>.from(
           [
-            Playlist(
-              name: playlistName,
-              creationDate: DateTime.now(),
-              songList: [],
-            ),
+            addedPlaylist,
             ...state.playlistsWithLikedSongs,
           ],
         ),
       ),
     );
+    return addedPlaylist;
   }
 
   deletePlaylist(String playlistName) {

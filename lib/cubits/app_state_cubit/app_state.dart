@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:djsona_mobile/constants/app_constants.dart';
 import 'package:djsona_mobile/constants/color_constants.dart';
+import 'package:djsona_mobile/cubits/app_state_cubit/error_types/request_error_object.dart';
 import 'package:djsona_mobile/types/playlist.dart';
 import 'package:flutter/foundation.dart';
 
@@ -42,13 +43,4 @@ class AppState {
       playlistLoadingName: playlistLoadingName != null ? playlistLoadingName() : this.playlistLoadingName,
     );
   }
-}
-
-class RequestErrorObject {
-  String? message;
-  String urlAndMethod;
-  Object? params;
-  Object? response;
-  dynamic type;
-  RequestErrorObject({this.message, required this.urlAndMethod, this.params, this.type, this.response});
 }

@@ -12,12 +12,14 @@ class FormValidators {
     final String? required = requiredValidator(value);
     if (required != null) return required;
 
+    if (value!.length >= 100) return "Playlist name is too long";
+
     RegExp regExp = RegExp(
       r'[<>:"/\\|?*]',
       caseSensitive: false,
     );
 
-    if (regExp.hasMatch(value!)) {
+    if (regExp.hasMatch(value)) {
       return "Special characters are not supported";
     }
     return null;
