@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:djsona_mobile/constants/app_constants.dart';
 import 'package:djsona_mobile/constants/color_constants.dart';
 import 'package:djsona_mobile/constants/icon_constants.dart';
@@ -7,6 +9,7 @@ import 'package:djsona_mobile/utils/theme_utils/elements_spacing_extension.dart'
 import 'package:djsona_mobile/utils/theme_utils/text_theme_extension.dart';
 import 'package:djsona_mobile/view/shared_components/card_layout.dart';
 import 'package:djsona_mobile/view/shared_components/delete_button.dart';
+import 'package:djsona_mobile/view/shared_components/network_img.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -26,6 +29,9 @@ class PlaylistCard extends StatelessWidget {
   final VoidCallback? onDelete;
   final bool isDisabled;
 
+  static const double _defaultThumbnailSize = 50;
+  static const double _miniDefaultThumbnailSize = 24;
+
   @override
   Widget build(BuildContext context) {
     return CardLayout(
@@ -36,31 +42,65 @@ class PlaylistCard extends StatelessWidget {
         onTap: isDisabled ? null : onPressed,
         child: Row(
           children: [
-            _getThumbnailSection(context, playlist),
-            _getPlaylistData(context, playlist),
+            _getThumbnailSection(context),
+            _getPlaylistData(context),
           ],
         ),
       ),
     );
   }
 
-  Widget _getThumbnailSection(BuildContext context, Playlist playlist) {
+  Widget _getThumbnailSection(BuildContext context) {
+    final List<String> images = List<String>.from(
+      playlist.songList.map((e) => e.thumbnailUrl).whereType<String>(),
+    );
     return ClipRRect(
       borderRadius: StyleConstants.radiusTlBl8,
       child: Container(
         width: 100,
         height: 100,
         color: Theme.of(context).colorScheme.secondary.withOpacity(0.6),
-        child: Icon(
-          IconConstants.playlist,
-          size: 50,
-          color: Theme.of(context).colorScheme.primary,
-        ),
+        child: images.isEmpty ? _getDefaultThumbnail(context) : _getThumbnailSectionWithImages(context, images),
       ),
     );
   }
 
-  Widget _getPlaylistData(BuildContext context, Playlist playlist) {
+  Widget _getThumbnailSectionWithImages(BuildContext context, List<String> images) {
+    images = images.length > 4 ? images.sublist(0, 4) : images;
+
+    late final List<Widget> imageWidgets;
+    if (images.length == 2) {
+      imageWidgets = [
+        NetworkImg(images[0]),
+        _getDefaultThumbnail(context, size: _miniDefaultThumbnailSize),
+        _getDefaultThumbnail(context, size: _miniDefaultThumbnailSize),
+        NetworkImg(images[1]),
+      ];
+    } else if (images.length == 3) {
+      imageWidgets = List<Widget>.from(images.map((e) => NetworkImg(e)))
+        ..add(
+          _getDefaultThumbnail(context, size: _miniDefaultThumbnailSize),
+        );
+    } else {
+      imageWidgets = List<Widget>.from(images.map((e) => NetworkImg(e)));
+    }
+    return GridView.count(
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      crossAxisCount: min(images.length, 2),
+      children: imageWidgets,
+    );
+  }
+
+  Widget _getDefaultThumbnail(BuildContext context, {double size = _defaultThumbnailSize}) {
+    return Icon(
+      IconConstants.playlist,
+      size: size,
+      color: Theme.of(context).colorScheme.primary,
+    );
+  }
+
+  Widget _getPlaylistData(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
 
     return Expanded(
@@ -79,19 +119,19 @@ class PlaylistCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _getPlaylistName(playlist, textTheme),
-                  _getPlaylistMetaData(playlist, textTheme),
+                  _getPlaylistName(textTheme),
+                  _getPlaylistMetaData(textTheme),
                 ].withVerticalElementsSpacing(8),
               ),
             ),
-            _getActions(context, playlist),
+            _getActions(context),
           ],
         ),
       ),
     );
   }
 
-  Flexible _getPlaylistName(Playlist playlist, TextTheme textTheme) {
+  Flexible _getPlaylistName(TextTheme textTheme) {
     return Flexible(
       child: Text(
         playlist.name,
@@ -102,11 +142,11 @@ class PlaylistCard extends StatelessWidget {
     );
   }
 
-  Widget _getPlaylistMetaData(Playlist playlist, TextTheme textTheme) {
+  Widget _getPlaylistMetaData(TextTheme textTheme) {
     return Row(
       children: [
-        _getPlaylistLength(playlist, textTheme),
-        _getPlaylistCreationDate(playlist, textTheme),
+        _getPlaylistLength(textTheme),
+        _getPlaylistCreationDate(textTheme),
       ]
           .withDivider(
             divider: const Icon(
@@ -119,7 +159,7 @@ class PlaylistCard extends StatelessWidget {
     );
   }
 
-  Row _getPlaylistLength(Playlist playlist, TextTheme textTheme) {
+  Row _getPlaylistLength(TextTheme textTheme) {
     return Row(
       children: [
         const Icon(
@@ -135,7 +175,7 @@ class PlaylistCard extends StatelessWidget {
     );
   }
 
-  Row _getPlaylistCreationDate(Playlist playlist, TextTheme textTheme) {
+  Row _getPlaylistCreationDate(TextTheme textTheme) {
     return Row(
       children: [
         const Icon(
@@ -151,7 +191,7 @@ class PlaylistCard extends StatelessWidget {
     );
   }
 
-  Widget _getActions(BuildContext context, Playlist playlist) {
+  Widget _getActions(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
