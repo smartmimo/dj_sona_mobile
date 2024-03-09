@@ -105,7 +105,7 @@ class PlaylistScreenPage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Liked songs",
+          playlistName,
           style: Theme.of(context).textTheme.bodyXLBold.copyWith(color: ColorConstants.white),
         ),
         Text(
