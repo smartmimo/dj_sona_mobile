@@ -38,7 +38,10 @@ class DeleteButton extends StatelessWidget {
         child: Material(
           type: MaterialType.transparency,
           child: IconButton(
-            onPressed: onPressed,
+            onPressed: () => showDialog<String>(
+              context: context,
+              builder: (context) => _getConfirmationPopup(context),
+            ),
             icon: const Icon(
               IconConstants.delete,
               color: Colors.white,
