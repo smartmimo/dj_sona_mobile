@@ -35,11 +35,14 @@ class MusicSearchCubit extends Cubit<MusicSearchState> {
     emit(state.copyWith(
       songLoadingId: () => songItem.id,
     ));
-    await _audioService.playSong(songItem);
-    LocalStorageManager.addToHistory(songItem);
-    emit(state.copyWith(
-      songLoadingId: () => null,
-    ));
+    try {
+      await _audioService.playSong(songItem);
+      LocalStorageManager.addToHistory(songItem);
+    } finally {
+      emit(state.copyWith(
+        songLoadingId: () => null,
+      ));
+    }
   }
 
   void onSearchChanged(String? text) {

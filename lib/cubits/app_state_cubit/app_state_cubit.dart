@@ -45,12 +45,15 @@ class AppStateCubit extends Cubit<AppState> {
     if (playlist == null) return;
 
     emit(state.copyWith(playlistLoadingName: () => playlistName));
-    await audioService.playPlaylist(
-      items: playlist.songList,
-      playlistName: playlistName,
-      startAt: startAt,
-    );
-    emit(state.copyWith(playlistLoadingName: () => null));
+    try {
+      await audioService.playPlaylist(
+        items: playlist.songList,
+        playlistName: playlistName,
+        startAt: startAt,
+      );
+    } finally {
+      emit(state.copyWith(playlistLoadingName: () => null));
+    }
   }
 
   addItemToPlaylist({required String playlistName, required SongItem item}) {
