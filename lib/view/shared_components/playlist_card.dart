@@ -17,12 +17,14 @@ class PlaylistCard extends StatelessWidget {
     required this.isCurrentlyPlaying,
     required this.onPressed,
     this.onDelete,
+    this.isDisabled = false,
   });
 
   final Playlist playlist;
   final bool isCurrentlyPlaying;
   final VoidCallback onPressed;
   final VoidCallback? onDelete;
+  final bool isDisabled;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +33,7 @@ class PlaylistCard extends StatelessWidget {
       hasBorder: isCurrentlyPlaying,
       content: InkWell(
         borderRadius: StyleConstants.radius8,
-        onTap: onPressed,
+        onTap: isDisabled ? null : onPressed,
         child: Row(
           children: [
             _getThumbnailSection(context, playlist),
@@ -63,7 +65,11 @@ class PlaylistCard extends StatelessWidget {
 
     return Expanded(
       child: Container(
-        color: isCurrentlyPlaying ? Theme.of(context).colorScheme.primary.withOpacity(0.2) : null,
+        color: isDisabled
+            ? ColorConstants.paleGrey01
+            : isCurrentlyPlaying
+                ? Theme.of(context).colorScheme.primary.withOpacity(0.2)
+                : null,
         padding: StyleConstants.edgeInsets8,
         height: 100,
         child: Column(

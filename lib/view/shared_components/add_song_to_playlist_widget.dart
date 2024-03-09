@@ -58,21 +58,51 @@ class AddSongToPlaylist extends StatelessWidget {
   }
 
   Widget _getPlaylistList(BuildContext context) {
+    final List<Playlist> playlists = _appStateCubit.state.playlists;
     return ListView.builder(
       padding: StyleConstants.edgeInsetsT16,
       itemBuilder: ((context, index) {
         return Padding(
           padding: StyleConstants.edgeInsetsB16,
-          child: PlaylistCard(
-            playlist: _appStateCubit.state.playlists[index],
-            isCurrentlyPlaying: false,
-            onPressed: () {},
-          ),
+          child: _getPlaylistCard(context, playlists[index]),
         );
       }),
-      itemCount: _appStateCubit.state.playlists.length,
+      itemCount: playlists.length,
       physics: const AlwaysScrollableScrollPhysics(),
     );
+  }
+
+  Widget _getPlaylistCard(BuildContext context, Playlist playlist) {
+    final songExists = _appStateCubit.getPlaylistSongs(playlistName: playlist.name).contains(songItem);
+
+    final Widget card = PlaylistCard(
+      playlist: playlist,
+      isCurrentlyPlaying: false,
+      onPressed: () => _addSongToPlaylist(context, playlist),
+      isDisabled: songExists,
+    );
+
+    if (songExists) {
+      final TextTheme textTheme = Theme.of(context).textTheme;
+      return Stack(
+        children: [
+          card,
+          Positioned(
+            bottom: 4,
+            right: 20,
+            child: Text(
+              "Song already exists in this playlist",
+              style: textTheme.bodyMBold.copyWith(
+                color: ColorConstants.roofTerracotta,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return card;
   }
 
   Widget _newPlaylistButton(BuildContext context) {
@@ -92,14 +122,14 @@ class AddSongToPlaylist extends StatelessWidget {
           ),
         ).then((result) {
           if (result != null) {
-            _onSongAdded(context, result);
+            _addSongToPlaylist(context, result);
           }
         });
       },
     );
   }
 
-  void _onSongAdded(BuildContext context, Playlist result) {
+  void _addSongToPlaylist(BuildContext context, Playlist result) {
     _appStateCubit.addItemToPlaylist(playlistName: result.name, item: songItem);
     AutoRouter.of(context).pop();
     ScaffoldMessenger.of(context)
