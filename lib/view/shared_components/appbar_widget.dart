@@ -6,9 +6,12 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   const AppBarWidget({
     super.key,
     required this.content,
+    this.leading,
   });
 
   final Widget content;
+  final Widget? leading;
+
   @override
   Size get preferredSize => const Size.fromHeight(70);
 
@@ -31,13 +34,14 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       ),
       leading: Padding(
         padding: StyleConstants.edgeInsetsL8,
-        child: CircleAvatar(
-          backgroundColor: Theme.of(context).colorScheme.secondary,
-          child: ClipRRect(
-            borderRadius: StyleConstants.radius100,
-            child: Image.asset("assets/images/dj_sona_icon_2.png"),
-          ),
-        ),
+        child: leading ??
+            CircleAvatar(
+              backgroundColor: Theme.of(context).colorScheme.secondary,
+              child: ClipRRect(
+                borderRadius: StyleConstants.radius100,
+                child: Image.asset("assets/images/dj_sona_icon_2.png"),
+              ),
+            ),
       ),
       leadingWidth: leadingSize + 8,
       titleSpacing: 8,

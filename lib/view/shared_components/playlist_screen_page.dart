@@ -1,4 +1,6 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:auto_route/auto_route.dart';
+import 'package:djsona_mobile/constants/app_constants.dart';
 import 'package:djsona_mobile/constants/color_constants.dart';
 import 'package:djsona_mobile/constants/icon_constants.dart';
 import 'package:djsona_mobile/constants/style_constants.dart';
@@ -38,7 +40,10 @@ class PlaylistScreenPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: ImageUtils.lightenColor(Theme.of(context).colorScheme.secondary, 0.6),
       resizeToAvoidBottomInset: false,
-      appBar: AppBarWidget(content: _getAppBarContent(context, state)),
+      appBar: AppBarWidget(
+        content: _getAppBarContent(context, state),
+        leading: _getAppBarLeading(context),
+      ),
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -85,6 +90,36 @@ class PlaylistScreenPage extends StatelessWidget {
           physics: const AlwaysScrollableScrollPhysics(),
         );
       },
+    );
+  }
+
+  Widget? _getAppBarLeading(BuildContext context) {
+    if (playlistName == AppConstants.likedSongsPlaylistName) {
+      return null;
+    }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Ink(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: ColorConstants.white,
+            boxShadow: StyleConstants.standardShadow,
+            borderRadius: StyleConstants.radius12,
+          ),
+          child: InkWell(
+            borderRadius: StyleConstants.radius12,
+            onTap: AutoRouter.of(context).pop,
+            child: const Icon(
+              IconConstants.chevronLeft,
+              color: ColorConstants.blackish,
+            ),
+          ),
+        ),
+      ],
     );
   }
 

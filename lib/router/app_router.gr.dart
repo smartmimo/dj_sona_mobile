@@ -39,18 +39,24 @@ class _$AppRouter extends RootStackRouter {
         child: HomePage(key: args.key),
       );
     },
-    PlaylistsRoute.name: (routeData) {
-      final args = routeData.argsAs<PlaylistsRouteArgs>(
-          orElse: () => const PlaylistsRouteArgs());
+    PlaylistsTabRoute.name: (routeData) {
       return MaterialPageX<dynamic>(
         routeData: routeData,
-        child: PlaylistsPage(key: args.key),
+        child: const PlaylistsTab(),
       );
     },
     LikedSongsRoute.name: (routeData) {
       return MaterialPageX<dynamic>(
         routeData: routeData,
         child: const LikedSongsPage(),
+      );
+    },
+    PlaylistsRoute.name: (routeData) {
+      final args = routeData.argsAs<PlaylistsRouteArgs>(
+          orElse: () => const PlaylistsRouteArgs());
+      return MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: PlaylistsPage(key: args.key),
       );
     },
     PlaylistScreenRoute.name: (routeData) {
@@ -82,15 +88,20 @@ class _$AppRouter extends RootStackRouter {
                   parent: LandingRoute.name,
                 ),
                 RouteConfig(
-                  PlaylistsRoute.name,
-                  path: 'playlists-page',
+                  PlaylistsTabRoute.name,
+                  path: 'playlists-tab',
                   parent: LandingRoute.name,
                   children: [
                     RouteConfig(
+                      PlaylistsRoute.name,
+                      path: '',
+                      parent: PlaylistsTabRoute.name,
+                    ),
+                    RouteConfig(
                       PlaylistScreenRoute.name,
                       path: 'playlist-screen-page',
-                      parent: PlaylistsRoute.name,
-                    )
+                      parent: PlaylistsTabRoute.name,
+                    ),
                   ],
                 ),
                 RouteConfig(
@@ -170,16 +181,38 @@ class HomeRouteArgs {
 }
 
 /// generated route for
+/// [PlaylistsTab]
+class PlaylistsTabRoute extends PageRouteInfo<void> {
+  const PlaylistsTabRoute({List<PageRouteInfo>? children})
+      : super(
+          PlaylistsTabRoute.name,
+          path: 'playlists-tab',
+          initialChildren: children,
+        );
+
+  static const String name = 'PlaylistsTabRoute';
+}
+
+/// generated route for
+/// [LikedSongsPage]
+class LikedSongsRoute extends PageRouteInfo<void> {
+  const LikedSongsRoute()
+      : super(
+          LikedSongsRoute.name,
+          path: 'liked-songs-page',
+        );
+
+  static const String name = 'LikedSongsRoute';
+}
+
+/// generated route for
 /// [PlaylistsPage]
 class PlaylistsRoute extends PageRouteInfo<PlaylistsRouteArgs> {
-  PlaylistsRoute({
-    Key? key,
-    List<PageRouteInfo>? children,
-  }) : super(
+  PlaylistsRoute({Key? key})
+      : super(
           PlaylistsRoute.name,
-          path: 'playlists-page',
+          path: '',
           args: PlaylistsRouteArgs(key: key),
-          initialChildren: children,
         );
 
   static const String name = 'PlaylistsRoute';
@@ -194,18 +227,6 @@ class PlaylistsRouteArgs {
   String toString() {
     return 'PlaylistsRouteArgs{key: $key}';
   }
-}
-
-/// generated route for
-/// [LikedSongsPage]
-class LikedSongsRoute extends PageRouteInfo<void> {
-  const LikedSongsRoute()
-      : super(
-          LikedSongsRoute.name,
-          path: 'liked-songs-page',
-        );
-
-  static const String name = 'LikedSongsRoute';
 }
 
 /// generated route for

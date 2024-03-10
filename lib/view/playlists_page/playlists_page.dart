@@ -125,9 +125,11 @@ class PlaylistsPage extends StatelessWidget {
           child: PlaylistCard(
             playlist: state.playlists[index],
             isCurrentlyPlaying: audioService.queueTitle.value == state.playlists[index].name,
-            onPressed: () => AutoRouter.of(context).push(
-              PlaylistScreenRoute(playlistName: state.playlists[index].name),
-            ),
+            onPressed: () {
+              context.navigateTo(
+                PlaylistScreenRoute(playlistName: state.playlists[index].name),
+              );
+            },
             onDelete: () => _appStateCubit.deletePlaylist(state.playlists[index].name),
             isDisabled: state.playlists[index].songList.isEmpty,
             onPlay: () => _appStateCubit.startPlaylist(

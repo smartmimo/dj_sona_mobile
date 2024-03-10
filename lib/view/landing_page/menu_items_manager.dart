@@ -28,7 +28,7 @@ abstract class MenuItemsManager {
     "Playlists",
     IconConstants.playlist,
     IconConstants.playlistFilled,
-    PlaylistsRoute(),
+    const PlaylistsTabRoute(),
   );
   static final _likedSongs = MenuItem(
     "Liked songs",
