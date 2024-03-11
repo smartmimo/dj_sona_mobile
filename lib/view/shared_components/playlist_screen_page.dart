@@ -103,19 +103,21 @@ class PlaylistScreenPage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         Ink(
-          width: 44,
-          height: 44,
+          width: AppBarWidget.leadingSize,
+          height: AppBarWidget.leadingSize,
           decoration: BoxDecoration(
-            color: ColorConstants.white,
+            color: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
             boxShadow: StyleConstants.standardShadow,
             borderRadius: StyleConstants.radius12,
           ),
           child: InkWell(
             borderRadius: StyleConstants.radius12,
             onTap: AutoRouter.of(context).pop,
+            splashColor: Theme.of(context).colorScheme.secondary,
+
             child: const Icon(
               IconConstants.chevronLeft,
-              color: ColorConstants.blackish,
+              color: ColorConstants.white,
             ),
           ),
         ),
@@ -189,7 +191,7 @@ class PlaylistScreenPage extends StatelessWidget {
                 ),
                 onPressed: () => _appStateCubit.startPlaylist(playlistName: playlistName),
                 padding: EdgeInsets.zero,
-                splashColor: Theme.of(context).colorScheme.secondary.withOpacity(1),
+                splashColor: Theme.of(context).colorScheme.secondary,
                 splashRadius: AppBarWidget.leadingSize / 2,
               ),
             ),
