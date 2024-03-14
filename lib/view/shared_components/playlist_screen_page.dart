@@ -7,7 +7,9 @@ import 'package:djsona_mobile/constants/style_constants.dart';
 import 'package:djsona_mobile/cubits/app_state_cubit/app_state.dart';
 import 'package:djsona_mobile/cubits/app_state_cubit/app_state_cubit.dart';
 import 'package:djsona_mobile/services/audio_player_service.dart';
+import 'package:djsona_mobile/services/downloader_api_provider.dart';
 import 'package:djsona_mobile/services/service_locator.dart';
+import 'package:djsona_mobile/types/playlist.dart';
 import 'package:djsona_mobile/types/song_item.dart';
 import 'package:djsona_mobile/utils/image_utils.dart';
 import 'package:djsona_mobile/utils/theme_utils/elements_spacing_extension.dart';
@@ -114,7 +116,6 @@ class PlaylistScreenPage extends StatelessWidget {
             borderRadius: StyleConstants.radius12,
             onTap: AutoRouter.of(context).pop,
             splashColor: Theme.of(context).colorScheme.secondary,
-
             child: const Icon(
               IconConstants.chevronLeft,
               color: ColorConstants.white,
@@ -199,6 +200,9 @@ class PlaylistScreenPage extends StatelessWidget {
   }
 
   Widget _getDownloadButton(BuildContext context, AppState state) {
+    final Playlist? playlist = state.getPlaylistByName(playlistName);
+    if (playlist == null) return Container();
+    
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
@@ -220,7 +224,10 @@ class PlaylistScreenPage extends StatelessWidget {
             size: AppBarWidget.leadingSize / 2.08,
             color: ColorConstants.white,
           ),
-          onPressed: () {},
+          onPressed: () => serviceLocator.get<DownloaderApiProvider>().downloadPlaylist(
+                playlist: playlist,
+                onProgress: (count, total) => print("$count / $total"),
+              ),
           padding: EdgeInsets.zero,
           splashColor: Theme.of(context).colorScheme.secondary.withOpacity(1),
           splashRadius: AppBarWidget.leadingSize / 2,

@@ -1,3 +1,4 @@
+import 'package:djsona_mobile/services/downloader_api_provider.dart';
 import 'package:djsona_mobile/services/search_api_provider.dart';
 import 'package:get_it/get_it.dart';
 import 'package:djsona_mobile/cubits/app_state_cubit/app_state_cubit.dart';
@@ -15,5 +16,8 @@ void setupDependencies() {
   **/
   serviceLocator.registerSingleton<SearchApiProvider>(
     SearchApiProvider(serviceLocator.get<ApiService>()),
+  );
+  serviceLocator.registerSingleton<DownloaderApiProvider>(
+    DownloaderApiProvider(serviceLocator.get<ApiService>()),
   );
 }

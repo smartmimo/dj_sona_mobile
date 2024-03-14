@@ -65,6 +65,7 @@ abstract class YoutubeUtils {
         streamUrl: audioStreamInfo.url.toString(),
         originalIndex: originalIndex,
         shuffledIndex: shuffledIndex,
+        fileSize: audioStreamInfo.size.totalBytes,
       ),
     );
   }

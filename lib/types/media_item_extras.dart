@@ -4,6 +4,7 @@ class MediaItemExtras {
   final String? viewsString;
   final int? originalIndex;
   final int? shuffledIndex;
+  final int fileSize;
 
   MediaItemExtras({
     required this.streamUrl,
@@ -11,6 +12,7 @@ class MediaItemExtras {
     this.viewsString,
     this.originalIndex,
     this.shuffledIndex,
+    required this.fileSize,
   });
 
   factory MediaItemExtras.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class MediaItemExtras {
       viewsString: json['viewsString'],
       originalIndex: json['originalIndex'],
       shuffledIndex: json['shuffledIndex'],
+      fileSize: json['fileSize'],
     );
   }
 
@@ -30,6 +33,7 @@ class MediaItemExtras {
       "viewsString": viewsString,
       "originalIndex": originalIndex,
       "shuffledIndex": shuffledIndex,
+      "fileSize": fileSize,
     };
   }
 
@@ -39,9 +43,11 @@ class MediaItemExtras {
     String? viewsString,
     int? originalIndex,
     int? shuffledIndex,
+    int? fileSize,
   }) {
     return MediaItemExtras(
       streamUrl: streamUrl ?? this.streamUrl,
+      fileSize: fileSize ?? this.fileSize,
       publishedTimeString: publishedTimeString ?? this.publishedTimeString,
       viewsString: viewsString ?? this.viewsString,
       originalIndex: originalIndex ?? this.originalIndex,

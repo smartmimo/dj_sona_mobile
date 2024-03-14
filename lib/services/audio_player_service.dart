@@ -256,6 +256,7 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
           streamUrl: audioStreamInfo.url.toString(),
           publishedTimeString: StringUtils.timeAgo(videoDetails.publishDate),
           viewsString: StringUtils.viewsToKMBFormat(videoDetails.engagement.viewCount),
+          fileSize: audioStreamInfo.size.totalBytes,
         ),
       );
       addQueueItem(item.toMediaItem().copyWith(artist: "Autoplay"));
