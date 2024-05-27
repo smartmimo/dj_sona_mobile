@@ -68,6 +68,9 @@ dev_dependencies:
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
+dependency_overrides:
+  fading_edge_scrollview: ^4.1.1
+
 flutter_native_splash:
   color: "#E19FD7"
   image: assets/app_icons/splash_icon.png

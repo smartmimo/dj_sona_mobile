@@ -224,10 +224,11 @@ class PlaylistScreenPage extends StatelessWidget {
             size: AppBarWidget.leadingSize / 2.08,
             color: ColorConstants.white,
           ),
-          onPressed: () => serviceLocator.get<DownloaderApiProvider>().downloadPlaylist(
-                playlist: playlist,
-                onProgress: (count, total) => print("$count / $total"),
-              ),
+          onPressed: () {},
+          //onPressed:  () => serviceLocator.get<DownloaderApiProvider>().downloadPlaylist(
+          //    playlist: playlist,
+          //  onProgress: (count, total) => print("$count / $total"),
+          //),
           padding: EdgeInsets.zero,
           splashColor: Theme.of(context).colorScheme.secondary.withOpacity(1),
           splashRadius: AppBarWidget.leadingSize / 2,
