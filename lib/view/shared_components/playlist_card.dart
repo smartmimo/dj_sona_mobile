@@ -24,6 +24,7 @@ class PlaylistCard extends StatelessWidget {
     this.onDelete,
     this.isDisabled = false,
     this.isLoading = false,
+    this.margin = StyleConstants.edgeInsetsH16,
   });
 
   final Playlist playlist;
@@ -31,6 +32,7 @@ class PlaylistCard extends StatelessWidget {
   final VoidCallback onPressed;
   final VoidCallback? onDelete;
   final VoidCallback? onPlay;
+  final EdgeInsets margin;
   final bool isDisabled;
   final bool isLoading;
 
@@ -40,6 +42,7 @@ class PlaylistCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CardLayout(
+      margin: margin,
       padding: EdgeInsets.zero,
       hasBorder: isCurrentlyPlaying,
       content: InkWell(

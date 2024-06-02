@@ -12,6 +12,8 @@ class PopupDialogLayout extends StatelessWidget {
     this.isDismissible = true,
     this.alignment = Alignment.center,
     this.padding = StyleConstants.edgeInsetsH16B24,
+    this.margin = StyleConstants.edgeInsets16,
+    this.headerBodySpacing = 16,
   });
 
   final Widget title;
@@ -19,6 +21,8 @@ class PopupDialogLayout extends StatelessWidget {
   final Alignment alignment;
   final bool isDismissible;
   final EdgeInsets padding;
+  final EdgeInsets margin;
+  final double headerBodySpacing;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +31,7 @@ class PopupDialogLayout extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),
       ),
-      insetPadding: StyleConstants.edgeInsets16,
+      insetPadding: margin,
       elevation: 5,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -39,7 +43,7 @@ class PopupDialogLayout extends StatelessWidget {
           Flexible(
             child: Padding(padding: padding, child: body),
           ),
-        ].withVerticalElementsSpacing(16),
+        ].withVerticalElementsSpacing(headerBodySpacing),
       ),
     );
   }

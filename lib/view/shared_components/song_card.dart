@@ -218,6 +218,9 @@ class SongCard extends StatelessWidget {
                   "Add song to playlist",
                   style: Theme.of(context).textTheme.heading5,
                 ),
+                margin: StyleConstants.edgeInsets8,
+                padding: StyleConstants.edgeInsets8,
+                headerBodySpacing: 0,
                 body: AddSongToPlaylist(
                   songItem: songItem,
                 ),

@@ -7,17 +7,19 @@ class CardLayout extends StatelessWidget {
     super.key,
     required this.content,
     this.padding = StyleConstants.edgeInsets16,
+    this.margin = StyleConstants.edgeInsetsH16,
     this.hasBorder = false,
   });
 
   final Widget content;
   final EdgeInsets padding;
+  final EdgeInsets margin;
   final bool hasBorder;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: StyleConstants.edgeInsetsH16,
+      padding: margin,
       child: Ink(
         padding: padding,
         decoration: BoxDecoration(

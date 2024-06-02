@@ -52,7 +52,7 @@ class AddSongToPlaylist extends StatelessWidget {
         children: [
           Expanded(child: _getPlaylistList(context)),
           _newPlaylistButton(context),
-        ],
+        ].withVerticalElementsSpacing(8),
       );
     }
   }
@@ -60,7 +60,7 @@ class AddSongToPlaylist extends StatelessWidget {
   Widget _getPlaylistList(BuildContext context) {
     final List<Playlist> playlists = _appStateCubit.state.playlists;
     return ListView.builder(
-      padding: StyleConstants.edgeInsetsT16,
+      padding: StyleConstants.edgeInsetsT8,
       itemBuilder: ((context, index) {
         return Padding(
           padding: StyleConstants.edgeInsetsB16,
@@ -76,6 +76,7 @@ class AddSongToPlaylist extends StatelessWidget {
     final songExists = _appStateCubit.isSongInPlaylist(playlistName: playlist.name, item: songItem);
 
     final Widget card = PlaylistCard(
+      margin: EdgeInsets.zero,
       playlist: playlist,
       isCurrentlyPlaying: false,
       onPressed: () => _addSongToPlaylist(context, playlist),
@@ -91,7 +92,7 @@ class AddSongToPlaylist extends StatelessWidget {
             bottom: 4,
             right: 20,
             child: Text(
-              "Song already exists in this playlist",
+              "Song already exists",
               style: textTheme.bodyMBold.copyWith(
                 color: ColorConstants.roofTerracotta,
                 fontStyle: FontStyle.italic,
