@@ -202,7 +202,7 @@ class PlaylistScreenPage extends StatelessWidget {
   Widget _getDownloadButton(BuildContext context, AppState state) {
     final Playlist? playlist = state.getPlaylistByName(playlistName);
     if (playlist == null) return Container();
-    
+
     return DownloadIndicator(playlist: playlist, size: AppBarWidget.leadingSize);
   }
 }
