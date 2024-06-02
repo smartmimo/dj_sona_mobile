@@ -15,7 +15,7 @@ class DownloaderApiProvider {
     return _apiService.dio.getUri(
       Uri.parse(mediaItem.extras.streamUrl),
       options: Options(receiveTimeout: null),
-      onReceiveProgress: onProgress,
+      onReceiveProgress: onProgress, //inBytes
     );
   }
 
@@ -29,16 +29,20 @@ class DownloaderApiProvider {
       playlist.songList.map(YoutubeUtils.getMediaItemFromSongItem),
     );
 
+    // final String generalPath = (await getExternalStorageDirectory())!.path;
+
     final int totalSizeInBytes = mediaItems.map((e) => e.extras.fileSize).reduce((a, b) => a + b);
 
     int totalCount = 0;
+    int offset = 0;
 
     for (final MediaItemWrapper mediaItem in mediaItems) {
       onCurrentDownloadChanged(mediaItem);
+      offset = totalCount;
       await _downloadSong(
         mediaItem: mediaItem,
         onProgress: (currentCount, currentTotal) {
-          totalCount += currentCount;
+          totalCount = offset + currentCount;
           onCurrentProgress(currentCount, currentTotal);
           onTotalProgress(totalCount, totalSizeInBytes);
         },
