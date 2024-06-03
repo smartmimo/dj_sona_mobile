@@ -34,7 +34,6 @@ class DownloaderApiProvider {
       playlist.songList.map(YoutubeUtils.getMediaItemFromSongItem),
     );
 
-    // final String generalPath = (await getApplicationDocumentsDirectory()).path;
 
     final int totalSizeInBytes = mediaItems.map((e) => e.extras.fileSize).reduce((a, b) => a + b);
 

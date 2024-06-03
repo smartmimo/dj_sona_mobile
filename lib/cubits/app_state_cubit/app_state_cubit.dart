@@ -12,10 +12,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
 
 class AppStateCubit extends Cubit<AppState> {
-  AppStateCubit() : super(AppState());
+  final LocalStorageManager _localStorageManager;
+  AppStateCubit(this._localStorageManager) : super(AppState());
 
   void init() async {
-    final List<Playlist> playlistsWithLikedSongs = await LocalStorageManager.listPlaylists();
+    final List<Playlist> playlistsWithLikedSongs = _localStorageManager.listPlaylists();
     emit(state.copyWith(playlistsWithLikedSongs: playlistsWithLikedSongs, playlistLoadingName: () => null));
   }
 
@@ -57,7 +58,7 @@ class AppStateCubit extends Cubit<AppState> {
   }
 
   addItemToPlaylist({required String playlistName, required SongItem item}) {
-    LocalStorageManager.addToPlaylist(playlistName: playlistName, item: item);
+    _localStorageManager.addToPlaylist(playlistName: playlistName, item: item);
     emit(state.copyWith(
       playlistsWithLikedSongs: List<Playlist>.from(
         state.playlistsWithLikedSongs.map((playlist) {
@@ -72,7 +73,7 @@ class AppStateCubit extends Cubit<AppState> {
   }
 
   removeItemFromPlaylist({required String playlistName, required SongItem item}) {
-    LocalStorageManager.removeFromPlaylist(playlistName: playlistName, item: item);
+    _localStorageManager.removeFromPlaylist(playlistName: playlistName, item: item);
     emit(state.copyWith(
       playlistsWithLikedSongs: List<Playlist>.from(
         state.playlistsWithLikedSongs.map((playlist) {
@@ -120,7 +121,7 @@ class AppStateCubit extends Cubit<AppState> {
   Playlist newPlaylist(String playlistName) {
     if (state.getPlaylistByName(playlistName) != null) throw PlaylistExistsError();
 
-    LocalStorageManager.newPlaylist(playlistName);
+    _localStorageManager.newPlaylist(playlistName);
 
     final Playlist addedPlaylist = Playlist(
       name: playlistName,
@@ -142,7 +143,7 @@ class AppStateCubit extends Cubit<AppState> {
   }
 
   deletePlaylist(String playlistName) {
-    LocalStorageManager.deletePlaylist(playlistName);
+    _localStorageManager.deletePlaylist(playlistName);
     emit(state.copyWith(
       playlistsWithLikedSongs: List<Playlist>.from(
         state.playlistsWithLikedSongs..removeWhere((playlist) => playlist.name == playlistName),

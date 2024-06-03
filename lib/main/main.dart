@@ -12,7 +12,7 @@ void main() async {
   PackageInfo packageinfo = await PackageInfo.fromPlatform();
   serviceLocator.registerSingleton<PackageInfo>(packageinfo);
 
-  setupDependencies();
+  await setupDependencies();
 
   final AudioPlayerService audioPlayerService = await AudioService.init(
     builder: () => AudioPlayerService(),

@@ -8,6 +8,7 @@ import 'package:djsona_mobile/services/audio_player_service.dart';
 import 'package:djsona_mobile/services/search_api_provider.dart';
 import 'package:djsona_mobile/services/service_locator.dart';
 import 'package:djsona_mobile/utils/image_utils.dart';
+import 'package:djsona_mobile/utils/local_storage_manager.dart';
 import 'package:djsona_mobile/utils/theme_utils/text_theme_extension.dart';
 import 'package:djsona_mobile/view/home_page/search_appbar.dart';
 import 'package:djsona_mobile/view/shared_components/appbar_widget.dart';
@@ -25,6 +26,7 @@ class HomePage extends StatelessWidget {
       create: (_) => MusicSearchCubit(
         serviceLocator.get<SearchApiProvider>(),
         audioService,
+        serviceLocator.get<LocalStorageManager>(),
       )..init(),
       child: BlocBuilder<MusicSearchCubit, MusicSearchState>(
         builder: _mapStateToWidget,

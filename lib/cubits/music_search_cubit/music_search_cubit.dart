@@ -13,22 +13,22 @@ class MusicSearchCubit extends Cubit<MusicSearchState> {
   MusicSearchCubit(
     this._searchApiProvider,
     this._audioService,
+    this._localStorageManager,
   ) : super(MusicSearchState());
 
   final SearchApiProvider _searchApiProvider;
   final AudioPlayerService _audioService;
+  final LocalStorageManager _localStorageManager;
 
   StreamSubscription<List<SongItem>>? searchStream;
   final Debounce _debounce = Debounce();
 
   void init() {
-    LocalStorageManager.listHistory().then(
-      (value) => emit(
-        state.copyWith(
-          songList: value,
-          isLoading: false,
-          isClearHistoryShown: true,
-        ),
+    emit(
+      state.copyWith(
+        songList: _localStorageManager.listHistory(),
+        isLoading: false,
+        isClearHistoryShown: true,
       ),
     );
   }
@@ -39,7 +39,7 @@ class MusicSearchCubit extends Cubit<MusicSearchState> {
     ));
     try {
       await _audioService.playSong(songItem);
-      LocalStorageManager.addToHistory(songItem);
+      _localStorageManager.addToHistory(songItem);
     } finally {
       emit(state.copyWith(
         songLoadingId: () => null,
@@ -61,6 +61,7 @@ class MusicSearchCubit extends Cubit<MusicSearchState> {
   }
 
   void clearHistory() {
-    LocalStorageManager.clearHistory().then((_) => init());
+    _localStorageManager.clearHistory();
+    init();
   }
 }

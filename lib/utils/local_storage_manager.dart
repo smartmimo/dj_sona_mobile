@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:djsona_mobile/constants/app_constants.dart';
 import 'package:djsona_mobile/types/playlist.dart';
@@ -9,7 +10,16 @@ import 'package:path_provider/path_provider.dart';
 class LocalStorageManager {
   static const int _maxItemsInHistory = 10;
 
-  static _writeFile(String path, Map<String, dynamic> content) {
+  late final Directory _basePath;
+
+  LocalStorageManager._(this._basePath);
+
+  static Future<LocalStorageManager> create() async {
+    Directory basePath = await getApplicationDocumentsDirectory();
+    return LocalStorageManager._(basePath);
+  }
+
+  _writeFile(String path, Map<String, dynamic> content) {
     List<int> compressedData = GZipCodec().encode(
       utf8.encode(
         jsonEncode(content),
@@ -19,7 +29,7 @@ class LocalStorageManager {
     File(path).writeAsBytes(compressedData);
   }
 
-  static Map<String, dynamic> _readFile(String path) {
+  Map<String, dynamic> _readFile(String path) {
     return jsonDecode(
       utf8.decode(
         GZipCodec().decode(File(path).readAsBytesSync()),
@@ -27,12 +37,12 @@ class LocalStorageManager {
     );
   }
 
-  static void _addSongToFolder({
+  void _addSongToFolder({
     required SongItem item,
     required String path,
     int? maxItems,
-  }) async {
-    final Directory dir = Directory("${(await getApplicationDocumentsDirectory()).path}/$path");
+  }) {
+    final Directory dir = Directory("${_basePath.path}/$path");
     if (!dir.existsSync()) dir.createSync();
 
     final List<FileSystemEntity> files = dir.listSync();
@@ -43,20 +53,20 @@ class LocalStorageManager {
     _writeFile("${dir.path}/${item.id}.json", item.toJson());
   }
 
-  static void _removeSongFromFolder({
+  void _removeSongFromFolder({
     required SongItem item,
     required String path,
-  }) async {
-    final Directory dir = Directory("${(await getApplicationDocumentsDirectory()).path}/$path");
+  }) {
+    final Directory dir = Directory("${_basePath.path}/$path");
     File("${dir.path}/${item.id}.json").delete();
   }
 
-  static Future<List<SongItem>> _listSongsFromFolder({
+  List<SongItem> _listSongsFromFolder({
     required String path,
     bool isFullPath = false,
-  }) async {
+  }) {
     final Directory dir = Directory(
-      isFullPath ? path : "${(await getApplicationDocumentsDirectory()).path}/$path",
+      isFullPath ? path : "${_basePath.path}/$path",
     );
     if (!dir.existsSync()) return [];
 
@@ -70,7 +80,7 @@ class LocalStorageManager {
     }).toList();
   }
 
-  static void addToHistory(SongItem item) async {
+  void addToHistory(SongItem item) {
     return _addSongToFolder(
       item: item,
       path: AppConstants.historyFolderName,
@@ -78,17 +88,16 @@ class LocalStorageManager {
     );
   }
 
-  static Future<List<SongItem>> listHistory() async {
+  List<SongItem> listHistory() {
     return _listSongsFromFolder(path: AppConstants.historyFolderName);
   }
 
-  static Future<void> clearHistory() async {
-    final Directory dir =
-        Directory("${(await getApplicationDocumentsDirectory()).path}/${AppConstants.historyFolderName}");
+  void clearHistory() {
+    final Directory dir = Directory("${_basePath.path}/${AppConstants.historyFolderName}");
     if (dir.existsSync()) dir.delete(recursive: true);
   }
 
-  static void addToPlaylist({required String playlistName, required SongItem item}) async {
+  void addToPlaylist({required String playlistName, required SongItem item}) {
     return _addSongToFolder(
       item: item,
       path: "playlists/$playlistName",
@@ -96,28 +105,32 @@ class LocalStorageManager {
     );
   }
 
-  static void removeFromPlaylist({required String playlistName, required SongItem item}) async {
+  void removeFromPlaylist({required String playlistName, required SongItem item}) {
     return _removeSongFromFolder(item: item, path: "playlists/$playlistName");
   }
 
-  static Future<List<SongItem>> getPlaylistSongs({required String playlistName}) async {
+  String _getDownloadDirectory() {
+    return "${_basePath.path}/downloads";
+  }
+
+  List<SongItem> getPlaylistSongs({required String playlistName}) {
     return _listSongsFromFolder(path: "playlists/$playlistName");
   }
 
-  static Future<List<Playlist>> listPlaylists() async {
-    final String rootPath = (await getApplicationDocumentsDirectory()).path;
+  List<Playlist> listPlaylists() {
+    final String rootPath = _basePath.path;
     final Directory playlistsDir = Directory("$rootPath/playlists");
     if (!playlistsDir.existsSync()) playlistsDir.createSync();
 
     final List<FileSystemEntity> playlistFolders = playlistsDir.listSync();
     playlistFolders.sort((a, b) => b.statSync().changed.compareTo(a.statSync().changed));
 
-    return Future.wait<Playlist>(
+    return List<Playlist>.from(
       playlistFolders.map(
-        (folder) async => Playlist(
+        (folder) => Playlist(
           name: folder.path.split("/").last,
           creationDate: folder.statSync().changed,
-          songList: await _listSongsFromFolder(
+          songList: _listSongsFromFolder(
             path: folder.path,
             isFullPath: true,
           ),
@@ -126,8 +139,8 @@ class LocalStorageManager {
     );
   }
 
-  static Future<void> newPlaylist(String playlistName) async {
-    final String rootPath = (await getApplicationDocumentsDirectory()).path;
+  void newPlaylist(String playlistName) {
+    final String rootPath = _basePath.path;
     final Directory playlistsDir = Directory("$rootPath/playlists");
     if (!playlistsDir.existsSync()) playlistsDir.createSync();
 
@@ -137,9 +150,19 @@ class LocalStorageManager {
     return Directory("${playlistsDir.path}/$playlistName").createSync();
   }
 
-  static Future<void> deletePlaylist(String playlistName) async {
-    final String rootPath = (await getApplicationDocumentsDirectory()).path;
+  void deletePlaylist(String playlistName) {
+    final String rootPath = _basePath.path;
     final Directory dir = Directory("$rootPath/playlists/$playlistName");
     if (dir.existsSync()) return dir.deleteSync(recursive: true);
+  }
+
+  void saveSongToDownloads(String songId, Uint8List bytes) {
+    final String downloadsPath = _getDownloadDirectory();
+    File('$downloadsPath/$songId.mp3').writeAsBytes(bytes);
+  }
+
+  bool isSongDownloaded(String songId) {
+    final String downloadsPath = _getDownloadDirectory();
+    return File('$downloadsPath/$songId.mp3').existsSync();
   }
 }
