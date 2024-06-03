@@ -14,7 +14,12 @@ class DownloaderApiProvider {
   }) async {
     return _apiService.dio.getUri(
       Uri.parse(mediaItem.extras.streamUrl),
-      options: Options(receiveTimeout: null),
+      options: Options(
+        receiveTimeout: null,
+        headers: {
+          'Range': 'bytes=0-',
+        },
+      ),
       onReceiveProgress: onProgress, //inBytes
     );
   }
