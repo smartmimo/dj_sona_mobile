@@ -161,4 +161,8 @@ class AppStateCubit extends Cubit<AppState> {
         .firstOrNull;
     return likedSong != null;
   }
+
+  bool isSongIdDownloaded(String songId) {
+    return _localStorageManager.isSongDownloaded(songId);
+  }
 }

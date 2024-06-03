@@ -16,6 +16,12 @@ class LocalStorageManager {
 
   static Future<LocalStorageManager> create() async {
     Directory basePath = await getApplicationDocumentsDirectory();
+
+    final Directory playlistsDir = Directory("${basePath.path}/playlists");
+    final Directory downloadsDir = Directory("${basePath.path}/downloads");
+    if (!playlistsDir.existsSync()) playlistsDir.createSync();
+    if (!downloadsDir.existsSync()) downloadsDir.createSync();
+
     return LocalStorageManager._(basePath);
   }
 
@@ -120,7 +126,6 @@ class LocalStorageManager {
   List<Playlist> listPlaylists() {
     final String rootPath = _basePath.path;
     final Directory playlistsDir = Directory("$rootPath/playlists");
-    if (!playlistsDir.existsSync()) playlistsDir.createSync();
 
     final List<FileSystemEntity> playlistFolders = playlistsDir.listSync();
     playlistFolders.sort((a, b) => b.statSync().changed.compareTo(a.statSync().changed));
@@ -142,7 +147,6 @@ class LocalStorageManager {
   void newPlaylist(String playlistName) {
     final String rootPath = _basePath.path;
     final Directory playlistsDir = Directory("$rootPath/playlists");
-    if (!playlistsDir.existsSync()) playlistsDir.createSync();
 
     final List<FileSystemEntity> playlistFolders = playlistsDir.listSync();
     playlistFolders.sort((a, b) => b.statSync().changed.compareTo(a.statSync().changed));

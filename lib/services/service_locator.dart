@@ -27,6 +27,9 @@ Future<void> setupDependencies() async {
     SearchApiProvider(serviceLocator.get<ApiService>()),
   );
   serviceLocator.registerSingleton<DownloaderApiProvider>(
-    DownloaderApiProvider(serviceLocator.get<ApiService>()),
+    DownloaderApiProvider(
+      serviceLocator.get<ApiService>(),
+      serviceLocator.get<LocalStorageManager>(),
+    ),
   );
 }

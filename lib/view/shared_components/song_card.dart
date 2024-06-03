@@ -105,13 +105,7 @@ class SongCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: LoadingWidget(),
-                      )
-                    : Container(),
+                _getSongSticker(context),
                 _getSongActions(context),
               ],
             ),
@@ -189,6 +183,28 @@ class SongCard extends StatelessWidget {
         ),
       ].withHorizontalElementsSpacing(4),
     );
+  }
+
+  Widget _getSongSticker(BuildContext context) {
+    if (isLoading) {
+      return const SizedBox(
+        height: 20,
+        width: 20,
+        child: LoadingWidget(),
+      );
+    } else if (_appStateCubit.isSongIdDownloaded(songItem.id)) {
+      return const SizedBox(
+        height: 20,
+        width: 20,
+        child: Icon(
+          IconConstants.download,
+          color: ColorConstants.greenSuccess,
+          size: 16,
+        ),
+      );
+    } else {
+      return Container();
+    }
   }
 
   Widget _getSongActions(BuildContext context) {

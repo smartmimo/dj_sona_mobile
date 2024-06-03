@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:djsona_mobile/types/media_item_extras.dart';
 import 'package:djsona_mobile/types/media_item_wrapper.dart';
+import 'package:djsona_mobile/utils/local_storage_manager.dart';
 import 'package:djsona_mobile/utils/string_utils.dart';
 
 class SongItem {
@@ -28,7 +29,7 @@ class SongItem {
     }));
   }
 
-  SongItem({
+  const SongItem({
     required this.id,
     required this.title,
     required this.durationString,
@@ -80,5 +81,9 @@ class SongItem {
       artUri: thumbnailUrl != null ? Uri.parse(thumbnailUrl!) : null,
       extras: extras.copyWith(publishedTimeString: publishedTimeString, viewsString: viewsString),
     );
+  }
+
+  bool isDownloaded(LocalStorageManager localStorageManager) {
+    return localStorageManager.isSongDownloaded(id);
   }
 }
