@@ -32,7 +32,7 @@ class LocalStorageManager {
     required String path,
     int? maxItems,
   }) async {
-    final Directory dir = Directory("${(await getExternalStorageDirectory())!.path}/$path");
+    final Directory dir = Directory("${(await getApplicationDocumentsDirectory()).path}/$path");
     if (!dir.existsSync()) dir.createSync();
 
     final List<FileSystemEntity> files = dir.listSync();
@@ -47,7 +47,7 @@ class LocalStorageManager {
     required SongItem item,
     required String path,
   }) async {
-    final Directory dir = Directory("${(await getExternalStorageDirectory())!.path}/$path");
+    final Directory dir = Directory("${(await getApplicationDocumentsDirectory()).path}/$path");
     File("${dir.path}/${item.id}.json").delete();
   }
 
@@ -56,7 +56,7 @@ class LocalStorageManager {
     bool isFullPath = false,
   }) async {
     final Directory dir = Directory(
-      isFullPath ? path : "${(await getExternalStorageDirectory())!.path}/$path",
+      isFullPath ? path : "${(await getApplicationDocumentsDirectory()).path}/$path",
     );
     if (!dir.existsSync()) return [];
 
@@ -83,7 +83,8 @@ class LocalStorageManager {
   }
 
   static Future<void> clearHistory() async {
-    final Directory dir = Directory("${(await getExternalStorageDirectory())!.path}/${AppConstants.historyFolderName}");
+    final Directory dir =
+        Directory("${(await getApplicationDocumentsDirectory()).path}/${AppConstants.historyFolderName}");
     if (dir.existsSync()) dir.delete(recursive: true);
   }
 
@@ -104,7 +105,7 @@ class LocalStorageManager {
   }
 
   static Future<List<Playlist>> listPlaylists() async {
-    final String rootPath = (await getExternalStorageDirectory())!.path;
+    final String rootPath = (await getApplicationDocumentsDirectory()).path;
     final Directory playlistsDir = Directory("$rootPath/playlists");
     if (!playlistsDir.existsSync()) playlistsDir.createSync();
 
@@ -126,7 +127,7 @@ class LocalStorageManager {
   }
 
   static Future<void> newPlaylist(String playlistName) async {
-    final String rootPath = (await getExternalStorageDirectory())!.path;
+    final String rootPath = (await getApplicationDocumentsDirectory()).path;
     final Directory playlistsDir = Directory("$rootPath/playlists");
     if (!playlistsDir.existsSync()) playlistsDir.createSync();
 
@@ -137,7 +138,7 @@ class LocalStorageManager {
   }
 
   static Future<void> deletePlaylist(String playlistName) async {
-    final String rootPath = (await getExternalStorageDirectory())!.path;
+    final String rootPath = (await getApplicationDocumentsDirectory()).path;
     final Directory dir = Directory("$rootPath/playlists/$playlistName");
     if (dir.existsSync()) return dir.deleteSync(recursive: true);
   }
