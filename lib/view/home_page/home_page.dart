@@ -9,6 +9,7 @@ import 'package:djsona_mobile/services/search_api_provider.dart';
 import 'package:djsona_mobile/services/service_locator.dart';
 import 'package:djsona_mobile/utils/image_utils.dart';
 import 'package:djsona_mobile/utils/local_storage_manager.dart';
+import 'package:djsona_mobile/utils/string_utils.dart';
 import 'package:djsona_mobile/utils/theme_utils/text_theme_extension.dart';
 import 'package:djsona_mobile/view/home_page/search_appbar.dart';
 import 'package:djsona_mobile/view/shared_components/appbar_widget.dart';
@@ -57,7 +58,40 @@ class HomePage extends StatelessWidget {
         ),
         child: Material(
           type: MaterialType.transparency,
-          child: _getSongList(context, state),
+          child: Column(
+            children: [
+              Padding(
+                padding: StyleConstants.edgeInsetsH16T16,
+                child: _getSearchString(context, state),
+              ),
+              Expanded(child: _getSongList(context, state)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _getSearchString(BuildContext context, MusicSearchState state) {
+    final TextTheme textTheme = Theme.of(context).textTheme;
+
+    if (StringUtils.isEmpty(state.searchString)) {
+      return Container();
+    }
+
+    return Flexible(
+      child: RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: "Search results for: ",
+              style: textTheme.bodyXL.copyWith(color: ColorConstants.blackish),
+            ),
+            TextSpan(
+              text: state.searchString,
+              style: textTheme.bodyXLBold.copyWith(color: ColorConstants.blackish, fontStyle: FontStyle.italic),
+            ),
+          ],
         ),
       ),
     );

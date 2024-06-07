@@ -29,6 +29,7 @@ class MusicSearchCubit extends Cubit<MusicSearchState> {
         songList: _localStorageManager.listHistory(),
         isLoading: false,
         isClearHistoryShown: true,
+        searchString: "",
       ),
     );
   }
@@ -55,7 +56,11 @@ class MusicSearchCubit extends Cubit<MusicSearchState> {
     emit(state.copyWith(isLoading: true, isClearHistoryShown: false));
     searchStream = _debounce(
       () => _searchApiProvider.searchByText(text!).asStream().listen((songList) {
-        emit(state.copyWith(songList: songList, isLoading: false));
+        emit(state.copyWith(
+          songList: songList,
+          isLoading: false,
+          searchString: text,
+        ));
       }),
     );
   }
