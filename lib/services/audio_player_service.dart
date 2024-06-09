@@ -118,7 +118,7 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
 
     List<MediaItemWrapper> mediaItemList = await Future.wait<MediaItemWrapper>(
       songItems.getRange(2, songItems.length).map(
-            (songItem) => YoutubeUtils.getMediaItemFromSongItem(
+            (songItem) => _getMediaItemFromSongItem(
               songItem,
               originalIndex: items.indexWhere((e) => songItem.id == e.id),
               shuffledIndex: shuffledItems.indexWhere((e) => songItem.id == e.id),
