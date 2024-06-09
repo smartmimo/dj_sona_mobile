@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:djsona_mobile/constants/color_constants.dart';
 import 'package:djsona_mobile/constants/icon_constants.dart';
 import 'package:djsona_mobile/constants/style_constants.dart';
 import 'package:djsona_mobile/view/shared_components/loading_widget.dart';
@@ -10,11 +14,15 @@ class NetworkImg extends StatelessWidget {
     this.height,
     this.width,
     this.fit = BoxFit.cover,
+    this.defaultImageIconSize = 30,
+    this.defaultImageIconColor = ColorConstants.blackish,
   }) : super(key: key);
   final String? _imageUrl;
   final BoxFit fit;
   final double? height;
   final double? width;
+  final double defaultImageIconSize;
+  final Color defaultImageIconColor;
 
   static const double _loadingWidgetSize = 20;
 
@@ -24,25 +32,31 @@ class NetworkImg extends StatelessWidget {
   }
 
   Widget _getDecorationImage(String imageUrl) {
-    return Image.network(
-      imageUrl,
+    if (imageUrl.startsWith("file://")) {
+      return Image.file(
+        File(imageUrl.replaceAll("file://", "")),
+        fit: fit,
+        width: width,
+        height: height,
+      );
+    }
+    return CachedNetworkImage(
+      imageUrl: imageUrl,
       fit: fit,
       width: width,
       height: height,
-      errorBuilder: (context, error, stackTrace) => _getDefaultImage(context),
-      loadingBuilder: (context, child, chunkEvent) =>
-          chunkEvent?.cumulativeBytesLoaded == chunkEvent?.expectedTotalBytes
-              ? child
-              : SizedBox(
-                  width: width,
-                  height: height,
-                  child: Container(
-                    alignment: Alignment.center,
-                    width: _loadingWidgetSize,
-                    height: _loadingWidgetSize,
-                    child: const LoadingWidget(),
-                  ),
-                ),
+      errorWidget: (context, url, error) => _getDefaultImage(context),
+      errorListener: (value) => {}, //prevent throw
+      progressIndicatorBuilder: (context, _, __) => SizedBox(
+        width: width,
+        height: height,
+        child: Container(
+          alignment: Alignment.center,
+          width: _loadingWidgetSize,
+          height: _loadingWidgetSize,
+          child: const LoadingWidget(),
+        ),
+      ),
     );
   }
 
@@ -53,7 +67,11 @@ class NetworkImg extends StatelessWidget {
       color: Theme.of(context).colorScheme.secondary,
       child: ClipRRect(
         borderRadius: StyleConstants.radius100,
-        child: const Icon(IconConstants.images, size: 30),
+        child: Icon(
+          IconConstants.images,
+          size: defaultImageIconSize,
+          color: defaultImageIconColor,
+        ),
       ),
     );
   }

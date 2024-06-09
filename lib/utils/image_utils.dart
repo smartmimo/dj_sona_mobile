@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/services.dart';
@@ -6,7 +7,15 @@ import 'package:palette_generator/palette_generator.dart';
 
 class ImageUtils {
   static Future<PaletteGenerator> getDominantColorsFromImageUrl(String imageUrl) async {
-    Uint8List bytes = (await NetworkAssetBundle(Uri.parse(imageUrl)).load(imageUrl)).buffer.asUint8List();
+    
+    late final Uint8List bytes;
+
+    if (imageUrl.startsWith("file://")) {
+      bytes = File(imageUrl.replaceAll("file://", "")).readAsBytesSync();
+    } else {
+      bytes = (await NetworkAssetBundle(Uri.parse(imageUrl)).load(imageUrl)).buffer.asUint8List();
+    }
+
     final Completer<Image> completer = Completer();
     decodeImageFromList(bytes, (Image img) {
       completer.complete(img);

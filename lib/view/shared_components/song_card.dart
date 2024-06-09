@@ -34,19 +34,24 @@ class SongCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CardLayout(
-      padding: EdgeInsets.zero,
-      hasBorder: isCurrentlyPlaying,
-      content: InkWell(
-        borderRadius: StyleConstants.radius8,
-        onTap: onPressed,
-        child: Row(
-          children: [
-            _getThumbnailSection(context),
-            _getSongData(context),
-          ],
-        ),
-      ),
+    return BlocBuilder<AppStateCubit, AppState>(
+      bloc: _appStateCubit,
+      builder: (context, state) {
+        return CardLayout(
+          padding: EdgeInsets.zero,
+          hasBorder: isCurrentlyPlaying,
+          content: InkWell(
+            borderRadius: StyleConstants.radius8,
+            onTap: _appStateCubit.isSongIdPlayable(songItem.id) ? onPressed : null,
+            child: Row(
+              children: [
+                _getThumbnailSection(context),
+                _getSongData(context, state),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -88,12 +93,22 @@ class SongCard extends StatelessWidget {
     );
   }
 
-  Widget _getSongData(BuildContext context) {
+  Widget _getSongData(BuildContext context, AppState state) {
     final TextTheme textTheme = Theme.of(context).textTheme;
-
+    late final Color? color;
+    if (isCurrentlyPlaying) {
+      color = Theme.of(context).colorScheme.primary.withOpacity(0.2);
+    } else if (!_appStateCubit.isSongIdPlayable(songItem.id)) {
+      color = ColorConstants.lightestGrey;
+    } else {
+      color = null;
+    }
     return Expanded(
       child: Container(
-        color: isCurrentlyPlaying ? Theme.of(context).colorScheme.primary.withOpacity(0.2) : null,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: StyleConstants.radiusTrBr8,
+        ),
         padding: StyleConstants.edgeInsets8,
         height: 100,
         child: Column(
@@ -212,7 +227,7 @@ class SongCard extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         _getAddToPlaylistAction(context),
-        _getLikeSongAction(),
+        _getLikeSongAction(context),
       ].withHorizontalElementsSpacing(8),
     );
   }
@@ -248,19 +263,14 @@ class SongCard extends StatelessWidget {
     );
   }
 
-  BlocBuilder<AppStateCubit, AppState> _getLikeSongAction() {
-    return BlocBuilder<AppStateCubit, AppState>(
-      bloc: _appStateCubit,
-      builder: (context, state) {
-        final bool isSongLiked = _appStateCubit.isSongLiked(songItem);
+  Widget _getLikeSongAction(BuildContext context) {
+    final bool isSongLiked = _appStateCubit.isSongLiked(songItem);
 
-        return _getActionIcon(
-          context,
-          iconData: isSongLiked ? IconConstants.heartFilled : IconConstants.heart,
-          iconColor: isSongLiked ? ColorConstants.errorRed : null,
-          onPressed: () => _appStateCubit.toggleSongLike(songItem),
-        );
-      },
+    return _getActionIcon(
+      context,
+      iconData: isSongLiked ? IconConstants.heartFilled : IconConstants.heart,
+      iconColor: isSongLiked ? ColorConstants.errorRed : null,
+      onPressed: () => _appStateCubit.toggleSongLike(songItem),
     );
   }
 

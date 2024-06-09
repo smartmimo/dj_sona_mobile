@@ -56,7 +56,7 @@ class AppStateCubit extends Cubit<AppState> {
     emit(state.copyWith(playlistLoadingName: () => playlistName));
     try {
       await audioService.playPlaylist(
-        items: playlist.songList,
+        playlistItems: playlist.songList,
         playlistName: playlistName,
         startAt: startAt,
       );
@@ -168,6 +168,10 @@ class AppStateCubit extends Cubit<AppState> {
         .where((song) => song.id == item.id)
         .firstOrNull;
     return likedSong != null;
+  }
+
+  bool isSongIdPlayable(String songId) {
+    return state.connectivityResult != ConnectivityResult.none || _localStorageManager.isSongDownloaded(songId);
   }
 
   bool isSongIdDownloaded(String songId) {

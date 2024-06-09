@@ -79,24 +79,32 @@ class PlaylistCard extends StatelessWidget {
     late final List<Widget> imageWidgets;
     if (images.length == 2) {
       imageWidgets = [
-        NetworkImg(images[0]),
+        _getNetworkImage(context, images[0]),
         _getDefaultThumbnail(context, size: _miniDefaultThumbnailSize),
         _getDefaultThumbnail(context, size: _miniDefaultThumbnailSize),
-        NetworkImg(images[1]),
+        _getNetworkImage(context, images[1]),
       ];
     } else if (images.length == 3) {
-      imageWidgets = List<Widget>.from(images.map((e) => NetworkImg(e)))
+      imageWidgets = List<Widget>.from(images.map((imageUrl) => _getNetworkImage(context, imageUrl)))
         ..add(
           _getDefaultThumbnail(context, size: _miniDefaultThumbnailSize),
         );
     } else {
-      imageWidgets = List<Widget>.from(images.map((e) => NetworkImg(e)));
+      imageWidgets = List<Widget>.from(images.map((imageUrl) => _getNetworkImage(context, imageUrl)));
     }
     return GridView.count(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       crossAxisCount: min(images.length, 2),
       children: imageWidgets,
+    );
+  }
+
+  Widget _getNetworkImage(BuildContext context, String url) {
+    return NetworkImg(
+      url,
+      defaultImageIconColor: Theme.of(context).colorScheme.primary,
+      defaultImageIconSize: _miniDefaultThumbnailSize,
     );
   }
 

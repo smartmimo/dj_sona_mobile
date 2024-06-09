@@ -1,4 +1,5 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:djsona_mobile/cubits/app_state_cubit/app_state_cubit.dart';
 import 'package:djsona_mobile/services/search_api_provider.dart';
 import 'package:djsona_mobile/services/service_locator.dart';
@@ -23,7 +24,10 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
     mediaItem.listen((value) {
       if (value == null) return;
 
-      if (queue.value.isEmpty || queue.value.indexOf(value) == queue.value.length - 1) {
+      final bool mustAutoPlay = queue.value.isEmpty || queue.value.indexOf(value) == queue.value.length - 1;
+      final bool canAutoPlay = _appStateCubit.state.connectivityResult != ConnectivityResult.none;
+
+      if (mustAutoPlay && canAutoPlay) {
         autoPlayFromCurrentItem(value);
       }
     });
@@ -68,31 +72,37 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
   }
 
   Future<void> playPlaylist({
-    required List<SongItem> items,
+    required List<SongItem> playlistItems,
     required String playlistName,
     int? startAt,
   }) async {
-    if (items.isEmpty) return;
+    final playableItems = List<SongItem>.from(
+      playlistItems.where((song) => _appStateCubit.isSongIdPlayable(song.id)),
+    );
+    if (playableItems.isEmpty) return;
 
-    final List<SongItem> shuffledItems = List<SongItem>.from(items)..shuffle();
+    final List<SongItem> shuffledItems = List<SongItem>.from(playableItems)..shuffle();
     late final List<SongItem> songItems;
     clearQueue();
 
     if (audioPlayer.shuffleModeEnabled) {
       songItems = shuffledItems;
     } else {
-      songItems = List<SongItem>.from(items);
+      songItems = List<SongItem>.from(playableItems);
     }
 
     if (startAt != null) {
-      var tmp = songItems[0];
-      songItems[0] = songItems[startAt];
-      songItems[startAt] = tmp;
+      final int startAtFromPlayableItems = playableItems.indexWhere((song) => song.id == playlistItems[startAt].id);
+      if (startAtFromPlayableItems != -1) {
+        var tmp = songItems[0];
+        songItems[0] = songItems[startAtFromPlayableItems];
+        songItems[startAtFromPlayableItems] = tmp;
+      }
     }
 
     final MediaItemWrapper firstMediaItem = await _getMediaItemFromSongItem(
       songItems[0],
-      originalIndex: items.indexWhere((e) => e.id == songItems[0].id),
+      originalIndex: playableItems.indexWhere((e) => e.id == songItems[0].id),
       shuffledIndex: shuffledItems.indexWhere((e) => e.id == songItems[0].id),
     );
     queueTitle.value = playlistName;
@@ -107,7 +117,7 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
 
     final MediaItemWrapper secondMediaItem = await _getMediaItemFromSongItem(
       songItems[1],
-      originalIndex: items.indexWhere((e) => e.id == songItems[1].id),
+      originalIndex: playableItems.indexWhere((e) => e.id == songItems[1].id),
       shuffledIndex: shuffledItems.indexWhere((e) => e.id == songItems[1].id),
     );
     addQueueItem(secondMediaItem.toMediaItem().copyWith(artist: playlistName));
@@ -120,7 +130,7 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
       songItems.getRange(2, songItems.length).map(
             (songItem) => _getMediaItemFromSongItem(
               songItem,
-              originalIndex: items.indexWhere((e) => songItem.id == e.id),
+              originalIndex: playableItems.indexWhere((e) => songItem.id == e.id),
               shuffledIndex: shuffledItems.indexWhere((e) => songItem.id == e.id),
             ),
           ),
@@ -197,9 +207,21 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
     return audioPlayer.setLoopMode(repeatMode == AudioServiceRepeatMode.none ? LoopMode.off : LoopMode.all);
   }
 
-  void broadcastMediaItem(MediaItem item) {
-    if (StringUtils.isNotEmpty(item.artUri?.toString())) {
-      ImageUtils.getDominantColorsFromImageUrl(item.artUri!.toString()).then((value) {
+  void broadcastMediaItem(MediaItem item) async {
+    final String? cachedThumbnail = await _localStorageManager.getCachedImagePath(item.artUri.toString());
+    late final Uri? thumbToProcess;
+
+    if (cachedThumbnail != null) {
+      item = item.copyWith(artUri: Uri.file(cachedThumbnail));
+      thumbToProcess = Uri.file(cachedThumbnail);
+    } else if (_appStateCubit.state.connectivityResult != ConnectivityResult.none) {
+      thumbToProcess = item.artUri;
+    } else {
+      thumbToProcess = null;
+    }
+
+    if (thumbToProcess != null) {
+      ImageUtils.getDominantColorsFromImageUrl(thumbToProcess.toString()).then((value) {
         _appStateCubit.updateColors(
           primary: value.darkVibrantColor?.color ??
               ImageUtils.darkenColor(
@@ -211,9 +233,9 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
               ),
         );
       });
-
-      mediaItem.add(item);
     }
+
+    mediaItem.add(item);
   }
 
   @override

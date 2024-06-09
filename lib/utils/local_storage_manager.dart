@@ -6,7 +6,7 @@ import 'package:djsona_mobile/constants/app_constants.dart';
 import 'package:djsona_mobile/types/playlist.dart';
 import 'package:djsona_mobile/types/song_item.dart';
 import 'package:path_provider/path_provider.dart';
-
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 class LocalStorageManager {
   static const int _maxItemsInHistory = 10;
 
@@ -23,6 +23,15 @@ class LocalStorageManager {
     if (!downloadsDir.existsSync()) downloadsDir.createSync();
 
     return LocalStorageManager._(basePath);
+  }
+
+  Future<String?> getCachedImagePath(String url) async {
+    try {
+      final file = await DefaultCacheManager().getSingleFile(url);
+      return file.path;
+    } catch (e) {
+      return null;
+    }
   }
 
   _writeFile(String path, Map<String, dynamic> content) {

@@ -198,6 +198,6 @@ class TxtFormField extends StatelessWidget {
   }
 
   Color _getBackgroundColor(BuildContext context) {
-    return isFilled && readOnly ? ColorConstants.grey.withOpacity(0.2) : ColorConstants.white;
+    return isFilled && readOnly ? ColorConstants.lightestGrey : ColorConstants.white;
   }
 }
