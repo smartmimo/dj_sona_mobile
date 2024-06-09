@@ -79,8 +79,7 @@ class HomePage extends StatelessWidget {
       return Container();
     }
 
-    return Flexible(
-      child: RichText(
+    return RichText(
         text: TextSpan(
           children: [
             TextSpan(
@@ -92,7 +91,6 @@ class HomePage extends StatelessWidget {
               style: textTheme.bodyXLBold.copyWith(color: ColorConstants.blackish, fontStyle: FontStyle.italic),
             ),
           ],
-        ),
       ),
     );
   }

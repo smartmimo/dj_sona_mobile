@@ -15,7 +15,7 @@ class LocalStorageManager {
   LocalStorageManager._(this._basePath);
 
   static Future<LocalStorageManager> create() async {
-    Directory basePath = await getApplicationDocumentsDirectory();
+    Directory basePath = Platform.isIOS ? await getLibraryDirectory() : await getApplicationDocumentsDirectory();
 
     final Directory playlistsDir = Directory("${basePath.path}/playlists");
     final Directory downloadsDir = Directory("${basePath.path}/downloads");
