@@ -16,8 +16,8 @@ class AppStateCubit extends Cubit<AppState> {
   AppStateCubit(this._localStorageManager) : super(AppState());
 
   void init() async {
-    final List<Playlist> playlistsWithLikedSongs = _localStorageManager.listPlaylists();
-    emit(state.copyWith(playlistsWithLikedSongs: playlistsWithLikedSongs, playlistLoadingName: () => null));
+    final List<Playlist> playlistsAndLikedSongs = _localStorageManager.listPlaylists();
+    emit(state.copyWith(playlistsAndLikedSongs: playlistsAndLikedSongs, playlistLoadingName: () => null));
   }
 
   void handleNetworkError(DioException error) {
@@ -60,8 +60,8 @@ class AppStateCubit extends Cubit<AppState> {
   addItemToPlaylist({required String playlistName, required SongItem item}) {
     _localStorageManager.addToPlaylist(playlistName: playlistName, item: item);
     emit(state.copyWith(
-      playlistsWithLikedSongs: List<Playlist>.from(
-        state.playlistsWithLikedSongs.map((playlist) {
+      playlistsAndLikedSongs: List<Playlist>.from(
+        state.playlistsAndLikedSongs.map((playlist) {
           if (playlist.name == playlistName) {
             return playlist.copyWith(songList: List<SongItem>.from([item, ...playlist.songList]));
           } else {
@@ -75,8 +75,8 @@ class AppStateCubit extends Cubit<AppState> {
   removeItemFromPlaylist({required String playlistName, required SongItem item}) {
     _localStorageManager.removeFromPlaylist(playlistName: playlistName, item: item);
     emit(state.copyWith(
-      playlistsWithLikedSongs: List<Playlist>.from(
-        state.playlistsWithLikedSongs.map((playlist) {
+      playlistsAndLikedSongs: List<Playlist>.from(
+        state.playlistsAndLikedSongs.map((playlist) {
           if (playlist.name == playlistName) {
             return playlist.copyWith(
               songList: List<SongItem>.from(playlist.songList)..removeWhere((song) => song.id == item.id),
@@ -131,10 +131,10 @@ class AppStateCubit extends Cubit<AppState> {
 
     emit(
       state.copyWith(
-        playlistsWithLikedSongs: List<Playlist>.from(
+        playlistsAndLikedSongs: List<Playlist>.from(
           [
             addedPlaylist,
-            ...state.playlistsWithLikedSongs,
+            ...state.playlistsAndLikedSongs,
           ],
         ),
       ),
@@ -145,8 +145,8 @@ class AppStateCubit extends Cubit<AppState> {
   deletePlaylist(String playlistName) {
     _localStorageManager.deletePlaylist(playlistName);
     emit(state.copyWith(
-      playlistsWithLikedSongs: List<Playlist>.from(
-        state.playlistsWithLikedSongs..removeWhere((playlist) => playlist.name == playlistName),
+      playlistsAndLikedSongs: List<Playlist>.from(
+        state.playlistsAndLikedSongs..removeWhere((playlist) => playlist.name == playlistName),
       ),
     ));
   }

@@ -10,36 +10,36 @@ class AppState {
   final RequestErrorObject? error;
   final Color primaryColor;
   final Color secondaryColor;
-  final List<Playlist> playlistsWithLikedSongs;
+  final List<Playlist> playlistsAndLikedSongs;
   final String? playlistLoadingName;
   AppState({
     this.error,
     this.primaryColor = ColorConstants.primary,
     this.secondaryColor = ColorConstants.secondary,
-    this.playlistsWithLikedSongs = const [],
+    this.playlistsAndLikedSongs = const [],
     this.playlistLoadingName,
   });
 
   List<Playlist> get playlists => List<Playlist>.from(
-        playlistsWithLikedSongs.where((playlist) => playlist.name != AppConstants.likedSongsPlaylistName),
+        playlistsAndLikedSongs.where((playlist) => playlist.name != AppConstants.likedSongsPlaylistName),
       );
 
   Playlist? getPlaylistByName(String name) {
-    return playlistsWithLikedSongs.where((element) => element.name == name).firstOrNull;
+    return playlistsAndLikedSongs.where((element) => element.name == name).firstOrNull;
   }
 
   AppState copyWith({
     ValueGetter<RequestErrorObject?>? error,
     Color? primaryColor,
     Color? secondaryColor,
-    List<Playlist>? playlistsWithLikedSongs,
+    List<Playlist>? playlistsAndLikedSongs,
     ValueGetter<String?>? playlistLoadingName,
   }) {
     return AppState(
       error: error != null ? error() : this.error,
       primaryColor: primaryColor ?? this.primaryColor,
       secondaryColor: secondaryColor ?? this.secondaryColor,
-      playlistsWithLikedSongs: playlistsWithLikedSongs ?? this.playlistsWithLikedSongs,
+      playlistsAndLikedSongs: playlistsAndLikedSongs ?? this.playlistsAndLikedSongs,
       playlistLoadingName: playlistLoadingName != null ? playlistLoadingName() : this.playlistLoadingName,
     );
   }
