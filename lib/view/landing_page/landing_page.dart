@@ -1,8 +1,13 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:djsona_mobile/constants/icon_constants.dart';
 import 'package:djsona_mobile/constants/style_constants.dart';
+import 'package:djsona_mobile/cubits/app_state_cubit/app_state.dart';
+import 'package:djsona_mobile/cubits/app_state_cubit/app_state_cubit.dart';
 import 'package:djsona_mobile/services/audio_player_service.dart';
 import 'package:djsona_mobile/services/service_locator.dart';
 import 'package:djsona_mobile/utils/image_utils.dart';
 import 'package:djsona_mobile/utils/string_utils.dart';
+import 'package:djsona_mobile/utils/theme_utils/elements_spacing_extension.dart';
 import 'package:djsona_mobile/utils/theme_utils/text_theme_extension.dart';
 import 'package:djsona_mobile/view/landing_page/audio_player_opener.dart';
 import 'package:flutter/material.dart';
@@ -11,12 +16,14 @@ import 'package:auto_route/auto_route.dart';
 import 'package:djsona_mobile/constants/color_constants.dart';
 import 'package:djsona_mobile/view/landing_page/menu_items_manager.dart';
 import 'package:djsona_mobile/view/shared_components/system_overlay_style.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LandingPage extends StatelessWidget {
   LandingPage({super.key});
   static const double bottomBarHeight = 60;
 
   final AudioPlayerService _audioPlayerService = serviceLocator.get<AudioPlayerService>();
+  final AppStateCubit _appStateCubit = serviceLocator.get<AppStateCubit>();
 
   @override
   Widget build(context) {
@@ -43,6 +50,11 @@ class LandingPage extends StatelessWidget {
                         bottom: 4,
                         left: 4,
                         child: _getCurrentPlaylistSticker(context),
+                      ),
+                      Positioned(
+                        bottom: 4,
+                        right: 4,
+                        child: _getCurrentConnectivity(context),
                       ),
                     ],
                   ),
@@ -145,6 +157,40 @@ class LandingPage extends StatelessWidget {
             ),
         textAlign: TextAlign.center,
       ),
+    );
+  }
+  
+  Widget _getCurrentConnectivity(BuildContext context) {
+    return BlocBuilder<AppStateCubit, AppState>(
+      bloc: _appStateCubit,
+      builder: (context, state) {
+        if (state.connectivityResult == ConnectivityResult.none) {
+          return Container(
+            height: 20,
+            decoration: BoxDecoration(
+              borderRadius: StyleConstants.radius4,
+              color: ColorConstants.roofTerracotta,
+              boxShadow: StyleConstants.standardShadow,
+            ),
+            padding: StyleConstants.edgeInsetsH8V4,
+            child: Row(
+              children: [
+                const Icon(IconConstants.noNetwork, color: ColorConstants.white, size: 12),
+                Text(
+                  "Offline mode",
+                  style: Theme.of(context).textTheme.bodyS.copyWith(
+                        color: ColorConstants.white,
+                        letterSpacing: 0.3,
+                      ),
+                  textAlign: TextAlign.center,
+                ),
+              ].withHorizontalElementsSpacing(4),
+            ),
+          );
+        } else {
+          return Container();
+        }
+      },
     );
   }
 }

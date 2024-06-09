@@ -90,4 +90,5 @@ class IconConstants {
   static const IconData customHeart = IconData(0xEA3E, fontFamily: "icons-bs");
   static const IconData customHeartFilled = IconData(0xEA3F, fontFamily: "icons-bs");
   static const IconData addToPlaylist = IconData(0xEA40, fontFamily: "icons-bs");
+  static const IconData noNetwork = IconData(0xEA19, fontFamily: "icons-bs");
 }

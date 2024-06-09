@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:djsona_mobile/constants/app_constants.dart';
 import 'package:djsona_mobile/cubits/app_state_cubit/app_state.dart';
 import 'package:djsona_mobile/cubits/app_state_cubit/error_types/playlist_exists_error.dart';
@@ -13,7 +14,14 @@ import 'package:dio/dio.dart';
 
 class AppStateCubit extends Cubit<AppState> {
   final LocalStorageManager _localStorageManager;
-  AppStateCubit(this._localStorageManager) : super(AppState());
+  AppStateCubit(
+    this._localStorageManager,
+    ConnectivityResult connectivity,
+  ) : super(AppState(connectivityResult: connectivity)) {
+    Connectivity().onConnectivityChanged.listen((event) {
+      updateConnectivityResult(event);
+    });
+  }
 
   void init() async {
     final List<Playlist> playlistsAndLikedSongs = _localStorageManager.listPlaylists();
@@ -164,5 +172,9 @@ class AppStateCubit extends Cubit<AppState> {
 
   bool isSongIdDownloaded(String songId) {
     return _localStorageManager.isSongDownloaded(songId);
+  }
+
+  void updateConnectivityResult(ConnectivityResult value) {
+    emit(state.copyWith(connectivityResult: value));
   }
 }

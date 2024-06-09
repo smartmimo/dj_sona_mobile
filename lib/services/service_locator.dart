@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:djsona_mobile/services/downloader_api_provider.dart';
 import 'package:djsona_mobile/services/search_api_provider.dart';
 import 'package:djsona_mobile/utils/local_storage_manager.dart';
@@ -18,7 +19,12 @@ Future<void> setupDependencies() async {
   );
 
   serviceLocator.registerSingleton<ApiService>(ApiService()..init());
-  serviceLocator.registerSingleton<AppStateCubit>(AppStateCubit(serviceLocator.get<LocalStorageManager>())..init());
+  serviceLocator.registerSingleton<AppStateCubit>(
+    AppStateCubit(
+      serviceLocator.get<LocalStorageManager>(),
+      await Connectivity().checkConnectivity(),
+    )..init(),
+  );
 
   /**
    * PROVIDERS
