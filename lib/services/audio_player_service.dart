@@ -6,6 +6,7 @@ import 'package:djsona_mobile/types/media_item_extras.dart';
 import 'package:djsona_mobile/types/media_item_wrapper.dart';
 import 'package:djsona_mobile/types/song_item.dart';
 import 'package:djsona_mobile/utils/image_utils.dart';
+import 'package:djsona_mobile/utils/local_storage_manager.dart';
 import 'package:djsona_mobile/utils/string_utils.dart';
 import 'package:djsona_mobile/utils/youtube_utils.dart';
 import 'package:just_audio/just_audio.dart';
@@ -14,6 +15,7 @@ import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler {
   final AudioPlayer audioPlayer = AudioPlayer();
   final SearchApiProvider _searchApiProvider = serviceLocator.get<SearchApiProvider>();
+  final LocalStorageManager _localStorageManager = serviceLocator.get<LocalStorageManager>();
   final AppStateCubit _appStateCubit = serviceLocator.get<AppStateCubit>();
 
   AudioPlayerService() {
@@ -27,10 +29,37 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
     });
   }
 
-  Future<MediaItemWrapper> playSong(SongItem songItem) async {
-    final MediaItemWrapper item = await YoutubeUtils.getMediaItemFromSongItem(songItem);
+  Future<MediaItemWrapper> _getMediaItemFromSongItem(
+    SongItem songItem, {
+    int? originalIndex,
+    int? shuffledIndex,
+  }) {
+    if (_localStorageManager.isSongDownloaded(songItem.id)) {
+      return Future.value(songItem.toMediaItemWrapper(
+        extras: MediaItemExtras(
+          streamUrl: _localStorageManager.getSongDownloadPath(songItem.id),
+          originalIndex: originalIndex,
+          shuffledIndex: shuffledIndex,
+          fileSize: 69, //Not needed for downloaded songs
+        ),
+      ));
+    } else {
+      return YoutubeUtils.getMediaItemFromSongItem(songItem);
+    }
+  }
 
-    audioPlayer.setUrl(item.extras.streamUrl);
+  AudioSource _getAudioSourceFromUrl(String url) {
+    if (url.startsWith("http")) {
+      return AudioSource.uri(Uri.parse(url));
+    } else {
+      return AudioSource.uri(Uri.file(url));
+    }
+  }
+
+  Future<MediaItemWrapper> playSong(SongItem songItem) async {
+    final MediaItemWrapper item = await _getMediaItemFromSongItem(songItem);
+
+    audioPlayer.setAudioSource(_getAudioSourceFromUrl(item.extras.streamUrl));
 
     clearQueue();
     broadcastMediaItem(item.toMediaItem().copyWith(artist: "Search"));
@@ -61,7 +90,7 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
       songItems[startAt] = tmp;
     }
 
-    final MediaItemWrapper firstMediaItem = await YoutubeUtils.getMediaItemFromSongItem(
+    final MediaItemWrapper firstMediaItem = await _getMediaItemFromSongItem(
       songItems[0],
       originalIndex: items.indexWhere((e) => e.id == songItems[0].id),
       shuffledIndex: shuffledItems.indexWhere((e) => e.id == songItems[0].id),
@@ -70,20 +99,20 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
     addQueueItem(firstMediaItem.toMediaItem().copyWith(artist: playlistName));
 
     if (songItems.length <= 1) {
-      audioPlayer.setUrl(firstMediaItem.extras.streamUrl);
+      audioPlayer.setAudioSource(_getAudioSourceFromUrl(firstMediaItem.extras.streamUrl));
       broadcastMediaItem(firstMediaItem.toMediaItem().copyWith(artist: playlistName));
       if (!audioPlayer.playing) audioPlayer.play();
       return;
     }
 
-    final MediaItemWrapper secondMediaItem = await YoutubeUtils.getMediaItemFromSongItem(
+    final MediaItemWrapper secondMediaItem = await _getMediaItemFromSongItem(
       songItems[1],
       originalIndex: items.indexWhere((e) => e.id == songItems[1].id),
       shuffledIndex: shuffledItems.indexWhere((e) => e.id == songItems[1].id),
     );
     addQueueItem(secondMediaItem.toMediaItem().copyWith(artist: playlistName));
 
-    audioPlayer.setUrl(firstMediaItem.extras.streamUrl);
+    audioPlayer.setAudioSource(_getAudioSourceFromUrl(firstMediaItem.extras.streamUrl));
     broadcastMediaItem(firstMediaItem.toMediaItem().copyWith(artist: playlistName));
     if (!audioPlayer.playing) audioPlayer.play();
 
@@ -128,7 +157,11 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
     if (currentIndex + 1 > queue.value.length - 1) return;
 
     final MediaItem nextItem = queue.value[currentIndex + 1];
-    audioPlayer.setUrl(MediaItemWrapper.fromMediaItem(nextItem).extras.streamUrl);
+    audioPlayer.setAudioSource(
+      _getAudioSourceFromUrl(
+        MediaItemWrapper.fromMediaItem(nextItem).extras.streamUrl,
+      ),
+    );
     broadcastMediaItem(nextItem);
     if (!audioPlayer.playing) play();
   }
@@ -139,7 +172,11 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
     if (currentIndex - 1 < 0) return;
 
     final MediaItem previousItem = queue.value[currentIndex - 1];
-    audioPlayer.setUrl(MediaItemWrapper.fromMediaItem(previousItem).extras.streamUrl);
+    audioPlayer.setAudioSource(
+      _getAudioSourceFromUrl(
+        MediaItemWrapper.fromMediaItem(previousItem).extras.streamUrl,
+      ),
+    );
     broadcastMediaItem(previousItem);
     if (!audioPlayer.playing) play();
   }

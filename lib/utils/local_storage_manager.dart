@@ -161,12 +161,15 @@ class LocalStorageManager {
   }
 
   void saveSongToDownloads(String songId, Uint8List bytes) {
-    final String downloadsPath = _getDownloadDirectory();
-    File('$downloadsPath/$songId.mp3').writeAsBytes(bytes);
+    File(getSongDownloadPath(songId)).writeAsBytes(bytes);
   }
 
   bool isSongDownloaded(String songId) {
+    return File(getSongDownloadPath(songId)).existsSync();
+  }
+
+  String getSongDownloadPath(String songId) {
     final String downloadsPath = _getDownloadDirectory();
-    return File('$downloadsPath/$songId.mp3').existsSync();
+    return '$downloadsPath/$songId.mp3';
   }
 }
