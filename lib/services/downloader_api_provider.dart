@@ -34,15 +34,31 @@ class DownloaderApiProvider {
     required Function(int, int) onCurrentProgress,
     required Function(int, int) onTotalProgress,
     required Function(MediaItemWrapper) onCurrentDownloadChanged,
+    required void Function() onDone,
   }) async {
     final List<MediaItemWrapper> mediaItems = await Future.wait(
       playlist.songList.map(YoutubeUtils.getMediaItemFromSongItem),
     );
 
-    final int totalSizeInBytes = mediaItems.map((e) => e.extras.fileSize).reduce((a, b) => a + b);
+    final List<MediaItemWrapper> alreadyDownloadedItems = mediaItems
+        .where(
+          (song) => _localStorageManager.isSongDownloaded(song.id),
+        )
+        .toList();
 
-    int totalCount = 0;
+    final int totalSizeInBytes = mediaItems.map((e) => e.extras.fileSize).reduce((a, b) => a + b);
+    final int alreadyDownloadItemsSizeInBytes = alreadyDownloadedItems.isNotEmpty
+        ? alreadyDownloadedItems
+            .map(
+              (e) => e.extras.fileSize,
+            )
+            .reduce((a, b) => a + b)
+        : 0;
+
+    int totalCount = alreadyDownloadItemsSizeInBytes;
     int offset = 0;
+
+    onTotalProgress(totalCount, totalSizeInBytes);
 
     for (final MediaItemWrapper mediaItem in mediaItems) {
       onCurrentDownloadChanged(mediaItem);
@@ -63,5 +79,7 @@ class DownloaderApiProvider {
 
       _localStorageManager.saveSongToDownloads(mediaItem.id, response.data!);
     }
+
+    onDone();
   }
 }

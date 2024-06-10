@@ -7,6 +7,7 @@ import 'package:djsona_mobile/types/playlist.dart';
 import 'package:djsona_mobile/types/song_item.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+
 class LocalStorageManager {
   static const int _maxItemsInHistory = 10;
 
@@ -180,5 +181,12 @@ class LocalStorageManager {
   String getSongDownloadPath(String songId) {
     final String downloadsPath = _getDownloadDirectory();
     return '$downloadsPath/$songId.mp3';
+  }
+
+  void clearDownloads() {
+    final Directory downloads = Directory(_getDownloadDirectory());
+    for (FileSystemEntity songFile in downloads.listSync()) {
+      songFile.deleteSync();
+    }
   }
 }

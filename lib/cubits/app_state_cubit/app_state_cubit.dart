@@ -181,4 +181,8 @@ class AppStateCubit extends Cubit<AppState> {
   void updateConnectivityResult(ConnectivityResult value) {
     emit(state.copyWith(connectivityResult: value));
   }
+
+  bool isPlaylistDownloaded(Playlist playlist) {
+    return playlist.songList.where((song) => !isSongIdDownloaded(song.id)).isEmpty;
+  }
 }
