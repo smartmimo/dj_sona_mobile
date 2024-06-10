@@ -36,6 +36,12 @@ abstract class MenuItemsManager {
     IconConstants.customHeartFilled,
     const LikedSongsRoute(),
   );
+  static final _appInfo = MenuItem(
+    "Info",
+    IconConstants.info,
+    IconConstants.infoFilled,
+    AppInfoRoute(),
+  );
 
-  static final List<MenuItem> menuItems = [_homePage, _playlists, _likedSongs];
+  static final List<MenuItem> menuItems = [_homePage, _playlists, _likedSongs, _appInfo];
 }

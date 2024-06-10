@@ -15,7 +15,7 @@ class DeleteButton extends StatelessWidget {
     required this.onPressed,
     this.onlyIcon = false,
     this.text = "Delete",
-    this.iconSpacing = 6,
+    this.iconSpacing = 12,
   });
 
   final bool isDisabled;
@@ -61,11 +61,9 @@ class DeleteButton extends StatelessWidget {
         builder: (context) => _getConfirmationPopup(context),
       ),
       filledColor: ColorConstants.roofTerracotta,
-      textStyle: textTheme.bodyMBold.copyWith(color: Colors.white),
       prefixIcon: const Icon(
         IconConstants.delete,
         color: Colors.white,
-        size: 16,
       ),
       iconSpacing: iconSpacing,
       isDisabled: isDisabled,

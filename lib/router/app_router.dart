@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:djsona_mobile/router/playlists_tab.dart';
+import 'package:djsona_mobile/view/app_info_page/app_info_page.dart';
 import 'package:djsona_mobile/view/home_page/home_page.dart';
 import 'package:djsona_mobile/view/landing_page/landing_page.dart';
 import 'package:djsona_mobile/view/liked_songs_page/liked_songs_page.dart';
@@ -32,6 +33,7 @@ part 'app_router.gr.dart';
               ],
             ),
             AutoRoute(page: LikedSongsPage),
+            AutoRoute(page: AppInfoPage),
           ],
         ),
       ],

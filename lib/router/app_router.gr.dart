@@ -51,6 +51,14 @@ class _$AppRouter extends RootStackRouter {
         child: const LikedSongsPage(),
       );
     },
+    AppInfoRoute.name: (routeData) {
+      final args = routeData.argsAs<AppInfoRouteArgs>(
+          orElse: () => const AppInfoRouteArgs());
+      return MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: AppInfoPage(key: args.key),
+      );
+    },
     PlaylistsRoute.name: (routeData) {
       final args = routeData.argsAs<PlaylistsRouteArgs>(
           orElse: () => const PlaylistsRouteArgs());
@@ -107,6 +115,11 @@ class _$AppRouter extends RootStackRouter {
                 RouteConfig(
                   LikedSongsRoute.name,
                   path: 'liked-songs-page',
+                  parent: LandingRoute.name,
+                ),
+                RouteConfig(
+                  AppInfoRoute.name,
+                  path: 'app-info-page',
                   parent: LandingRoute.name,
                 ),
               ],
@@ -203,6 +216,30 @@ class LikedSongsRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'LikedSongsRoute';
+}
+
+/// generated route for
+/// [AppInfoPage]
+class AppInfoRoute extends PageRouteInfo<AppInfoRouteArgs> {
+  AppInfoRoute({Key? key})
+      : super(
+          AppInfoRoute.name,
+          path: 'app-info-page',
+          args: AppInfoRouteArgs(key: key),
+        );
+
+  static const String name = 'AppInfoRoute';
+}
+
+class AppInfoRouteArgs {
+  const AppInfoRouteArgs({this.key});
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'AppInfoRouteArgs{key: $key}';
+  }
 }
 
 /// generated route for

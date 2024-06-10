@@ -14,7 +14,7 @@ class IconConstants {
   static const IconData grid = IconData(0xE97F, fontFamily: 'icons-bs');
   static const IconData maximize = IconData(0xE99C, fontFamily: 'icons-bs');
   static const IconData alertCircle = IconData(0xE902, fontFamily: 'icons-bs');
-  static const IconData alertCircleFilled = IconData(0xEA37, fontFamily: 'icons-bs');
+  static const IconData infoFilled = IconData(0xEA37, fontFamily: 'icons-bs');
   static const IconData alertHexaFilled = IconData(0xEA38, fontFamily: 'icons-bs');
   static const IconData mapPin = IconData(0xE999, fontFamily: 'icons-bs');
   static const IconData mail = IconData(0xE998, fontFamily: 'icons-bs');
@@ -91,4 +91,5 @@ class IconConstants {
   static const IconData customHeartFilled = IconData(0xEA3F, fontFamily: "icons-bs");
   static const IconData addToPlaylist = IconData(0xEA40, fontFamily: "icons-bs");
   static const IconData noNetwork = IconData(0xEA19, fontFamily: "icons-bs");
+  static const IconData version = IconData(0xE919, fontFamily: "icons-bs");
 }

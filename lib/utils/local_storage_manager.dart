@@ -189,4 +189,10 @@ class LocalStorageManager {
       songFile.deleteSync();
     }
   }
+
+  int getCurrentDownloadFolderSize() {
+    final Directory downloads = Directory(_getDownloadDirectory());
+    final List<int> downloadedFilesSizeList = downloads.listSync().map((file) => file.statSync().size).toList();
+    return downloadedFilesSizeList.isNotEmpty ? downloadedFilesSizeList.reduce((a, b) => a + b) : 0;
+  }
 }
