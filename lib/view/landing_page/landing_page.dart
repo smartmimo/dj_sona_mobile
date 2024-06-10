@@ -59,9 +59,7 @@ class LandingPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                AudioPlayerOpener(
-                  isHidden: _audioPlayerService.mediaItem.value == null,
-                ),
+                AudioPlayerOpener(),
               ],
             ),
           );

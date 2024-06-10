@@ -19,9 +19,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:marquee/marquee.dart';
 
 class AudioPlayerWidget extends StatelessWidget {
-  AudioPlayerWidget({super.key});
+  AudioPlayerWidget({super.key, required this.state, required this.mediaItem});
 
-  final AudioPlayerService audioService = serviceLocator.get<AudioPlayerService>();
+  final PlaybackState state;
+  final MediaItem mediaItem;
+
+  final AudioPlayerService _audioService = serviceLocator.get<AudioPlayerService>();
   final AppStateCubit _appStateCubit = serviceLocator.get<AppStateCubit>();
 
   static const double _miniWidgetImageWidth = 100;
@@ -35,13 +38,10 @@ class AudioPlayerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<MediaItem?>(stream: audioService.mediaItem, builder: _mapSnapshotToWidget);
+    return _mapSnapshotToWidget(context);
   }
 
-  Widget _mapSnapshotToWidget(BuildContext context, AsyncSnapshot<MediaItem?> snapshot) {
-    final MediaItem? mediaItem = snapshot.data;
-    if (mediaItem == null) return Container();
-
+  Widget _mapSnapshotToWidget(BuildContext context) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         double currentHeight = constraints.maxHeight;
@@ -66,34 +66,26 @@ class AudioPlayerWidget extends StatelessWidget {
     MediaItemWrapper mediaItem,
     double currentHeight,
   ) {
-    return StreamBuilder<PlaybackState?>(
-      stream: audioService.playbackState,
-      builder: (context, snapshot) {
-        final PlaybackState? state = snapshot.data;
-        if (state == null) return Container();
-
-        final bool isMiniWidget = _isMiniWidget(currentHeight);
-        return Padding(
-          padding: isMiniWidget ? EdgeInsets.zero : StyleConstants.edgeInsetsH16V8,
-          child: Flex(
-            direction: isMiniWidget ? Axis.horizontal : Axis.vertical,
-            children: [
-              if (!isMiniWidget) _getScrollerLineIcon(context),
-              if (isMiniWidget) ...{
-                _getMiniImageAndPlayButton(context, state, mediaItem, currentHeight),
-              } else ...{
-                _getImage(mediaItem, currentHeight),
-              },
-              Expanded(
-                child: Padding(
-                  padding: isMiniWidget ? StyleConstants.edgeInsets4 : EdgeInsets.zero,
-                  child: _getPlayerContent(context, state, mediaItem, currentHeight),
-                ),
-              ),
-            ].withVerticalElementsSpacing(8),
+    final bool isMiniWidget = _isMiniWidget(currentHeight);
+    return Padding(
+      padding: isMiniWidget ? EdgeInsets.zero : StyleConstants.edgeInsetsH16V8,
+      child: Flex(
+        direction: isMiniWidget ? Axis.horizontal : Axis.vertical,
+        children: [
+          if (!isMiniWidget) _getScrollerLineIcon(context),
+          if (isMiniWidget) ...{
+            _getMiniImageAndPlayButton(context, state, mediaItem, currentHeight),
+          } else ...{
+            _getImage(mediaItem, currentHeight),
+          },
+          Expanded(
+            child: Padding(
+              padding: isMiniWidget ? StyleConstants.edgeInsets4 : EdgeInsets.zero,
+              child: _getPlayerContent(context, state, mediaItem, currentHeight),
+            ),
           ),
-        );
-      },
+        ].withVerticalElementsSpacing(8),
+      ),
     );
   }
 
@@ -107,13 +99,13 @@ class AudioPlayerWidget extends StatelessWidget {
     late final VoidCallback actionCallback;
     if (state.processingState == AudioProcessingState.completed) {
       actionIcon = Icons.replay_rounded;
-      actionCallback = audioService.replay;
+      actionCallback = _audioService.replay;
     } else if (state.playing) {
       actionIcon = Icons.pause_rounded;
-      actionCallback = audioService.pause;
+      actionCallback = _audioService.pause;
     } else {
       actionIcon = Icons.play_arrow_rounded;
-      actionCallback = audioService.play;
+      actionCallback = _audioService.play;
     }
 
     return Stack(
@@ -252,7 +244,7 @@ class AudioPlayerWidget extends StatelessWidget {
 
   Widget _getProgressSection(BuildContext context, PlaybackState state, MediaItemWrapper mediaItem, bool isMiniWidget) {
     return SeekerWidget(
-      seek: audioService.seek,
+      seek: _audioService.seek,
       totalDuration: mediaItem.duration!,
       currentDuration: state.position,
       bufferedDuration: state.bufferedPosition,
@@ -267,9 +259,9 @@ class AudioPlayerWidget extends StatelessWidget {
         _getShuffleButton(context, state),
         Row(
           children: [
-            _getSwitchSongButton(context, iconData: IconConstants.previous, onPressed: audioService.skipToPrevious),
+            _getSwitchSongButton(context, iconData: IconConstants.previous, onPressed: _audioService.skipToPrevious),
             _getPlayPauseButton(context, state),
-            _getSwitchSongButton(context, iconData: IconConstants.next, onPressed: audioService.skipToNext),
+            _getSwitchSongButton(context, iconData: IconConstants.next, onPressed: _audioService.skipToNext),
           ].withHorizontalElementsSpacing(4),
         ),
         _getLoopButton(context, state),
@@ -309,10 +301,10 @@ class AudioPlayerWidget extends StatelessWidget {
               color: Theme.of(context).colorScheme.primary,
             ),
             onPressed: state.processingState == AudioProcessingState.completed
-                ? audioService.replay
+                ? _audioService.replay
                 : isPlaying
-                    ? audioService.pause
-                    : audioService.play,
+                    ? _audioService.pause
+                    : _audioService.play,
             padding: EdgeInsets.zero,
             splashColor: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
             splashRadius: 1000,
@@ -357,7 +349,7 @@ class AudioPlayerWidget extends StatelessWidget {
           size: 20,
           color: isActivated ? ColorConstants.greenSuccess : ColorConstants.white,
         ),
-        onPressed: () => audioService.setShuffleMode(
+        onPressed: () => _audioService.setShuffleMode(
           isActivated ? AudioServiceShuffleMode.none : AudioServiceShuffleMode.all,
         ),
         padding: EdgeInsets.zero,
@@ -379,7 +371,7 @@ class AudioPlayerWidget extends StatelessWidget {
           size: 20,
           color: isActivated ? ColorConstants.greenSuccess : ColorConstants.white,
         ),
-        onPressed: () => audioService.setRepeatMode(
+        onPressed: () => _audioService.setRepeatMode(
           isActivated ? AudioServiceRepeatMode.none : AudioServiceRepeatMode.all,
         ),
         padding: EdgeInsets.zero,

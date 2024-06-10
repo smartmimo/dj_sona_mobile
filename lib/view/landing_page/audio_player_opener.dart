@@ -1,16 +1,19 @@
+import 'package:audio_service/audio_service.dart';
+import 'package:djsona_mobile/services/audio_player_service.dart';
+import 'package:djsona_mobile/services/service_locator.dart';
 import 'package:djsona_mobile/view/landing_page/landing_page.dart';
 import 'package:djsona_mobile/view/landing_page/audio_player_widget.dart';
 import 'package:flutter/material.dart' hide SearchBar;
 
 class AudioPlayerOpener extends StatefulWidget {
-  const AudioPlayerOpener({
+  AudioPlayerOpener({
     super.key,
-    required this.isHidden,
   });
+
+  final AudioPlayerService audioService = serviceLocator.get<AudioPlayerService>();
 
   static const double defaultBoxHeight = LandingPage.bottomBarHeight;
   static const double openedBoxHeight = 300;
-  final bool isHidden;
 
   @override
   State<AudioPlayerOpener> createState() => _AudioPlayerOpenerState();
@@ -20,11 +23,21 @@ class _AudioPlayerOpenerState extends State<AudioPlayerOpener> {
   static const double _heightToTriggerOpen = 200;
   static const Duration _animationDuration = Duration(milliseconds: 300);
 
+  MediaItem? _mediaItem;
+  PlaybackState? _playbackState;
   double _boxHeight = 0;
   bool _isBarDragging = false;
 
   @override
   void initState() {
+    widget.audioService.mediaItem.stream.listen((mediaItem) {
+      setState(() => _mediaItem = mediaItem);
+    });
+
+    widget.audioService.playbackState.stream.listen((state) {
+      setState(() => _playbackState = state);
+    });
+
     _boxHeight = AudioPlayerOpener.defaultBoxHeight;
     super.initState();
   }
@@ -96,11 +109,17 @@ class _AudioPlayerOpenerState extends State<AudioPlayerOpener> {
   }
 
   Widget _getAnimatedWidget(BuildContext context) {
+    final bool isHidden = _playbackState == null || _mediaItem == null;
     return AnimatedContainer(
       duration: !_isBarDragging ? _animationDuration : const Duration(milliseconds: 0),
-      height: widget.isHidden ? 0 : _boxHeight,
+      height: isHidden ? 0 : _boxHeight,
       curve: Curves.easeInOut,
-      child: AudioPlayerWidget(),
+      child: isHidden
+          ? Container()
+          : AudioPlayerWidget(
+              state: _playbackState!,
+              mediaItem: _mediaItem!,
+            ),
     );
   }
 }

@@ -25,8 +25,6 @@ class DeleteButton extends StatelessWidget {
   final double iconSpacing;
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
     if (onlyIcon) {
       return Container(
         width: 30,
