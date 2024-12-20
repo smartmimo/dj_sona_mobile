@@ -15,9 +15,9 @@ class SearchApiProvider {
   }
 
   Future<List<String>> getRelatedVideosFromId(String videoId) async {
-    final result = await _apiService.get("https://madmaden-ytscraper.fly.dev/getNext", queryParameters: {
-      "id": videoId,
+    final result = await _apiService.get("watch", queryParameters: {
+      "v": videoId,
     });
-    return (result.data as List).map((e) => e.toString()).toList();
+    return YoutubeUtils.parseAutoplayResponse(result.data);
   }
 }

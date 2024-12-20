@@ -76,4 +76,31 @@ abstract class YoutubeUtils {
     yt.close();
     return manifest;
   }
+
+  static List<String> parseAutoplayResponse(String html) {
+    final Document document = parse(html);
+
+    for (final Element element in document.getElementsByTagName('script')) {
+      if (!element.innerHtml.contains("var ytInitialData")) continue;
+
+      final jsonRegex = RegExp(r'var\s+ytInitialData\s*=\s*({.*?});', dotAll: true);
+      final match = jsonRegex.firstMatch(element.innerHtml);
+      if (match == null) throw ('JSON variable not found in the script content.');
+
+      final jsonStr = match.group(1)!;
+
+      final Map<String, dynamic> data = jsonDecode(jsonStr);
+
+      final List suggestedVideos =
+          data['contents']?['twoColumnWatchNextResults']?['secondaryResults']?['secondaryResults']?['results'] ?? [];
+
+      final List<String> videoIds = suggestedVideos
+          .where((item) => item['compactVideoRenderer']?['videoId'] != null)
+          .map<String>((item) => item['compactVideoRenderer']['videoId'] as String)
+          .toList();
+
+      return videoIds;
+    }
+    throw "Error while parsing..";
+  }
 }

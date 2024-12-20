@@ -117,7 +117,9 @@ class LandingPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            tabsRouter.activeIndex == index ? Icon(activeIcon) : Icon(icon),
+            tabsRouter.activeIndex == index
+                ? Icon(activeIcon, color: ColorConstants.white)
+                : Icon(icon, color: ColorConstants.white),
             Flexible(
               child: Text(
                 text,
@@ -125,6 +127,7 @@ class LandingPage extends StatelessWidget {
                   height: 1.5,
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
+                  color: ColorConstants.white,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
