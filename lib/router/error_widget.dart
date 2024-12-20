@@ -173,16 +173,18 @@ class ErrorWidget extends StatelessWidget {
         text: "Copy error",
         onPressed: () => Clipboard.setData(
           ClipboardData(text: textToCopy),
-        ).then(
-          (value) => ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBarWidget.success(
-                context: context,
-                text: "Error copied successfully",
-              ),
-            ),
-        ),
+        ).then((value) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBarWidget.success(
+                  context: context,
+                  text: "Error copied successfully",
+                ),
+              );
+          }
+        }),
         prefixIcon: const Icon(
           IconConstants.document,
           color: ColorConstants.blackish,

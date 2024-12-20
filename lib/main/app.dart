@@ -16,7 +16,7 @@ class DJSonaMobileApp extends StatelessWidget {
   Widget _buildAppWidget(BuildContext context) {
     return MaterialApp.router(
       builder: (context, child) => MediaQuery(
-        data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true, textScaleFactor: 1),
+        data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true, textScaler: const TextScaler.linear(1)),
         child: child ?? Container(),
       ),
       routerDelegate: AutoRouterDelegate.declarative(

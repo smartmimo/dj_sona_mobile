@@ -122,7 +122,7 @@ class AddSongToPlaylist extends StatelessWidget {
             body: Material(child: AddPlaylistWidget(onCreatePressed: _appStateCubit.newPlaylist)),
           ),
         ).then((result) {
-          if (result != null) {
+          if (result != null && context.mounted) {
             _addSongToPlaylist(context, result);
           }
         });

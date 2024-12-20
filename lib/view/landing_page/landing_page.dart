@@ -65,10 +65,10 @@ class LandingPage extends StatelessWidget {
           );
         },
         bottomNavigationBuilder: (_, tabsRouter) {
-          return WillPopScope(
-            onWillPop: () async {
+          return PopScope(
+            canPop: false,
+            onPopInvokedWithResult: (_, __) async {
               tabsRouter.setActiveIndex(0);
-              return false;
             },
             child: Container(
               height: bottomBarHeight,
@@ -107,12 +107,12 @@ class LandingPage extends StatelessWidget {
     return Expanded(
       child: ElevatedButton(
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
-          elevation: MaterialStateProperty.all<double>(0),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          backgroundColor: WidgetStateProperty.all<Color>(Colors.transparent),
+          elevation: WidgetStateProperty.all<double>(0),
+          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
             const RoundedRectangleBorder(),
           ),
-          overlayColor: MaterialStateProperty.all<Color>(ColorConstants.blackish.withOpacity(0.1)),
+          overlayColor: WidgetStateProperty.all<Color>(ColorConstants.blackish.withOpacity(0.1)),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -157,7 +157,7 @@ class LandingPage extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _getCurrentConnectivity(BuildContext context) {
     return BlocBuilder<AppStateCubit, AppState>(
       bloc: _appStateCubit,

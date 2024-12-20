@@ -60,15 +60,15 @@ class ButtonMaster extends StatelessWidget {
         onPressed: isDisabled ? null : onPressed,
         style: ButtonStyle(
           backgroundColor: _getBackgroundColor(context),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
               side: _getBorderSide(context),
               borderRadius: StyleConstants.radius80,
             ),
           ),
-          elevation: MaterialStateProperty.all<double>(0),
-          overlayColor: MaterialStateProperty.all<Color>(_getOverlayColor(context)),
-          padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.zero),
+          elevation: WidgetStateProperty.all<double>(0),
+          overlayColor: WidgetStateProperty.all<Color>(_getOverlayColor(context)),
+          padding: WidgetStateProperty.all<EdgeInsets>(EdgeInsets.zero),
         ),
         child: isLoading ? _getCircularProgressIndicator() : _getButtonContent(context),
       ),
@@ -126,7 +126,7 @@ class ButtonMaster extends StatelessWidget {
     return style;
   }
 
-  MaterialStateProperty<Color> _getBackgroundColor(BuildContext context) {
+  WidgetStateProperty<Color> _getBackgroundColor(BuildContext context) {
     if (filled) {
       return _getFilledColor(context);
     } else {
@@ -134,10 +134,10 @@ class ButtonMaster extends StatelessWidget {
     }
   }
 
-  MaterialStateProperty<Color> _getFilledColor(BuildContext context) {
+  WidgetStateProperty<Color> _getFilledColor(BuildContext context) {
     Color color = filledColor ?? Theme.of(context).colorScheme.primary;
-    return MaterialStateProperty.resolveWith<Color>((buttonState) {
-      bool isDisabled = buttonState.contains(MaterialState.disabled);
+    return WidgetStateProperty.resolveWith<Color>((buttonState) {
+      bool isDisabled = buttonState.contains(WidgetState.disabled);
       if (isDisabled) {
         return color.withOpacity(.4);
       } else {
@@ -146,8 +146,8 @@ class ButtonMaster extends StatelessWidget {
     });
   }
 
-  MaterialStateProperty<Color> _getTransparentColor() {
-    return MaterialStateProperty.all<Color>(Colors.transparent);
+  WidgetStateProperty<Color> _getTransparentColor() {
+    return WidgetStateProperty.all<Color>(Colors.transparent);
   }
 
   Color _getOverlayColor(BuildContext context) {
