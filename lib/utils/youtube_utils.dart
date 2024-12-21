@@ -96,6 +96,7 @@ abstract class YoutubeUtils {
 
       final List<String> videoIds = suggestedVideos
           .where((item) => item['compactVideoRenderer']?['videoId'] != null)
+          .take(10)
           .map<String>((item) => item['compactVideoRenderer']['videoId'] as String)
           .toList();
 
