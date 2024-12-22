@@ -144,17 +144,19 @@ class LandingPage extends StatelessWidget {
     final item = _audioPlayerService.mediaItem;
     if (item.value == null || StringUtils.isEmpty(item.value!.artist)) return Container();
     return Container(
+      alignment: Alignment.center,
       height: 20,
       decoration: BoxDecoration(
         borderRadius: StyleConstants.radius4,
         color: Theme.of(context).colorScheme.primary.withOpacity(0.9),
         boxShadow: StyleConstants.standardShadow,
       ),
-      padding: StyleConstants.edgeInsetsH8V4,
+      padding: StyleConstants.edgeInsetsH8,
       child: Text(
         item.value!.artist!,
         style: Theme.of(context).textTheme.bodyS.copyWith(
               color: ColorConstants.white,
+              height: 1,
             ),
         textAlign: TextAlign.center,
       ),
@@ -167,6 +169,7 @@ class LandingPage extends StatelessWidget {
       builder: (context, state) {
         if (state.connectivityResult == ConnectivityResult.none) {
           return Container(
+            alignment: Alignment.center,
             height: 20,
             decoration: BoxDecoration(
               borderRadius: StyleConstants.radius4,
@@ -182,6 +185,7 @@ class LandingPage extends StatelessWidget {
                   style: Theme.of(context).textTheme.bodyS.copyWith(
                         color: ColorConstants.white,
                         letterSpacing: 0.3,
+                        height: 1,
                       ),
                   textAlign: TextAlign.center,
                 ),
