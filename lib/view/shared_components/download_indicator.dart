@@ -57,7 +57,7 @@ class _DownloadIndicatorState extends State<DownloadIndicator> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
           borderRadius: StyleConstants.radius100,
           border: Border.all(
             color: Colors.transparent,
@@ -86,7 +86,7 @@ class _DownloadIndicatorState extends State<DownloadIndicator> {
                 ),
                 onPressed: _onButtonPressed,
                 padding: EdgeInsets.zero,
-                splashColor: Theme.of(context).colorScheme.secondary.withOpacity(1),
+                splashColor: Theme.of(context).colorScheme.secondary.withValues(alpha: 1),
                 splashRadius: widget.leadingSize / 2,
               ),
             ),

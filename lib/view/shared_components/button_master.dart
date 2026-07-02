@@ -139,7 +139,7 @@ class ButtonMaster extends StatelessWidget {
     return WidgetStateProperty.resolveWith<Color>((buttonState) {
       bool isDisabled = buttonState.contains(WidgetState.disabled);
       if (isDisabled) {
-        return color.withOpacity(.4);
+        return color.withValues(alpha: .4);
       } else {
         return color;
       }
@@ -152,9 +152,9 @@ class ButtonMaster extends StatelessWidget {
 
   Color _getOverlayColor(BuildContext context) {
     if (filled) {
-      return ColorConstants.white.withOpacity(0.1);
+      return ColorConstants.white.withValues(alpha: 0.1);
     } else {
-      return ColorConstants.blackish.withOpacity(0.1);
+      return ColorConstants.blackish.withValues(alpha: 0.1);
     }
   }
 }

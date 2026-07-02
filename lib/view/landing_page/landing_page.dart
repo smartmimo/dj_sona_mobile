@@ -112,7 +112,7 @@ class LandingPage extends StatelessWidget {
           shape: WidgetStateProperty.all<RoundedRectangleBorder>(
             const RoundedRectangleBorder(),
           ),
-          overlayColor: WidgetStateProperty.all<Color>(ColorConstants.blackish.withOpacity(0.1)),
+          overlayColor: WidgetStateProperty.all<Color>(ColorConstants.blackish.withValues(alpha: 0.1)),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -148,7 +148,7 @@ class LandingPage extends StatelessWidget {
       height: 20,
       decoration: BoxDecoration(
         borderRadius: StyleConstants.radius4,
-        color: Theme.of(context).colorScheme.primary.withOpacity(0.9),
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.9),
         boxShadow: StyleConstants.standardShadow,
       ),
       padding: StyleConstants.edgeInsetsH8,

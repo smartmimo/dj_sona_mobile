@@ -120,7 +120,7 @@ class AudioPlayerWidget extends StatelessWidget {
             child: InkWell(
               borderRadius: StyleConstants.radiusTl12,
               onTap: actionCallback,
-              splashColor: Theme.of(context).colorScheme.primary.withOpacity(0.9),
+              splashColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.9),
             ),
           ),
         ),
@@ -156,7 +156,7 @@ class AudioPlayerWidget extends StatelessWidget {
   ) {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
         borderRadius: StyleConstants.radius100,
         border: Border.all(
           color: ColorConstants.white,
@@ -306,7 +306,7 @@ class AudioPlayerWidget extends StatelessWidget {
                     ? _audioService.pause
                     : _audioService.play,
             padding: EdgeInsets.zero,
-            splashColor: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
+            splashColor: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.5),
             splashRadius: 1000,
           ),
         ),
@@ -331,7 +331,7 @@ class AudioPlayerWidget extends StatelessWidget {
         ),
         onPressed: onPressed,
         padding: EdgeInsets.zero,
-        splashColor: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
+        splashColor: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.5),
         splashRadius: 20,
       ),
     );
@@ -353,7 +353,7 @@ class AudioPlayerWidget extends StatelessWidget {
           isActivated ? AudioServiceShuffleMode.none : AudioServiceShuffleMode.all,
         ),
         padding: EdgeInsets.zero,
-        splashColor: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
+        splashColor: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.5),
         splashRadius: 20,
       ),
     );
@@ -375,7 +375,7 @@ class AudioPlayerWidget extends StatelessWidget {
           isActivated ? AudioServiceRepeatMode.none : AudioServiceRepeatMode.all,
         ),
         padding: EdgeInsets.zero,
-        splashColor: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
+        splashColor: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.5),
         splashRadius: 20,
       ),
     );
@@ -431,7 +431,7 @@ class AudioPlayerWidget extends StatelessWidget {
             size: 20,
             color: iconColor ?? Theme.of(context).colorScheme.primary,
           ),
-          splashColor: ColorConstants.blackish.withOpacity(0.4),
+          splashColor: ColorConstants.blackish.withValues(alpha: 0.4),
         ),
       ),
     );

@@ -80,7 +80,7 @@ class PlaylistsPage extends StatelessWidget {
   Widget _getNewPlaylistButton(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
+        color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.5),
         borderRadius: StyleConstants.radius100,
         boxShadow: StyleConstants.standardShadow,
       ),
@@ -109,7 +109,7 @@ class PlaylistsPage extends StatelessWidget {
             ),
           ),
           padding: EdgeInsets.zero,
-          splashColor: Theme.of(context).colorScheme.secondary.withOpacity(1),
+          splashColor: Theme.of(context).colorScheme.secondary.withValues(alpha: 1),
           splashRadius: AppBarWidget.leadingSize / 2,
         ),
       ),

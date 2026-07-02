@@ -132,7 +132,7 @@ class _SeekerWidgetState extends State<SeekerWidget> {
             ),
             Container(
               height: widget.seekerHeight,
-              color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
+              color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.3),
               width: widget.bufferedDuration.inSeconds * widthOfSibling / widget.totalDuration.inSeconds,
             ),
             Container(

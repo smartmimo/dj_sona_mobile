@@ -108,7 +108,7 @@ class PlaylistScreenPage extends StatelessWidget {
           width: AppBarWidget.leadingSize,
           height: AppBarWidget.leadingSize,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
+            color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.5),
             boxShadow: StyleConstants.standardShadow,
             borderRadius: StyleConstants.radius12,
           ),
@@ -166,7 +166,7 @@ class PlaylistScreenPage extends StatelessWidget {
   Widget _getPlayButton(BuildContext context, AppState state) {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
+        color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.5),
         borderRadius: StyleConstants.radius100,
         boxShadow: StyleConstants.standardShadow,
       ),

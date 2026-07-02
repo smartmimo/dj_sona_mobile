@@ -67,7 +67,7 @@ class PlaylistCard extends StatelessWidget {
       child: Container(
         width: 100,
         height: 100,
-        color: Theme.of(context).colorScheme.secondary.withOpacity(0.6),
+        color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.6),
         child: images.isEmpty ? _getDefaultThumbnail(context) : _getThumbnailSectionWithImages(context, images),
       ),
     );
@@ -126,7 +126,7 @@ class PlaylistCard extends StatelessWidget {
           color: isDisabled
               ? ColorConstants.paleGrey01
               : isCurrentlyPlaying
-                  ? Theme.of(context).colorScheme.primary.withOpacity(0.2)
+                  ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)
                   : null,
           padding: StyleConstants.edgeInsets8,
           height: 100,
@@ -254,7 +254,7 @@ class PlaylistCard extends StatelessWidget {
       width: 28,
       height: 28,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
+        color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.3),
         borderRadius: StyleConstants.radius100,
         boxShadow: StyleConstants.standardShadow,
         border: Border.all(
@@ -275,7 +275,7 @@ class PlaylistCard extends StatelessWidget {
             size: 24,
             color: iconColor ?? Theme.of(context).colorScheme.primary,
           ),
-          splashColor: ColorConstants.blackish.withOpacity(0.4),
+          splashColor: ColorConstants.blackish.withValues(alpha: 0.4),
         ),
       ),
     );

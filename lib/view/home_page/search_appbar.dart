@@ -74,7 +74,7 @@ class SearchAppbar extends StatelessWidget {
               onChanged(null);
             },
             icon: const Icon(IconConstants.close, size: _textFieldIconsSize),
-            splashColor: Theme.of(context).colorScheme.primary.withOpacity(0.4),
+            splashColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
           ),
         ),
       );

@@ -97,7 +97,7 @@ class SongCard extends StatelessWidget {
     final TextTheme textTheme = Theme.of(context).textTheme;
     late final Color? color;
     if (isCurrentlyPlaying) {
-      color = Theme.of(context).colorScheme.primary.withOpacity(0.2);
+      color = Theme.of(context).colorScheme.primary.withValues(alpha: 0.2);
     } else if (!_appStateCubit.isSongIdPlayable(songItem.id)) {
       color = ColorConstants.lightestGrey;
     } else {
@@ -284,7 +284,7 @@ class SongCard extends StatelessWidget {
       width: 20,
       height: 20,
       decoration: BoxDecoration(
-        color: ColorConstants.white.withOpacity(0.8),
+        color: ColorConstants.white.withValues(alpha: 0.8),
         borderRadius: StyleConstants.radius100,
         boxShadow: StyleConstants.standardShadow,
         border: Border.all(
@@ -302,7 +302,7 @@ class SongCard extends StatelessWidget {
             size: 16,
             color: iconColor ?? Theme.of(context).colorScheme.primary,
           ),
-          splashColor: ColorConstants.blackish.withOpacity(0.4),
+          splashColor: ColorConstants.blackish.withValues(alpha: 0.4),
         ),
       ),
     );
