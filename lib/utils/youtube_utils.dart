@@ -48,7 +48,14 @@ abstract class YoutubeUtils {
 
   static Future<AudioOnlyStreamInfo> getAudioStreamFromVideoId(String videoId) async {
     final YoutubeExplode yt = YoutubeExplode();
-    final StreamManifest manifest = await yt.videos.streamsClient.getManifest(videoId);
+    final StreamManifest manifest = await yt.videos.streamsClient.getManifest(
+      videoId,
+      ytClients: [
+        YoutubeApiClient.androidVr,
+        YoutubeApiClient.tv,
+        YoutubeApiClient.android,
+      ],
+    );
     final AudioOnlyStreamInfo audioStreamInfo = manifest.audioOnly.withHighestBitrate();
     yt.close();
     return audioStreamInfo;
