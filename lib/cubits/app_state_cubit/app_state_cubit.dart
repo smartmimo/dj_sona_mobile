@@ -1,3 +1,4 @@
+import 'package:bloc_presentation/bloc_presentation.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:djsona_mobile/constants/app_constants.dart';
 import 'package:djsona_mobile/cubits/app_state_cubit/app_state.dart';
@@ -12,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
 
-class AppStateCubit extends Cubit<AppState> {
+class AppStateCubit extends Cubit<AppState> with BlocPresentationMixin<AppState, AppStateEvent> {
   final LocalStorageManager _localStorageManager;
   AppStateCubit(
     this._localStorageManager,
@@ -185,4 +186,16 @@ class AppStateCubit extends Cubit<AppState> {
   bool isPlaylistDownloaded(Playlist playlist) {
     return playlist.songList.where((song) => !isSongIdDownloaded(song.id)).isEmpty;
   }
+
+  dynamic onPlaybackError(error) {
+    emitPresentation(AppStatePlaybackErrorEvent(errorMessage: error.toString()));
+  }
 }
+
+class AppStatePlaybackErrorEvent extends AppStateEvent {
+  final String errorMessage;
+
+  AppStatePlaybackErrorEvent({required this.errorMessage});
+}
+
+class AppStateEvent {}

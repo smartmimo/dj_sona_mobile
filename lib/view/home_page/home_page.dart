@@ -1,4 +1,5 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:bloc_presentation/bloc_presentation.dart';
 import 'package:djsona_mobile/constants/color_constants.dart';
 import 'package:djsona_mobile/constants/icon_constants.dart';
 import 'package:djsona_mobile/constants/style_constants.dart';
@@ -13,6 +14,7 @@ import 'package:djsona_mobile/utils/string_utils.dart';
 import 'package:djsona_mobile/utils/theme_utils/text_theme_extension.dart';
 import 'package:djsona_mobile/view/home_page/search_appbar.dart';
 import 'package:djsona_mobile/view/shared_components/appbar_widget.dart';
+import 'package:djsona_mobile/view/shared_components/snack_bar_widget.dart';
 import 'package:djsona_mobile/view/shared_components/song_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,8 +31,23 @@ class HomePage extends StatelessWidget {
         audioService,
         serviceLocator.get<LocalStorageManager>(),
       )..init(),
+      child: BlocPresentationListener<MusicSearchCubit, MusicSearchEvent>(
+        listener: (context, event) {
+          switch (event) {
+            case SongPlaybackErrorEvent():
+              ScaffoldMessenger.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBarWidget.error(
+                    context: context,
+                    text: event.errorMessage,
+                  ),
+                );
+          }
+        },
       child: BlocBuilder<MusicSearchCubit, MusicSearchState>(
-        builder: _mapStateToWidget,
+          builder: _mapStateToWidget,
+        ),
       ),
     );
   }
@@ -80,17 +97,17 @@ class HomePage extends StatelessWidget {
     }
 
     return RichText(
-        text: TextSpan(
-          children: [
-            TextSpan(
-              text: "Search results for: ",
-              style: textTheme.bodyXL.copyWith(color: ColorConstants.blackish),
-            ),
-            TextSpan(
-              text: state.searchString,
-              style: textTheme.bodyXLBold.copyWith(color: ColorConstants.blackish, fontStyle: FontStyle.italic),
-            ),
-          ],
+      text: TextSpan(
+        children: [
+          TextSpan(
+            text: "Search results for: ",
+            style: textTheme.bodyXL.copyWith(color: ColorConstants.blackish),
+          ),
+          TextSpan(
+            text: state.searchString,
+            style: textTheme.bodyXLBold.copyWith(color: ColorConstants.blackish, fontStyle: FontStyle.italic),
+          ),
+        ],
       ),
     );
   }

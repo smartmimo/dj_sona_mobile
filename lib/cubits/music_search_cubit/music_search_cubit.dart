@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bloc_presentation/bloc_presentation.dart';
 import 'package:djsona_mobile/cubits/music_search_cubit/music_search_state.dart';
 import 'package:djsona_mobile/services/audio_player_service.dart';
 import 'package:djsona_mobile/services/search_api_provider.dart';
@@ -9,7 +10,7 @@ import 'package:djsona_mobile/utils/local_storage_manager.dart';
 import 'package:djsona_mobile/utils/string_utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class MusicSearchCubit extends Cubit<MusicSearchState> {
+class MusicSearchCubit extends Cubit<MusicSearchState> with BlocPresentationMixin<MusicSearchState, MusicSearchEvent> {
   MusicSearchCubit(
     this._searchApiProvider,
     this._audioService,
@@ -41,6 +42,8 @@ class MusicSearchCubit extends Cubit<MusicSearchState> {
     try {
       await _audioService.playSong(songItem);
       _localStorageManager.addToHistory(songItem);
+    } catch (e) {
+      emitPresentation(SongPlaybackErrorEvent(songItem, e.toString()));
     } finally {
       emit(state.copyWith(
         songLoadingId: () => null,
@@ -70,3 +73,12 @@ class MusicSearchCubit extends Cubit<MusicSearchState> {
     init();
   }
 }
+
+class SongPlaybackErrorEvent extends MusicSearchEvent {
+  final SongItem songItem;
+  final String errorMessage;
+
+  SongPlaybackErrorEvent(this.songItem, this.errorMessage);
+}
+
+class MusicSearchEvent {}

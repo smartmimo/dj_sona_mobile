@@ -60,10 +60,14 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
     }
   }
 
+  void _setAudioSource(AudioSource source) {
+    audioPlayer.setAudioSource(source).catchError(_appStateCubit.onPlaybackError);
+  }
+
   Future<MediaItemWrapper> playSong(SongItem songItem) async {
     final MediaItemWrapper item = await _getMediaItemFromSongItem(songItem);
 
-    audioPlayer.setAudioSource(_getAudioSourceFromUrl(item.extras.streamUrl));
+    _setAudioSource(_getAudioSourceFromUrl(item.extras.streamUrl));
 
     clearQueue();
     broadcastMediaItem(item.toMediaItem().copyWith(artist: "Search"));
@@ -109,7 +113,7 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
     addQueueItem(firstMediaItem.toMediaItem().copyWith(artist: playlistName));
 
     if (songItems.length <= 1) {
-      audioPlayer.setAudioSource(_getAudioSourceFromUrl(firstMediaItem.extras.streamUrl));
+      _setAudioSource(_getAudioSourceFromUrl(firstMediaItem.extras.streamUrl));
       broadcastMediaItem(firstMediaItem.toMediaItem().copyWith(artist: playlistName));
       if (!audioPlayer.playing) audioPlayer.play();
       return;
@@ -122,7 +126,7 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
     );
     addQueueItem(secondMediaItem.toMediaItem().copyWith(artist: playlistName));
 
-    audioPlayer.setAudioSource(_getAudioSourceFromUrl(firstMediaItem.extras.streamUrl));
+    _setAudioSource(_getAudioSourceFromUrl(firstMediaItem.extras.streamUrl));
     broadcastMediaItem(firstMediaItem.toMediaItem().copyWith(artist: playlistName));
     if (!audioPlayer.playing) audioPlayer.play();
 
@@ -167,7 +171,7 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
     if (currentIndex + 1 > queue.value.length - 1) return;
 
     final MediaItem nextItem = queue.value[currentIndex + 1];
-    audioPlayer.setAudioSource(
+    _setAudioSource(
       _getAudioSourceFromUrl(
         MediaItemWrapper.fromMediaItem(nextItem).extras.streamUrl,
       ),
@@ -182,7 +186,7 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
     if (currentIndex - 1 < 0) return;
 
     final MediaItem previousItem = queue.value[currentIndex - 1];
-    audioPlayer.setAudioSource(
+    _setAudioSource(
       _getAudioSourceFromUrl(
         MediaItemWrapper.fromMediaItem(previousItem).extras.streamUrl,
       ),
