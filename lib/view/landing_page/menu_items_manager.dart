@@ -9,12 +9,14 @@ class MenuItem {
     this.icon,
     this.activeIcon,
     this.route,
+    {this.isVisible = true}
   );
 
   final String text;
   final IconData icon;
   final IconData activeIcon;
   final PageRouteInfo route;
+  final bool isVisible;
 }
 
 abstract class MenuItemsManager {
@@ -36,12 +38,19 @@ abstract class MenuItemsManager {
     IconConstants.customHeartFilled,
     const LikedSongsRoute(),
   );
+  static final _spotify = MenuItem(
+    "Spotify",
+    IconConstants.spotify,
+    IconConstants.spotifyFilled,
+    const SpotifyRoute(),
+  );
   static final _appInfo = MenuItem(
     "Info",
     IconConstants.info,
     IconConstants.infoFilled,
     AppInfoRoute(),
+    isVisible: false,
   );
 
-  static final List<MenuItem> menuItems = [_homePage, _playlists, _likedSongs, _appInfo];
+  static final List<MenuItem> menuItems = [_homePage, _playlists, _likedSongs, _spotify, _appInfo];
 }

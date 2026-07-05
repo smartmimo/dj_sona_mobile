@@ -1,3 +1,5 @@
+import 'package:auto_route/auto_route.dart';
+import 'package:djsona_mobile/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:djsona_mobile/constants/style_constants.dart';
 import 'package:flutter/services.dart';
@@ -34,12 +36,17 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       ),
       leading: Padding(
         padding: StyleConstants.edgeInsetsL8,
-        child: leading ??
+        child: GestureDetector(
+          onTap: () {
+            AutoTabsRouter.of(context).setActiveIndex(4);
+          },
+          child: leading ??
             CircleAvatar(
-              backgroundColor: Theme.of(context).colorScheme.secondary,
-              child: ClipRRect(
-                borderRadius: StyleConstants.radius100,
-                child: Image.asset("assets/images/dj_sona_icon_2.png"),
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+                child: ClipRRect(
+                  borderRadius: StyleConstants.radius100,
+                  child: Image.asset("assets/images/dj_sona_icon_2.png"),
+                ),
               ),
             ),
       ),

@@ -54,7 +54,7 @@ class LandingPage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _getCurrentPlaylistSticker(context),
-                            _getQueueItemsSticker(context),
+                            if (_audioPlayerService.mediaItem.value != null) _getQueueItemsSticker(context),
                           ].withVerticalElementsSpacing(2),
                         ),
                       ),
@@ -84,16 +84,16 @@ class LandingPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: List<Widget>.from(
-                  MenuItemsManager.menuItems.map(
-                    (item) => _getMenuItem(
-                      textTheme,
-                      tabsRouter,
-                      MenuItemsManager.menuItems.indexOf(item),
-                      text: item.text,
-                      icon: item.icon,
-                      activeIcon: item.activeIcon,
-                    ),
-                  ),
+                  MenuItemsManager.menuItems.where((MenuItem item) => item.isVisible).map(
+                        (item) => _getMenuItem(
+                          textTheme,
+                          tabsRouter,
+                          MenuItemsManager.menuItems.indexOf(item),
+                          text: item.text,
+                          icon: item.icon,
+                          activeIcon: item.activeIcon,
+                        ),
+                      ),
                 ),
               ),
             ),
@@ -170,24 +170,29 @@ class LandingPage extends StatelessWidget {
     );
   }
 
-  Container _getQueueItemsSticker(BuildContext context) {
+  Widget _getQueueItemsSticker(BuildContext context) {
     final List<MediaItem> queue = _audioPlayerService.queue.value;
-    return Container(
-      alignment: Alignment.center,
-      height: 20,
-      decoration: BoxDecoration(
-        borderRadius: StyleConstants.radius4,
-        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.9),
-        boxShadow: StyleConstants.standardShadow,
-      ),
-      padding: StyleConstants.edgeInsetsH8,
-      child: Text(
-        "Queue: ${queue.length} items",
-        style: Theme.of(context).textTheme.bodyS.copyWith(
-              color: ColorConstants.white,
-              height: 1,
-            ),
-        textAlign: TextAlign.center,
+    return InkWell(
+      onTap: queue.isNotEmpty
+          ? null
+          : () => _audioPlayerService.autoPlayFromCurrentItem(_audioPlayerService.mediaItem.value!),
+      child: Container(
+        alignment: Alignment.center,
+        height: 20,
+        decoration: BoxDecoration(
+          borderRadius: StyleConstants.radius4,
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.9),
+          boxShadow: StyleConstants.standardShadow,
+        ),
+        padding: StyleConstants.edgeInsetsH8,
+        child: Text(
+          "Queue: ${queue.length} items",
+          style: Theme.of(context).textTheme.bodyS.copyWith(
+                color: ColorConstants.white,
+                height: 1,
+              ),
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }

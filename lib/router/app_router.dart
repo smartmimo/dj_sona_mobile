@@ -6,6 +6,7 @@ import 'package:djsona_mobile/view/landing_page/landing_page.dart';
 import 'package:djsona_mobile/view/liked_songs_page/liked_songs_page.dart';
 import 'package:djsona_mobile/view/playlists_page/playlists_page.dart';
 import 'package:djsona_mobile/view/shared_components/playlist_screen_page.dart';
+import 'package:djsona_mobile/view/spotify_page/spotify_page.dart';
 import 'package:flutter/material.dart';
 import 'app_wrapper.dart';
 
@@ -33,6 +34,7 @@ part 'app_router.gr.dart';
               ],
             ),
             AutoRoute(page: LikedSongsPage),
+            AutoRoute(page: SpotifyPage),
             AutoRoute(page: AppInfoPage),
           ],
         ),

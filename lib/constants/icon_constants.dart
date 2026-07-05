@@ -92,4 +92,6 @@ class IconConstants {
   static const IconData addToPlaylist = IconData(0xEA40, fontFamily: "icons-bs");
   static const IconData noNetwork = IconData(0xEA19, fontFamily: "icons-bs");
   static const IconData version = IconData(0xE919, fontFamily: "icons-bs");
+  static const IconData spotify = IconData(0xEA42, fontFamily: "icons-bs");
+  static const IconData spotifyFilled = IconData(0xEA41, fontFamily: "icons-bs");
 }

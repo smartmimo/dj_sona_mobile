@@ -51,6 +51,12 @@ class _$AppRouter extends RootStackRouter {
         child: const LikedSongsPage(),
       );
     },
+    SpotifyRoute.name: (routeData) {
+      return MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: const SpotifyPage(),
+      );
+    },
     AppInfoRoute.name: (routeData) {
       final args = routeData.argsAs<AppInfoRouteArgs>(
           orElse: () => const AppInfoRouteArgs());
@@ -115,6 +121,11 @@ class _$AppRouter extends RootStackRouter {
                 RouteConfig(
                   LikedSongsRoute.name,
                   path: 'liked-songs-page',
+                  parent: LandingRoute.name,
+                ),
+                RouteConfig(
+                  SpotifyRoute.name,
+                  path: 'spotify-page',
                   parent: LandingRoute.name,
                 ),
                 RouteConfig(
@@ -216,6 +227,18 @@ class LikedSongsRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'LikedSongsRoute';
+}
+
+/// generated route for
+/// [SpotifyPage]
+class SpotifyRoute extends PageRouteInfo<void> {
+  const SpotifyRoute()
+      : super(
+          SpotifyRoute.name,
+          path: 'spotify-page',
+        );
+
+  static const String name = 'SpotifyRoute';
 }
 
 /// generated route for
