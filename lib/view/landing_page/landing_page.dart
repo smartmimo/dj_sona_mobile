@@ -1,3 +1,4 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:djsona_mobile/constants/icon_constants.dart';
 import 'package:djsona_mobile/constants/style_constants.dart';
@@ -49,7 +50,13 @@ class LandingPage extends StatelessWidget {
                       Positioned(
                         bottom: 4,
                         left: 4,
-                        child: _getCurrentPlaylistSticker(context),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _getCurrentPlaylistSticker(context),
+                            _getQueueItemsSticker(context),
+                          ].withVerticalElementsSpacing(2),
+                        ),
                       ),
                       Positioned(
                         bottom: 4,
@@ -154,6 +161,28 @@ class LandingPage extends StatelessWidget {
       padding: StyleConstants.edgeInsetsH8,
       child: Text(
         item.value!.artist!,
+        style: Theme.of(context).textTheme.bodyS.copyWith(
+              color: ColorConstants.white,
+              height: 1,
+            ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  Container _getQueueItemsSticker(BuildContext context) {
+    final List<MediaItem> queue = _audioPlayerService.queue.value;
+    return Container(
+      alignment: Alignment.center,
+      height: 20,
+      decoration: BoxDecoration(
+        borderRadius: StyleConstants.radius4,
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.9),
+        boxShadow: StyleConstants.standardShadow,
+      ),
+      padding: StyleConstants.edgeInsetsH8,
+      child: Text(
+        "Queue: ${queue.length} items",
         style: Theme.of(context).textTheme.bodyS.copyWith(
               color: ColorConstants.white,
               height: 1,
