@@ -98,17 +98,61 @@ abstract class YoutubeUtils {
 
       final Map<String, dynamic> data = jsonDecode(jsonStr);
 
-      final List suggestedVideos =
-          data['contents']?['twoColumnWatchNextResults']?['secondaryResults']?['secondaryResults']?['results'] ?? [];
+      final List suggestedVideos = data['contents']?['twoColumnWatchNextResults']?['secondaryResults']
+              ?['secondaryResults']?['results']?[0]?['itemSectionRenderer']?['contents'] ??
+          [];
 
-      final List<String> videoIds = suggestedVideos
-          .where((item) => item['compactVideoRenderer']?['videoId'] != null)
-          .take(10)
-          .map<String>((item) => item['compactVideoRenderer']['videoId'] as String)
-          .toList();
+      final Map<String, int> videoDurationMap = {};
 
-      return videoIds;
+      for (final item in suggestedVideos) {
+        final String? videoId = item['lockupViewModel']?['contentId'];
+        if (videoId == null) continue;
+
+        final String? durationText = item['lockupViewModel']?['contentImage']?['thumbnailViewModel']?['overlays']?[0]
+            ?['thumbnailBottomOverlayViewModel']?['badges']?[0]?['thumbnailBadgeViewModel']?['text'] as String?;
+
+        videoDurationMap[videoId] = _parseDurationToSeconds(durationText);
+      }
+
+      if (videoDurationMap.isEmpty) return [];
+
+      // keep videos <= 10 minutes (600s)
+      final List<MapEntry<String, int>> filtered =
+          videoDurationMap.entries.where((e) => e.value > 0 && e.value <= 600).toList();
+
+      if (filtered.isNotEmpty) {
+        return filtered.map((e) => e.key).toList();
+      }
+
+      // fallback: return the single video with minimum duration
+      final List<MapEntry<String, int>> nonZeroDurationEntries =
+          videoDurationMap.entries.where((e) => e.value > 0).toList();
+      if (nonZeroDurationEntries.isNotEmpty) {
+        final minEntry = nonZeroDurationEntries.reduce(
+          (a, b) => a.value < b.value ? a : b,
+        );
+        return [minEntry.key];
+      }
+      return [videoDurationMap.entries.first.key];
     }
     throw "Error while parsing..";
+  }
+
+  static int _parseDurationToSeconds(String? durationText) {
+    if (durationText == null || durationText.isEmpty) {
+      return 0;
+    }
+
+    final parts = durationText.split(':').map(int.parse).toList();
+
+    if (parts.length == 2) {
+      // mm:ss
+      return parts[0] * 60 + parts[1];
+    } else if (parts.length == 3) {
+      // hh:mm:ss
+      return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    }
+
+    return 0;
   }
 }

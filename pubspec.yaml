@@ -52,6 +52,9 @@ dependencies:
   connectivity_plus: ^5.0.2
   cached_network_image: ^3.3.1
   flutter_cache_manager: ^3.3.1
+  crypto: ^3.0.7
+  flutter_secure_storage: ^10.3.1
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

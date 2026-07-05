@@ -183,7 +183,10 @@ class AudioPlayerService extends BaseAudioHandler with QueueHandler, SeekHandler
   @override
   Future<void> skipToPrevious() async {
     final int currentIndex = queue.value.indexOf(mediaItem.value!);
-    if (currentIndex - 1 < 0) return;
+    if (currentIndex - 1 < 0 || audioPlayer.position > const Duration(seconds: 5)) {
+      seek(Duration.zero);
+      return;
+    }
 
     final MediaItem previousItem = queue.value[currentIndex - 1];
     _setAudioSource(
