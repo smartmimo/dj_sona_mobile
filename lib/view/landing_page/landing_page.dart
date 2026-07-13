@@ -178,7 +178,7 @@ class LandingPage extends StatelessWidget {
         final List<MediaItem> queue = snapshot.data ?? [];
 
         return InkWell(
-          onTap: queue.isNotEmpty
+          onTap: queue.length > 1
               ? null
               : () => _audioPlayerService.autoPlayFromCurrentItem(
                     _audioPlayerService.mediaItem.value!,
