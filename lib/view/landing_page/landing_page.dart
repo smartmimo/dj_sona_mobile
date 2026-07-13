@@ -171,29 +171,38 @@ class LandingPage extends StatelessWidget {
   }
 
   Widget _getQueueItemsSticker(BuildContext context) {
-    final List<MediaItem> queue = _audioPlayerService.queue.value;
-    return InkWell(
-      onTap: queue.isNotEmpty
-          ? null
-          : () => _audioPlayerService.autoPlayFromCurrentItem(_audioPlayerService.mediaItem.value!),
-      child: Container(
-        alignment: Alignment.center,
-        height: 20,
-        decoration: BoxDecoration(
-          borderRadius: StyleConstants.radius4,
-          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.9),
-          boxShadow: StyleConstants.standardShadow,
-        ),
-        padding: StyleConstants.edgeInsetsH8,
-        child: Text(
-          "Queue: ${queue.length} items",
-          style: Theme.of(context).textTheme.bodyS.copyWith(
-                color: ColorConstants.white,
-                height: 1,
-              ),
-          textAlign: TextAlign.center,
-        ),
-      ),
+    return StreamBuilder<List<MediaItem>>(
+      stream: _audioPlayerService.queue,
+      initialData: _audioPlayerService.queue.value,
+      builder: (context, snapshot) {
+        final List<MediaItem> queue = snapshot.data ?? [];
+
+        return InkWell(
+          onTap: queue.isNotEmpty
+              ? null
+              : () => _audioPlayerService.autoPlayFromCurrentItem(
+                    _audioPlayerService.mediaItem.value!,
+                  ),
+          child: Container(
+            alignment: Alignment.center,
+            height: 20,
+            decoration: BoxDecoration(
+              borderRadius: StyleConstants.radius4,
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.9),
+              boxShadow: StyleConstants.standardShadow,
+            ),
+            padding: StyleConstants.edgeInsetsH8,
+            child: Text(
+              "Queue: ${queue.length} items",
+              style: Theme.of(context).textTheme.bodyS.copyWith(
+                    color: ColorConstants.white,
+                    height: 1,
+                  ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        );
+      },
     );
   }
 

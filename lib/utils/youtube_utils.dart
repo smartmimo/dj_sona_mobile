@@ -52,8 +52,6 @@ abstract class YoutubeUtils {
       videoId,
       ytClients: [
         YoutubeApiClient.androidVr,
-        YoutubeApiClient.tv,
-        YoutubeApiClient.android,
       ],
     );
     final AudioOnlyStreamInfo audioStreamInfo = manifest.audioOnly.withHighestBitrate();
