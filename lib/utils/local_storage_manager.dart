@@ -9,7 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class LocalStorageManager {
-  static const int _maxItemsInHistory = 10;
+  static const int _maxItemsInHistory = 30;
 
   late final Directory _basePath;
 
@@ -117,7 +117,6 @@ class LocalStorageManager {
     return _addSongToFolder(
       item: item,
       path: "playlists/$playlistName",
-      maxItems: _maxItemsInHistory,
     );
   }
 
