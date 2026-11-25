@@ -5,7 +5,7 @@ import 'package:djsona_mobile/constants/color_constants.dart';
 import 'package:djsona_mobile/constants/icon_constants.dart';
 import 'package:djsona_mobile/constants/style_constants.dart';
 import 'package:djsona_mobile/view/shared_components/loading_widget.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class NetworkImg extends StatelessWidget {
   const NetworkImg(

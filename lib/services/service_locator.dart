@@ -22,7 +22,8 @@ Future<void> setupDependencies() async {
   serviceLocator.registerSingleton<AppStateCubit>(
     AppStateCubit(
       serviceLocator.get<LocalStorageManager>(),
-      await Connectivity().checkConnectivity(),
+      (await Connectivity().checkConnectivity())
+          .firstWhere((element) => element != ConnectivityResult.none, orElse: () => ConnectivityResult.none),
     )..init(),
   );
 

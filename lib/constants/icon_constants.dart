@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class IconConstants {
   static const IconData creditCard = IconData(0xE953, fontFamily: 'icons-bs');

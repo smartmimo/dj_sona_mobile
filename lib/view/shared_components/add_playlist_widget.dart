@@ -7,7 +7,7 @@ import 'package:djsona_mobile/utils/theme_utils/elements_spacing_extension.dart'
 import 'package:djsona_mobile/view/shared_components/button_master.dart';
 import 'package:djsona_mobile/view/shared_components/snack_bar_widget.dart';
 import 'package:djsona_mobile/view/shared_components/txt_field.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class AddPlaylistWidget extends StatelessWidget {
   AddPlaylistWidget({

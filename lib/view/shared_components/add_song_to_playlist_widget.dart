@@ -13,7 +13,7 @@ import 'package:djsona_mobile/view/shared_components/button_master.dart';
 import 'package:djsona_mobile/view/shared_components/playlist_card.dart';
 import 'package:djsona_mobile/view/shared_components/popup_dialog_layout.dart';
 import 'package:djsona_mobile/view/shared_components/snack_bar_widget.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class AddSongToPlaylist extends StatelessWidget {
   AddSongToPlaylist({

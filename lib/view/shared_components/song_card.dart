@@ -14,7 +14,7 @@ import 'package:djsona_mobile/view/shared_components/card_layout.dart';
 import 'package:djsona_mobile/view/shared_components/loading_widget.dart';
 import 'package:djsona_mobile/view/shared_components/network_img.dart';
 import 'package:djsona_mobile/view/shared_components/popup_dialog_layout.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SongCard extends StatelessWidget {

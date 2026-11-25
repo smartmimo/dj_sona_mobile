@@ -1,7 +1,7 @@
 import 'package:djsona_mobile/utils/image_utils.dart';
 import 'package:djsona_mobile/utils/theme_utils/text_theme_extension.dart';
 import 'package:djsona_mobile/view/shared_components/appbar_widget.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class SpotifyPage extends StatelessWidget {
   const SpotifyPage({super.key});

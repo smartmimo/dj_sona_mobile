@@ -7,7 +7,7 @@ import 'package:djsona_mobile/services/service_locator.dart';
 import 'package:djsona_mobile/types/download_state.dart';
 import 'package:djsona_mobile/cubits/app_state_cubit/app_state_cubit.dart';
 import 'package:djsona_mobile/types/playlist.dart';
-import 'package:flutter/material.dart' hide SearchBar;
+import 'package:material_ui/material_ui.dart' hide SearchBar;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DownloadIndicator extends StatefulWidget {

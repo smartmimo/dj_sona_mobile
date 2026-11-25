@@ -9,7 +9,7 @@ import 'package:djsona_mobile/services/service_locator.dart';
 import 'package:djsona_mobile/types/playlist.dart';
 import 'package:djsona_mobile/types/song_item.dart';
 import 'package:djsona_mobile/utils/local_storage_manager.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
 
@@ -20,7 +20,8 @@ class AppStateCubit extends Cubit<AppState> with BlocPresentationMixin<AppState,
     ConnectivityResult connectivity,
   ) : super(AppState(connectivityResult: connectivity)) {
     Connectivity().onConnectivityChanged.listen((event) {
-      updateConnectivityResult(event);
+      updateConnectivityResult(
+          event.firstWhere((element) => element != ConnectivityResult.none, orElse: () => ConnectivityResult.none));
     });
   }
 

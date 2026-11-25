@@ -14,7 +14,7 @@ import 'package:djsona_mobile/view/shared_components/add_playlist_widget.dart';
 import 'package:djsona_mobile/view/shared_components/appbar_widget.dart';
 import 'package:djsona_mobile/view/shared_components/playlist_card.dart';
 import 'package:djsona_mobile/view/shared_components/popup_dialog_layout.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PlaylistsPage extends StatelessWidget {

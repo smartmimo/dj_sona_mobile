@@ -3,7 +3,7 @@ import 'package:djsona_mobile/constants/color_constants.dart';
 import 'package:djsona_mobile/main/app.dart';
 import 'package:djsona_mobile/services/audio_player_service.dart';
 import 'package:djsona_mobile/services/service_locator.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 void main() async {

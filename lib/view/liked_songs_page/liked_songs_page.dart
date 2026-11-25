@@ -1,6 +1,6 @@
 import 'package:djsona_mobile/constants/app_constants.dart';
 import 'package:djsona_mobile/view/shared_components/playlist_screen_page.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class LikedSongsPage extends StatelessWidget {
   const LikedSongsPage({super.key});

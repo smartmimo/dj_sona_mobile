@@ -14,7 +14,7 @@ import 'package:djsona_mobile/view/landing_page/audio_player_opener.dart';
 import 'package:djsona_mobile/view/landing_page/landing_page.dart';
 import 'package:djsona_mobile/view/landing_page/seeker_widget.dart';
 import 'package:djsona_mobile/view/shared_components/network_img.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:marquee/marquee.dart';
 

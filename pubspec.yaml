@@ -42,20 +42,21 @@ dependencies:
   bloc_presentation: ^1.0.1
   intl: ^0.19.0
   path_provider: ^2.1.2
-  package_info_plus: ^4.2.0
+  package_info_plus: ^10.2.2
   html: ^0.15.4
   audio_service: ^0.18.13
   youtube_explode_dart: ^3.1.0
   marquee: ^2.2.3
-  just_audio: ^0.9.37
+  just_audio: ^0.10.6
   palette_generator: ^0.3.3+3
-  connectivity_plus: ^5.0.2
+  connectivity_plus: ^7.3.2
   cached_network_image: ^3.3.1
   flutter_cache_manager: ^3.3.1
   crypto: ^3.0.7
   flutter_secure_storage: ^10.3.1
   url_launcher: ^6.3.2
 
+  material_ui: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

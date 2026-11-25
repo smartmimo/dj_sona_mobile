@@ -3,7 +3,7 @@ import 'package:djsona_mobile/services/audio_player_service.dart';
 import 'package:djsona_mobile/services/service_locator.dart';
 import 'package:djsona_mobile/view/landing_page/landing_page.dart';
 import 'package:djsona_mobile/view/landing_page/audio_player_widget.dart';
-import 'package:flutter/material.dart' hide SearchBar;
+import 'package:material_ui/material_ui.dart' hide SearchBar;
 
 class AudioPlayerOpener extends StatefulWidget {
   AudioPlayerOpener({

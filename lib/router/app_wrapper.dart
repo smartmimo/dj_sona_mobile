@@ -5,7 +5,7 @@ import 'package:djsona_mobile/cubits/app_state_cubit/app_state_cubit.dart';
 import 'package:djsona_mobile/router/error_widget.dart';
 import 'package:djsona_mobile/services/service_locator.dart';
 import 'package:djsona_mobile/view/shared_components/snack_bar_widget.dart';
-import 'package:flutter/material.dart' hide ErrorWidget;
+import 'package:material_ui/material_ui.dart' hide ErrorWidget;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AppWrapper extends StatelessWidget {

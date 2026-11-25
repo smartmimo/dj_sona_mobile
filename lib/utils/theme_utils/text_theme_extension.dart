@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 extension TextThemeExtension on TextTheme {
   TextStyle get heading1 => const TextStyle(fontSize: 40, fontWeight: FontWeight.w800);

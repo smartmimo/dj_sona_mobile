@@ -3,7 +3,7 @@ import 'package:djsona_mobile/constants/style_constants.dart';
 import 'package:djsona_mobile/utils/string_utils.dart';
 import 'package:djsona_mobile/utils/theme_utils/elements_spacing_extension.dart';
 import 'package:djsona_mobile/utils/theme_utils/text_theme_extension.dart';
-import 'package:flutter/material.dart' hide SearchBar;
+import 'package:material_ui/material_ui.dart' hide SearchBar;
 
 class SeekerWidget extends StatefulWidget {
   const SeekerWidget({
